@@ -4,22 +4,40 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   
-  <title>Archives: 2018 | 漫碼</title>
+  <title>HHKB 开箱留念 | 漫碼</title>
   <meta name="description" content="美麗的太陽照常升起 苦痛的人們依舊歇斯底裏" />
   <meta name="keywords" content="ios,objective-c,swift,python,javascript,otaku,lision" />
   <meta name="HandheldFriendly" content="True" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="美麗的太陽照常升起 苦痛的人們依舊歇斯底裏">
-<meta property="og:type" content="website">
-<meta property="og:title" content="漫碼">
-<meta property="og:url" content="https://lision.me/archives/2018/index.html">
+  <meta name="description" content="HHKB 开箱留念 前言Emmmmm… 这个清明节本来打算去青海湖骑行的，不过因为北京 4 月飞雪的天气骤变加上自己没注意添衣… 最终还是没能出了帝都 ╮(╯▽╰)╭  不过这也省下了一些开销~ 于是用本来准备出去踏青的 💰 入了一把垂涎已久的键盘，也就是本文的主角 —— HHKB 酱！ 嘛~ 知道 HHKB 是在 2015 年，记得还是在某乎的一篇回答中看到的，答主是一个妹子，大意是这个妹子偷">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HHKB 开箱留念">
+<meta property="og:url" content="https://lision.me/uncategorized/hhkb-bt">
 <meta property="og:site_name" content="漫碼">
-<meta property="og:description" content="美麗的太陽照常升起 苦痛的人們依舊歇斯底裏">
+<meta property="og:description" content="HHKB 开箱留念 前言Emmmmm… 这个清明节本来打算去青海湖骑行的，不过因为北京 4 月飞雪的天气骤变加上自己没注意添衣… 最终还是没能出了帝都 ╮(╯▽╰)╭  不过这也省下了一些开销~ 于是用本来准备出去踏青的 💰 入了一把垂涎已久的键盘，也就是本文的主角 —— HHKB 酱！ 嘛~ 知道 HHKB 是在 2015 年，记得还是在某乎的一篇回答中看到的，答主是一个妹子，大意是这个妹子偷">
 <meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="https://lision.me/uncategorized/hhkb-bt/hhkb_c_00.jpg">
+<meta property="og:image" content="https://lision.me/uncategorized/hhkb-bt/hhkb_00.jpg">
+<meta property="og:image" content="https://lision.me/uncategorized/hhkb-bt/hhkb_01.jpg">
+<meta property="og:image" content="https://lision.me/uncategorized/hhkb-bt/hhkb_02.jpg">
+<meta property="og:image" content="https://lision.me/uncategorized/hhkb-bt/hhkb_03.jpg">
+<meta property="og:image" content="https://lision.me/uncategorized/hhkb-bt/hhkb_04.jpg">
+<meta property="og:image" content="https://lision.me/uncategorized/hhkb-bt/hhkb_05.jpg">
+<meta property="og:image" content="https://lision.me/uncategorized/hhkb-bt/hhkb_06.jpg">
+<meta property="og:image" content="https://lision.me/uncategorized/hhkb-bt/hhkb_07.jpg">
+<meta property="og:image" content="https://lision.me/uncategorized/hhkb-bt/hhkb_08.jpg">
+<meta property="og:image" content="https://lision.me/uncategorized/hhkb-bt/hhkb_09.jpg">
+<meta property="og:image" content="https://lision.me/uncategorized/hhkb-bt/hhkb_10.jpg">
+<meta property="og:image" content="https://lision.me/uncategorized/hhkb-bt/hhkb_c_00.jpg">
+<meta property="og:image" content="https://lision.me/uncategorized/hhkb-bt/hhkb_c_01.jpg">
+<meta property="og:image" content="https://lision.me/uncategorized/hhkb-bt/iterative_filco.jpg">
+<meta property="og:image" content="https://lision.me/uncategorized/hhkb-bt/iterative_hhkb.jpg">
+<meta property="og:updated_time" content="2018-04-05T17:16:56.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="漫碼">
-<meta name="twitter:description" content="美麗的太陽照常升起 苦痛的人們依舊歇斯底裏">
+<meta name="twitter:title" content="HHKB 开箱留念">
+<meta name="twitter:description" content="HHKB 开箱留念 前言Emmmmm… 这个清明节本来打算去青海湖骑行的，不过因为北京 4 月飞雪的天气骤变加上自己没注意添衣… 最终还是没能出了帝都 ╮(╯▽╰)╭  不过这也省下了一些开销~ 于是用本来准备出去踏青的 💰 入了一把垂涎已久的键盘，也就是本文的主角 —— HHKB 酱！ 嘛~ 知道 HHKB 是在 2015 年，记得还是在某乎的一篇回答中看到的，答主是一个妹子，大意是这个妹子偷">
+<meta name="twitter:image" content="https://lision.me/uncategorized/hhkb-bt/hhkb_c_00.jpg">
   
   
     <link rel="icon" href="/favicon.png">
@@ -80,33 +98,20 @@
     <script>setLoadingBarProgress(40);</script>
     
     <main id="main" role="main">
-      
-	
-
-
-	<section class="page-header archive">
-    <h1>- <span>2018</span> -</h1>
-  </section>
-
-
-
-
-<section class="post-list">
-	
-    <article class="post ">
-
-  
-  <h2 class="title">
-    <a href="/uncategorized/hhkb-bt">
-      HHKB 开箱留念
+      <article id="post-hhkb-bt"
+  class="post article white-box article-type-post"
+  itemscope itemprop="blogPost">
+	<h2 class="title">
+  	<a href="/uncategorized/hhkb-bt">
+    	HHKB 开箱留念
     </a>
   </h2>
-  
-  <time>
-    4月 5, 2018
-  </time>
-  <section class="content">
-	  <h1 id="HHKB-开箱留念"><a href="#HHKB-开箱留念" class="headerlink" title="HHKB 开箱留念"></a>HHKB 开箱留念</h1><img src="/uncategorized/hhkb-bt/hhkb_c_00.jpg" class="slug">
+	<time>
+	  4月 5, 2018
+	</time>
+	<section class="content">
+  	<div class="article-entry" itemprop="articleBody">
+    	<h1 id="HHKB-开箱留念"><a href="#HHKB-开箱留念" class="headerlink" title="HHKB 开箱留念"></a>HHKB 开箱留念</h1><img src="/uncategorized/hhkb-bt/hhkb_c_00.jpg" class="slug">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Emmmmm… 这个清明节本来打算去青海湖骑行的，不过因为北京 4 月飞雪的天气骤变加上自己没注意添衣… 最终还是没能出了帝都 ╮(╯▽╰)╭ </p>
 <p>不过这也省下了一些开销~ 于是用本来准备出去踏青的 💰 入了一把垂涎已久的键盘，也就是本文的主角 —— HHKB 酱！</p>
 <p>嘛~ 知道 HHKB 是在 2015 年，记得还是在某乎的一篇回答中看到的，答主是一个妹子，大意是这个妹子偷偷看到了程序猿男票的购物车中躺着一把 HHKB，然后这个对键盘一窍不通的妹子历尽波折将 HHKB 入手送给自己程序猿男票的暖心小故事。</p>
@@ -189,15 +194,14 @@
 <img src="/uncategorized/hhkb-bt/iterative_filco.jpg" class="slug">
 <img src="/uncategorized/hhkb-bt/iterative_hhkb.jpg" class="slug">
 
+  	</div>
 
-    
-    
-    
-
-  </section>
+	  <div class="article-tags tags">
+		  
+	  </div>
+	</section>
 </article>
-  
-</section>
+
 
 
 
