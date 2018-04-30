@@ -14,20 +14,20 @@
 <meta name="keywords" content="yykit,yymodel">
 <meta property="og:type" content="article">
 <meta property="og:title" content="揭秘 YYModel 的魔法 0x02">
-<meta property="og:url" content="https://lision.me/yymodel0x02/index.html">
+<meta property="og:url" content="https://lision.me/ios/yymodel0x02/index.html">
 <meta property="og:site_name" content="漫碼">
 <meta property="og:description" content="前言在上文《揭秘 YYModel 的魔法（上）》 中主要剖析了 YYModel 的源码结构，并且分享了 YYClassInfo 与 NSObject+YYModel 内部有趣的实现细节。 紧接上篇，本文将解读 YYModel 关于 JSON 模型转换的源码，旨在揭秘 JSON 模型自动转换魔法。 索引 JSON 与 Model 相互转换 总结  JSON 与 Model 相互转换JSON(Jav">
 <meta property="og:locale" content="zh-cn">
-<meta property="og:image" content="https://lision.me/yymodel0x02/design_model_0x02.jpg">
-<meta property="og:image" content="https://lision.me/yymodel0x02/switch.jpg">
-<meta property="og:image" content="https://lision.me/yymodel0x02/j2d2m.jpg">
-<meta property="og:image" content="https://lision.me/yymodel0x02/d2m.png">
-<meta property="og:image" content="https://lision.me/yymodel0x02/m2j.jpg">
+<meta property="og:image" content="https://lision.me/ios/yymodel0x02/design_model_0x02.jpg">
+<meta property="og:image" content="https://lision.me/ios/yymodel0x02/switch.jpg">
+<meta property="og:image" content="https://lision.me/ios/yymodel0x02/j2d2m.jpg">
+<meta property="og:image" content="https://lision.me/ios/yymodel0x02/d2m.png">
+<meta property="og:image" content="https://lision.me/ios/yymodel0x02/m2j.jpg">
 <meta property="og:updated_time" content="2017-11-19T10:58:59.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="揭秘 YYModel 的魔法 0x02">
 <meta name="twitter:description" content="前言在上文《揭秘 YYModel 的魔法（上）》 中主要剖析了 YYModel 的源码结构，并且分享了 YYClassInfo 与 NSObject+YYModel 内部有趣的实现细节。 紧接上篇，本文将解读 YYModel 关于 JSON 模型转换的源码，旨在揭秘 JSON 模型自动转换魔法。 索引 JSON 与 Model 相互转换 总结  JSON 与 Model 相互转换JSON(Jav">
-<meta name="twitter:image" content="https://lision.me/yymodel0x02/design_model_0x02.jpg">
+<meta name="twitter:image" content="https://lision.me/ios/yymodel0x02/design_model_0x02.jpg">
   
   
     <link rel="icon" href="/favicon.png">
@@ -74,10 +74,6 @@
           Home
         </a>
       
-        <a href="/about" class="nav-about nav">
-          About
-        </a>
-      
         <a href="/archives" class="nav-archives nav">
           Archives
         </a>
@@ -92,7 +88,7 @@
   class="post article white-box article-type-post"
   itemscope itemprop="blogPost">
 	<h2 class="title">
-  	<a href="/yymodel0x02/">
+  	<a href="/ios/yymodel0x02/">
     	揭秘 YYModel 的魔法 0x02
     </a>
   </h2>
@@ -101,7 +97,7 @@
 	</time>
 	<section class="content">
   	<div class="article-entry" itemprop="articleBody">
-    	<img src="/yymodel0x02/design_model_0x02.jpg">
+    	<img src="/ios/yymodel0x02/design_model_0x02.jpg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在上文<a href="https://lision.me/yymodel_x01/">《揭秘 YYModel 的魔法（上）》</a> 中主要剖析了 <a href="https://github.com/ibireme/YYModel" target="_blank" rel="noopener">YYModel</a> 的源码结构，并且分享了 YYClassInfo 与 NSObject+YYModel 内部有趣的实现细节。</p>
 <p>紧接上篇，本文将解读 YYModel 关于 JSON 模型转换的源码，旨在揭秘 JSON 模型自动转换魔法。</p>
 <h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
@@ -115,7 +111,7 @@
 <li>JSON to Model</li>
 <li>Model to JSON</li>
 </ul>
-<img src="/yymodel0x02/switch.jpg">
+<img src="/ios/yymodel0x02/switch.jpg">
 <h3 id="JSON-to-Model"><a href="#JSON-to-Model" class="headerlink" title="JSON to Model"></a>JSON to Model</h3><p>我们从 YYModel 的接口开始解读。</p>
 <figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">+ (<span class="keyword">instancetype</span>)yy_modelWithJSON:(<span class="keyword">id</span>)json &#123;</span><br><span class="line">    <span class="comment">// 将 json 转为字典 dic</span></span><br><span class="line">    <span class="built_in">NSDictionary</span> *dic = [<span class="keyword">self</span> _yy_dictionaryWithJSON:json];</span><br><span class="line">    <span class="comment">// 再通过 dic 得到 model 并返回</span></span><br><span class="line">    <span class="keyword">return</span> [<span class="keyword">self</span> yy_modelWithDictionary:dic];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>上面接口把 JSON 转 Model 很简单的分为了两个子任务：</p>
@@ -123,7 +119,7 @@
 <li>JSON to NSDictionary</li>
 <li>NSDictionary to Model</li>
 </ul>
-<img src="/yymodel0x02/j2d2m.jpg">
+<img src="/ios/yymodel0x02/j2d2m.jpg">
 <h4 id="JSON-to-NSDictionary"><a href="#JSON-to-NSDictionary" class="headerlink" title="JSON to NSDictionary"></a>JSON to NSDictionary</h4><p>我们先看一下 <code>_yy_dictionaryWithJSON</code> 是怎么将 json 转为 NSDictionary 的。</p>
 <figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">+ (<span class="built_in">NSDictionary</span> *)_yy_dictionaryWithJSON:(<span class="keyword">id</span>)json &#123;</span><br><span class="line">    <span class="comment">// 入参判空</span></span><br><span class="line">    <span class="keyword">if</span> (!json || json == (<span class="keyword">id</span>)kCFNull) <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSDictionary</span> *dic = <span class="literal">nil</span>;</span><br><span class="line">    <span class="built_in">NSData</span> *jsonData = <span class="literal">nil</span>;</span><br><span class="line">    <span class="comment">// 根据 json 的类型对应操作</span></span><br><span class="line">    <span class="keyword">if</span> ([json isKindOfClass:[<span class="built_in">NSDictionary</span> <span class="keyword">class</span>]]) &#123;</span><br><span class="line">        <span class="comment">// 如果是 NSDictionary 类则直接赋值</span></span><br><span class="line">        dic = json;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> ([json isKindOfClass:[<span class="built_in">NSString</span> <span class="keyword">class</span>]]) &#123;</span><br><span class="line">        <span class="comment">// 如果是 NSString 类则用 UTF-8 编码转 NSData</span></span><br><span class="line">        jsonData = [(<span class="built_in">NSString</span> *)json dataUsingEncoding : <span class="built_in">NSUTF8StringEncoding</span>];</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> ([json isKindOfClass:[<span class="built_in">NSData</span> <span class="keyword">class</span>]]) &#123;</span><br><span class="line">        <span class="comment">// 如果是 NSData 则直接赋值给 jsonData</span></span><br><span class="line">        jsonData = json;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// jsonData 不为 nil，则表示上面的 2、3 情况中的一种</span></span><br><span class="line">    <span class="keyword">if</span> (jsonData) &#123;</span><br><span class="line">        <span class="comment">// 利用 NSJSONSerialization 方法将 jsonData 转为 dic</span></span><br><span class="line">        dic = [<span class="built_in">NSJSONSerialization</span> JSONObjectWithData:jsonData options:kNilOptions error:<span class="literal">NULL</span>];</span><br><span class="line">        <span class="comment">// 判断转换结果 </span></span><br><span class="line">        <span class="keyword">if</span> (![dic isKindOfClass:[<span class="built_in">NSDictionary</span> <span class="keyword">class</span>]]) dic = <span class="literal">nil</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> dic;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这个函数主要是根据入参的类型判断如何将其转为 NSDictionary 类型并返回。</p>
@@ -179,9 +175,9 @@
 </ul>
 <p>嘛~ 其实上面的代码除了长以外逻辑还是很简单的，总结起来就是根据可能出现的类型去做出对应的逻辑操作，建议各位有时间还是去读下源码，尤其是自己项目中用到 YYModel 的同学。相信看完之后会对 YYModel 属性赋值一清二楚，这样在使用 YYModel 的日常中出现任何问题都可以心中有数，改起代码自然如有神助哈。</p>
 <p>额…考虑到 NSDictionary to Model 的整个过程代码量不小，我花了一些时间将其逻辑总结归纳为一张图：</p>
-<img src="/yymodel0x02/d2m.png">
+<img src="/ios/yymodel0x02/d2m.png">
 <p>希望可以尽自己的努力让文章的表述变得更直白。</p>
-<h3 id="Model-to-JSON"><a href="#Model-to-JSON" class="headerlink" title="Model to JSON"></a>Model to JSON</h3><img src="/yymodel0x02/m2j.jpg">
+<h3 id="Model-to-JSON"><a href="#Model-to-JSON" class="headerlink" title="Model to JSON"></a>Model to JSON</h3><img src="/ios/yymodel0x02/m2j.jpg">
 <p>相比于 JSON to Model 来说，Model to JSON 更简单一些。其中因为 NSJSONSerialization 在对 JSON 的转换时做了一些规定：</p>
 <ul>
 <li>顶级对象是 NSArray 或者 NSDictionary 类型</li>
@@ -223,6 +219,10 @@
 	</section>
 </article>
 
+
+<section id="comments">
+	<div id="disqus_thread"></div>
+</section>
 
 
 
@@ -279,6 +279,20 @@
   </div>
 
   
+<script>
+  var disqus_shortname = 'lision-me';
+  
+  var disqus_url = 'https://lision.me/ios/yymodel0x02/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
 
 
 

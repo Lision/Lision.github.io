@@ -66,10 +66,6 @@
           Home
         </a>
       
-        <a href="/about" class="nav-about nav">
-          About
-        </a>
-      
         <a href="/archives" class="nav-archives nav">
           Archives
         </a>
@@ -96,7 +92,7 @@
 
   
   <h2 class="title">
-    <a href="/yyimage/">
+    <a href="/ios/yyimage/">
       YYImage 设计思路，实现细节剖析
     </a>
   </h2>
@@ -105,7 +101,7 @@
     12月 10, 2017
   </time>
   <section class="content">
-	  <img src="/yyimage/yyimage_h.jpg">
+	  <img src="/ios/yyimage/yyimage_h.jpg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>图片的历史早于文字，是最原始的信息传递方式。<a href="https://zh.wikipedia.org/wiki/%E5%85%AD%E6%9B%B8" target="_blank" rel="noopener">六书</a>中的象形文构造思想就是用文字的线条或笔画，把要表达物体的外形特征，具体地勾画出来。</p>
 <blockquote>
 <p><a href="https://zh.wikipedia.org/wiki/%E8%A8%B1%E6%85%8E" target="_blank" rel="noopener">许慎</a>《<a href="https://zh.wikipedia.org/wiki/%E8%AF%B4%E6%96%87%E8%A7%A3%E5%AD%97" target="_blank" rel="noopener">说文解字</a>》云：“象形者，画成其物，随体诘诎，日、月是也。”</p>
@@ -119,7 +115,7 @@
 <li><a href="https://blog.ibireme.com/2015/11/02/ios_image_tips/" target="_blank" rel="noopener">iOS 处理图片的一些小 Tip</a></li>
 </ul>
 <p>本文引用代码均为 YYImage v1.0.4 版本源码，文章旨在剖析 YYImage 的架构思想以及设计思路并对笔者在阅读源码过程中发现的有趣实现细节探究分享，不会逐行翻译源码，建议对源码实现感兴趣的同学结合 YYImage v1.0.4 版本源码食用本文~</p>
-<img src="/yyimage/xiaomai.gif">
+<img src="/ios/yyimage/xiaomai.gif">
 <h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
 <li>YYImage 简介</li>
 <li>YYImage, YYFrameImage, YYSpriteSheetImage</li>
@@ -128,7 +124,7 @@
 <li>总结</li>
 <li>扩展阅读</li>
 </ul>
-<h2 id="YYImage-简介"><a href="#YYImage-简介" class="headerlink" title="YYImage 简介"></a>YYImage 简介</h2><img src="/yyimage/yyimage.jpg">
+<h2 id="YYImage-简介"><a href="#YYImage-简介" class="headerlink" title="YYImage 简介"></a>YYImage 简介</h2><img src="/ios/yyimage/yyimage.jpg">
 <p>YYImage 是一款功能强大的 iOS 图像框架，支持当前市场主流的静/动态图像编/解码与动态图像的动画播放显示，其具有以下特性：</p>
 <ul>
 <li>支持以下类型动画图像的播放/编码/解码: WebP, APNG, GIF。</li>
@@ -175,7 +171,7 @@
 <blockquote>
 <p>Note: <a href="https://developer.apple.com/documentation/imageio" target="_blank" rel="noopener">ImageIO.framework</a> 是 iOS 底层实现的图片编/解码库，负责管理颜色和访问图像元数据。其内部的实现使用了第三方编/解码库（如 libpng 等）并对第三方库进行调整优化。除此之外，iOS 还专门针对 JPEG 的编/解码开发了 AppleJPEG.framework，实现了性能更高的硬编码和硬解码。</p>
 </blockquote>
-<img src="/yyimage/yyimage_struct.png">
+<img src="/ios/yyimage/yyimage_struct.png">
 <h2 id="YYImage-YYFrameImage-YYSpriteSheetImage"><a href="#YYImage-YYFrameImage-YYSpriteSheetImage" class="headerlink" title="YYImage, YYFrameImage, YYSpriteSheetImage"></a>YYImage, YYFrameImage, YYSpriteSheetImage</h2><p>先来介绍 YYImage 库中图像层的三个类，它们分别是：</p>
 <ul>
 <li>YYImage</li>
@@ -212,7 +208,7 @@
 <li>用首图初始化 <code>_oneFrameBytes</code> ，如入参初始化 <code>_imageDatas</code> ，<code>_frameDurations</code> 和 <code>_loopCount</code></li>
 <li>用 <code>UIImage</code> 的 <code>initWithCGImage:scale:orientation:</code> 初始化并返回初始化结果</li>
 </ul>
-<h3 id="YYSpriteSheetImage"><a href="#YYSpriteSheetImage" class="headerlink" title="YYSpriteSheetImage"></a>YYSpriteSheetImage</h3><img src="/yyimage/ss_wukong.png">
+<h3 id="YYSpriteSheetImage"><a href="#YYSpriteSheetImage" class="headerlink" title="YYSpriteSheetImage"></a>YYSpriteSheetImage</h3><img src="/ios/yyimage/ss_wukong.png">
 <p>YYSpriteSheetImage 是用来做 Spritesheet 动画显示的图像类，它也是 UIImage 的子类。</p>
 <p>关于 Spritesheet 可能做过游戏开发或者以前鼓捣过简单网页游戏 Demo 的同学会很熟悉，其动画原理是把一个动画过程分解为多个动画帧，按照顺序将这些动画帧排布在一张大的画布中，播放动画时只需要按照每一帧图像的尺寸大小以及对应索引去画布中提取对应的帧替换显示以达到人眼判定动画的效果，点击 <a href="https://gamedevelopment.tutsplus.com/tutorials/an-introduction-to-spritesheet-animation--gamedev-13099" target="_blank" rel="noopener"><br>An Introduction to Spritesheet Animation</a> 或者 <a href="https://www.codeandweb.com/what-is-a-sprite-sheet" target="_blank" rel="noopener">What is a sprite sheet?</a> 了解更多关于 Spritesheet 动画的信息。</p>
 <blockquote>
@@ -232,7 +228,7 @@
 <li>将处理后的逻辑定位 LogicRect 作为图层定位 LayerRect 返回</li>
 </ul>
 <p>返回的 LayerRect 作为对应索引帧的画布内相对位置存在，结合画布就可以定位到对应帧图像的具体尺寸和位置。</p>
-<h2 id="YYAnimatedImageView"><a href="#YYAnimatedImageView" class="headerlink" title="YYAnimatedImageView"></a>YYAnimatedImageView</h2><img src="/yyimage/blood_wheel_eye.jpeg">
+<h2 id="YYAnimatedImageView"><a href="#YYAnimatedImageView" class="headerlink" title="YYAnimatedImageView"></a>YYAnimatedImageView</h2><img src="/ios/yyimage/blood_wheel_eye.jpeg">
 <p>人眼中呈现的动画是由一幅幅内容连贯的图像以较短时间按顺序替换形成的，所以要显示动画只需要知道动画顺序中每一帧图像以及对应的显示时间等信息即可。YYImage 中对应于 UIImage 层级的内容（YYImage, YYFrameImage, YYSpriteSheetImage）在上文已经介绍过了，虽然它们之间存在内容和形式上的差异，但是对于人眼动画呈现的原理却是不变的。</p>
 <p>YYAnimatedImageView 是 YYImage 的重要组成，它是 UIImageView 的子类，负责 YYImage 图像层中不同的图像类的视图显示（包含动态图像的动画播放），其内部包含 YYAnimatedImage 协议以及 YYAnimatedImageView 自身两部分。</p>
 <h3 id="YYAnimatedImage-协议"><a href="#YYAnimatedImage-协议" class="headerlink" title="YYAnimatedImage 协议"></a>YYAnimatedImage 协议</h3><p>上文提到不论是 YYImage, YYFrameImage, YYSpriteSheetImage 还是以后可能会扩展的图像类，虽然它们之间存在内容和形式上的差异，但是对于人眼动画呈现的原理却是不变的。</p>
@@ -303,7 +299,7 @@
 <blockquote>
 <p>Note: 消息转发产生的开销要比动态方法解析和消息重定向大。</p>
 </blockquote>
-<h2 id="YYImageCoder"><a href="#YYImageCoder" class="headerlink" title="YYImageCoder"></a>YYImageCoder</h2><img src="/yyimage/image_coder.jpg">
+<h2 id="YYImageCoder"><a href="#YYImageCoder" class="headerlink" title="YYImageCoder"></a>YYImageCoder</h2><img src="/ios/yyimage/image_coder.jpg">
 <p>YYImageCoder 作为 YYImage 的编/解码器，对应于 iOS 中的 ImageIO.framework 图片编/解码库，正是因为有了 YYImageCoder 的存在，YYImage 才得以支持如此多的图片格式，所以说 YYImageCoder 是 YYImage 的底层核心。</p>
 <p>YYImageCoder 内部定义了许多 YYImage 中用到的核心数据结构：</p>
 <ul>
@@ -374,7 +370,7 @@
 
   
   <h2 class="title">
-    <a href="/yymodel0x02/">
+    <a href="/ios/yymodel0x02/">
       揭秘 YYModel 的魔法 0x02
     </a>
   </h2>
@@ -383,7 +379,7 @@
     11月 19, 2017
   </time>
   <section class="content">
-	  <img src="/yymodel0x02/design_model_0x02.jpg">
+	  <img src="/ios/yymodel0x02/design_model_0x02.jpg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在上文<a href="https://lision.me/yymodel_x01/">《揭秘 YYModel 的魔法（上）》</a> 中主要剖析了 <a href="https://github.com/ibireme/YYModel" target="_blank" rel="noopener">YYModel</a> 的源码结构，并且分享了 YYClassInfo 与 NSObject+YYModel 内部有趣的实现细节。</p>
 <p>紧接上篇，本文将解读 YYModel 关于 JSON 模型转换的源码，旨在揭秘 JSON 模型自动转换魔法。</p>
 <h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
@@ -397,7 +393,7 @@
 <li>JSON to Model</li>
 <li>Model to JSON</li>
 </ul>
-<img src="/yymodel0x02/switch.jpg">
+<img src="/ios/yymodel0x02/switch.jpg">
 <h3 id="JSON-to-Model"><a href="#JSON-to-Model" class="headerlink" title="JSON to Model"></a>JSON to Model</h3><p>我们从 YYModel 的接口开始解读。</p>
 <figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">+ (<span class="keyword">instancetype</span>)yy_modelWithJSON:(<span class="keyword">id</span>)json &#123;</span><br><span class="line">    <span class="comment">// 将 json 转为字典 dic</span></span><br><span class="line">    <span class="built_in">NSDictionary</span> *dic = [<span class="keyword">self</span> _yy_dictionaryWithJSON:json];</span><br><span class="line">    <span class="comment">// 再通过 dic 得到 model 并返回</span></span><br><span class="line">    <span class="keyword">return</span> [<span class="keyword">self</span> yy_modelWithDictionary:dic];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>上面接口把 JSON 转 Model 很简单的分为了两个子任务：</p>
@@ -405,7 +401,7 @@
 <li>JSON to NSDictionary</li>
 <li>NSDictionary to Model</li>
 </ul>
-<img src="/yymodel0x02/j2d2m.jpg">
+<img src="/ios/yymodel0x02/j2d2m.jpg">
 <h4 id="JSON-to-NSDictionary"><a href="#JSON-to-NSDictionary" class="headerlink" title="JSON to NSDictionary"></a>JSON to NSDictionary</h4><p>我们先看一下 <code>_yy_dictionaryWithJSON</code> 是怎么将 json 转为 NSDictionary 的。</p>
 <figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">+ (<span class="built_in">NSDictionary</span> *)_yy_dictionaryWithJSON:(<span class="keyword">id</span>)json &#123;</span><br><span class="line">    <span class="comment">// 入参判空</span></span><br><span class="line">    <span class="keyword">if</span> (!json || json == (<span class="keyword">id</span>)kCFNull) <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSDictionary</span> *dic = <span class="literal">nil</span>;</span><br><span class="line">    <span class="built_in">NSData</span> *jsonData = <span class="literal">nil</span>;</span><br><span class="line">    <span class="comment">// 根据 json 的类型对应操作</span></span><br><span class="line">    <span class="keyword">if</span> ([json isKindOfClass:[<span class="built_in">NSDictionary</span> <span class="keyword">class</span>]]) &#123;</span><br><span class="line">        <span class="comment">// 如果是 NSDictionary 类则直接赋值</span></span><br><span class="line">        dic = json;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> ([json isKindOfClass:[<span class="built_in">NSString</span> <span class="keyword">class</span>]]) &#123;</span><br><span class="line">        <span class="comment">// 如果是 NSString 类则用 UTF-8 编码转 NSData</span></span><br><span class="line">        jsonData = [(<span class="built_in">NSString</span> *)json dataUsingEncoding : <span class="built_in">NSUTF8StringEncoding</span>];</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> ([json isKindOfClass:[<span class="built_in">NSData</span> <span class="keyword">class</span>]]) &#123;</span><br><span class="line">        <span class="comment">// 如果是 NSData 则直接赋值给 jsonData</span></span><br><span class="line">        jsonData = json;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// jsonData 不为 nil，则表示上面的 2、3 情况中的一种</span></span><br><span class="line">    <span class="keyword">if</span> (jsonData) &#123;</span><br><span class="line">        <span class="comment">// 利用 NSJSONSerialization 方法将 jsonData 转为 dic</span></span><br><span class="line">        dic = [<span class="built_in">NSJSONSerialization</span> JSONObjectWithData:jsonData options:kNilOptions error:<span class="literal">NULL</span>];</span><br><span class="line">        <span class="comment">// 判断转换结果 </span></span><br><span class="line">        <span class="keyword">if</span> (![dic isKindOfClass:[<span class="built_in">NSDictionary</span> <span class="keyword">class</span>]]) dic = <span class="literal">nil</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> dic;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这个函数主要是根据入参的类型判断如何将其转为 NSDictionary 类型并返回。</p>
@@ -461,9 +457,9 @@
 </ul>
 <p>嘛~ 其实上面的代码除了长以外逻辑还是很简单的，总结起来就是根据可能出现的类型去做出对应的逻辑操作，建议各位有时间还是去读下源码，尤其是自己项目中用到 YYModel 的同学。相信看完之后会对 YYModel 属性赋值一清二楚，这样在使用 YYModel 的日常中出现任何问题都可以心中有数，改起代码自然如有神助哈。</p>
 <p>额…考虑到 NSDictionary to Model 的整个过程代码量不小，我花了一些时间将其逻辑总结归纳为一张图：</p>
-<img src="/yymodel0x02/d2m.png">
+<img src="/ios/yymodel0x02/d2m.png">
 <p>希望可以尽自己的努力让文章的表述变得更直白。</p>
-<h3 id="Model-to-JSON"><a href="#Model-to-JSON" class="headerlink" title="Model to JSON"></a>Model to JSON</h3><img src="/yymodel0x02/m2j.jpg">
+<h3 id="Model-to-JSON"><a href="#Model-to-JSON" class="headerlink" title="Model to JSON"></a>Model to JSON</h3><img src="/ios/yymodel0x02/m2j.jpg">
 <p>相比于 JSON to Model 来说，Model to JSON 更简单一些。其中因为 NSJSONSerialization 在对 JSON 的转换时做了一些规定：</p>
 <ul>
 <li>顶级对象是 NSArray 或者 NSDictionary 类型</li>
@@ -511,7 +507,7 @@
 
   
   <h2 class="title">
-    <a href="/yymodel0x01/">
+    <a href="/ios/yymodel0x01/">
       揭秘 YYModel 的魔法 0x01
     </a>
   </h2>
@@ -520,7 +516,7 @@
     11月 12, 2017
   </time>
   <section class="content">
-	  <img src="/yymodel0x01/design_model_0x01.jpg">
+	  <img src="/ios/yymodel0x01/design_model_0x01.jpg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>iOS 开发中少不了各种各样的模型，不论是采用 MVC、MVP 还是 MVVM 设计模式都逃不过 Model。</p>
 <p>那么大家在使用 Model 的时候肯定遇到过一个问题，即接口传递过来的数据（一般是 JSON 格式）需要转换为 iOS 内我们能直接使用的模型（类）。iOS 开发早期第三方框架没有那么多，大家可能会手写相关代码，但是随着业务的扩展，模型的增多，这些没什么技术含量的代码只是在重复的浪费我们的劳动力而已。</p>
 <p>这时候就需要一种工具来帮助我们把劳动力从这些无意义的繁琐代码中解放出来，于是 GitHub 上出现了很多解决此类问题的第三方库，诸如 Mantle、JSONModel、MJExtension 以及 YYModel 等等。</p>
@@ -530,7 +526,7 @@
 <blockquote>
 <p>处理 GithubUser 数据 10000 次耗时统计 (iPhone 6):</p>
 </blockquote>
-<img src="/yymodel0x01/yymodel_performance.png">
+<img src="/ios/yymodel0x01/yymodel_performance.png">
 <h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
 <li>YYModel 简介</li>
 <li>YYClassInfo 剖析</li>
@@ -538,14 +534,14 @@
 <li>JSON 与 Model 相互转换</li>
 <li>总结</li>
 </ul>
-<h2 id="YYModel-简介"><a href="#YYModel-简介" class="headerlink" title="YYModel 简介"></a>YYModel 简介</h2><img src="/yymodel0x01/yymodel.png">
+<h2 id="YYModel-简介"><a href="#YYModel-简介" class="headerlink" title="YYModel 简介"></a>YYModel 简介</h2><img src="/ios/yymodel0x01/yymodel.png">
 <p>撸了一遍 YYModel 的源码，果然是非常轻量级的 JSON 模型自动转换库，加上 YYModel.h 一共也只有 5 个文件。</p>
 <p>抛开 YYModel.h 来看，其实只有 YYClassInfo 和 NSObject+YYModel 两个模块。</p>
 <ul>
 <li>YYClassInfo 主要将 Runtime 层级的一些结构体封装到 NSObject 层级以便调用。</li>
 <li>NSObject+YYModel 负责提供方便调用的接口以及实现具体的模型转换逻辑（借助 YYClassInfo 中的封装）。</li>
 </ul>
-<h2 id="YYClassInfo-剖析"><a href="#YYClassInfo-剖析" class="headerlink" title="YYClassInfo 剖析"></a>YYClassInfo 剖析</h2><img src="/yymodel0x01/yyclassinfo.jpg">
+<h2 id="YYClassInfo-剖析"><a href="#YYClassInfo-剖析" class="headerlink" title="YYClassInfo 剖析"></a>YYClassInfo 剖析</h2><img src="/ios/yymodel0x01/yyclassinfo.jpg">
 <p>前面说到 YYClassInfo 主要将 Runtime 层级的一些结构体封装到 NSObject 层级以便调用，我觉得如果需要与 Runtime 层级的结构体做对比的话，没什么比表格来的更简单直观了：</p>
 <table>
 <thead>
@@ -646,7 +642,7 @@
 </ul>
 <figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// objc.h</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> objc_class *Class;</span><br><span class="line"></span><br><span class="line"><span class="comment">// runtime.h</span></span><br><span class="line"><span class="keyword">struct</span> objc_class &#123;</span><br><span class="line">    Class _Nonnull isa OBJC_ISA_AVAILABILITY; <span class="comment">// isa 指针</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#if !__OBJC2__</span></span><br><span class="line">    Class _Nullable super_class OBJC2_UNAVAILABLE; <span class="comment">// 父类（超类）指针</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> * _Nonnull name OBJC2_UNAVAILABLE; <span class="comment">// 类名</span></span><br><span class="line">    <span class="keyword">long</span> version OBJC2_UNAVAILABLE; <span class="comment">// 版本</span></span><br><span class="line">    <span class="keyword">long</span> info OBJC2_UNAVAILABLE; <span class="comment">// 信息</span></span><br><span class="line">    <span class="keyword">long</span> instance_size OBJC2_UNAVAILABLE; <span class="comment">// 初始尺寸</span></span><br><span class="line">    <span class="keyword">struct</span> objc_ivar_list * _Nullable ivars OBJC2_UNAVAILABLE; <span class="comment">// 变量列表</span></span><br><span class="line">    <span class="keyword">struct</span> objc_method_list * _Nullable * _Nullable methodLists OBJC2_UNAVAILABLE; <span class="comment">// 方法列表</span></span><br><span class="line">    <span class="keyword">struct</span> objc_cache * _Nonnull cache OBJC2_UNAVAILABLE; <span class="comment">// 缓存</span></span><br><span class="line">    <span class="keyword">struct</span> objc_protocol_list * _Nullable protocols OBJC2_UNAVAILABLE; <span class="comment">// 协议列表</span></span><br><span class="line"><span class="meta">#endif</span></span><br><span class="line"></span><br><span class="line">&#125; OBJC2_UNAVAILABLE;</span><br></pre></td></tr></table></figure>
 <p>额… 看来想完全避开 Runtime 的知识来讲 YYModel 源码是不现实的。这里简单介绍一下 Runtime 中关于 Class 的知识以便阅读，已经熟悉这方面知识的同学就当温习一下好了。</p>
-<img src="/yymodel0x01/class_diagram.jpg">
+<img src="/ios/yymodel0x01/class_diagram.jpg">
 <ul>
 <li>isa 指针，用于找到所属类，类对象的 isa 一般指向对应元类。</li>
 <li>元类，由于 objc_class 继承于 objc_object，即类本身同时也是一个对象，所以 Runtime 库设计出元类用以表述类对象自身所具备的元数据。</li>
@@ -674,7 +670,7 @@
 <figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (info &amp;&amp; info-&gt;_needUpdate) &#123;</span><br><span class="line">    [info _update];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>简单介绍一下 <code>_update</code>，它是 YYClassInfo 的私有方法，它的实现逻辑简单介绍就是清空当前 YYClassInfo 实例变量，方法以及属性，之后再重新初始化它们。由于 <code>_update</code> 实现源码并没有什么特别之处，我这里就不贴源码了。</p>
 <p>嘛~ 对 YYClassInfo 的剖析到这里就差不多了。</p>
-<h2 id="NSObject-YYModel-探究"><a href="#NSObject-YYModel-探究" class="headerlink" title="NSObject+YYModel 探究"></a>NSObject+YYModel 探究</h2><img src="/yymodel0x01/nsobject_yymodel.jpg">
+<h2 id="NSObject-YYModel-探究"><a href="#NSObject-YYModel-探究" class="headerlink" title="NSObject+YYModel 探究"></a>NSObject+YYModel 探究</h2><img src="/ios/yymodel0x01/nsobject_yymodel.jpg">
 <p>如果说 YYClassInfo 主要是作者对 Runtime 层在 JSON 模型转换中需要用到的结构体的封装，那么 NSObject+YYModel 在 YYModel 中担当的责任则是利用 YYClassInfo 层级封装好的类切实的执行 JSON 模型之间的转换逻辑，并且提供了无侵入性的接口。</p>
 <p>第一次阅读 NSObject+YYModel.m 的源码可能会有些不适应，这很正常。因为其大量使用了 Runtime 函数与 CoreFoundation 库，加上各种类型编码和递归解析，代码量也有 1800 多行了。</p>
 <p>我简单把 NSObject+YYModel.m 的源码做了一下划分，这样划分之后代码看起来一样很简单清晰：</p>
@@ -748,7 +744,7 @@
 
   
   <h2 class="title">
-    <a href="/yycache/">
+    <a href="/ios/yycache/">
       从 YYCache 源码 Get 到如何设计一个优秀的缓存
     </a>
   </h2>
@@ -757,15 +753,15 @@
     10月 30, 2017
   </time>
   <section class="content">
-	  <img src="/yycache/how_to_design_a_good_cache.jpg">
+	  <img src="/ios/yycache/how_to_design_a_good_cache.jpg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>iOS 开发中总会用到各种缓存，但是各位有没有考虑过什么样的缓存才能被叫做优秀的缓存，或者说优秀的缓存应该具备哪些特质？</p>
 <p><strong>闭上眼睛，想一想如果面试官让你设计一个缓存你会怎么回答？</strong></p>
 <p>本文将结合 YYCache 的源码逐步带大家找到答案。</p>
 <p><a href="https://github.com/ibireme/YYCache" target="_blank" rel="noopener">YYCache</a> 是一个线程安全的高性能键值缓存（该项目是 <a href="https://github.com/ibireme/YYKit" target="_blank" rel="noopener">YYKit</a> 组件之一）。YYKit 是在 2015 年发布到 Github 的，由于其代码质量很高，在短时间内就收获了大量的 Star（目前已经 1w+ Star 了），而且在 iOS 各大社区反响广泛，Google 一下也是漫天赞叹。</p>
 <p>YYKit 作者是 <a href="https://github.com/ibireme" target="_blank" rel="noopener">@ibireme</a>，原名郭曜源（猜测 YY 前缀来源于曜源？），是我个人非常喜欢的国人开发者（何止喜欢，简直是迷弟😘）。</p>
 <p>YYCache 的代码逻辑清晰，注释详尽，加上自身不算太大的代码量使得其阅读非常简单，更加难能可贵的是它的性能还非常高。</p>
-<img src="/yycache/performance_yymemorycache.jpg">
-<img src="/yycache/performance_yydiskcache.jpg">
+<img src="/ios/yycache/performance_yymemorycache.jpg">
+<img src="/ios/yycache/performance_yydiskcache.jpg">
 <p>我对它的评价是<strong>小而美</strong>，这种小而美的缓存源码对于我们今天的主题太合适不过了（本文中 YYCache 源码版本为 v1.0.4）。</p>
 <h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
 <li>YYCache 简介</li>
@@ -774,7 +770,7 @@
 <li>优秀的缓存应该具备哪些特质</li>
 <li>总结</li>
 </ul>
-<h2 id="YYCache-简介"><a href="#YYCache-简介" class="headerlink" title="YYCache 简介"></a>YYCache 简介</h2><img src="/yycache/yycache.jpg">
+<h2 id="YYCache-简介"><a href="#YYCache-简介" class="headerlink" title="YYCache 简介"></a>YYCache 简介</h2><img src="/ios/yycache/yycache.jpg">
 <p>简单把 YYCache 从头到尾撸了一遍，最大的感触就是代码风格干净整洁，代码思路清晰明了。</p>
 <p>由于代码整体阅读难度不是非常大，本文不会去逐字逐句的解读源码，而是提炼 YYCache 作为一个小而美的缓存实现了哪些缓存该具备的特质，并且分析实现细节。</p>
 <p>我们先来简单看一下 YYCache 的代码结构，YYCache 是由 YYMemoryCache 与 YYDiskCache 两部分组成的，其中 YYMemoryCache 作为高速内存缓存，而 YYDiskCache 则作为低速磁盘缓存。</p>
@@ -788,7 +784,7 @@
 <p>类似上述的编码技巧还有很多，我并非不想与大家分享我 get 到的这些编码技巧，只是觉得它与本文的主题似乎不太相符。我准备在之后专门写一篇文章来与大家分享我在阅读各大源码库过程中 get 到的编码技巧（感兴趣的话可以 <a href="https://weibo.com/5071795354/profile" target="_blank" rel="noopener">关注我</a>）。</p>
 </blockquote>
 <p>从代码中我们可以看到 YYCache 中持有 YYMemoryCache 与 YYDiskCache，并且对外提供了一些接口。这些接口基本都是基于 Key 和 Value 设计的，类似于 iOS 原生的字典类接口（增删改查）。</p>
-<h2 id="YYMemoryCache-细节剖析"><a href="#YYMemoryCache-细节剖析" class="headerlink" title="YYMemoryCache 细节剖析"></a>YYMemoryCache 细节剖析</h2><img src="/yycache/yymemorycache.jpg">
+<h2 id="YYMemoryCache-细节剖析"><a href="#YYMemoryCache-细节剖析" class="headerlink" title="YYMemoryCache 细节剖析"></a>YYMemoryCache 细节剖析</h2><img src="/ios/yycache/yymemorycache.jpg">
 <p>YYMemoryCache 是一个高速的内存缓存，用于存储键值对。它与 NSDictionary 相反，Key 被保留并且不复制。API 和性能类似于 NSCache，所有方法都是线程安全的。</p>
 <p>YYMemoryCache 对象与 NSCache 的不同之处在于：</p>
 <ul>
@@ -806,7 +802,7 @@
 <blockquote>
 <p>有趣的是，这里 ibireme 使用 <code>pthread_mutex</code> 是有一段小故事的。在最初 YYMemoryCache 这里使用的锁是 <code>OSSpinLock</code> 自旋锁（详见 <a href="https://blog.ibireme.com/2015/10/26/yycache/" target="_blank" rel="noopener">YYCache 设计思路</a> 备注-关于锁），后面有人在 Github 向作者提 <a href="https://github.com/ibireme/YYModel/issues/43" target="_blank" rel="noopener">issue</a> 反馈 <code>OSSpinLock</code> 不安全，经过作者的确认（详见 <a href="https://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/" target="_blank" rel="noopener">不再安全的 OSSpinLock</a>）最后选择用 <code>pthread_mutex</code> 替代 <code>OSSpinLock</code>。</p>
 </blockquote>
-<img src="/yycache/lock_benchmark.jpg">
+<img src="/ios/yycache/lock_benchmark.jpg">
 <p>上面是 ibireme 在确认 <code>OSSpinLock</code> 不再安全之后为了寻找替代方案做的简单性能测试，对比了一下几种能够替代 <code>OSSpinLock</code> 锁的性能。在 <a href="https://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/" target="_blank" rel="noopener">不再安全的 OSSpinLock</a> 文末的评论中，我找到了作者使用 <code>pthread_mutex</code> 的原因。</p>
 <blockquote>
 <p>ibireme: 苹果员工说 libobjc 里 <code>spinlock</code> 是用了一些私有方法 (<code>mach_thread_switch</code>)，贡献出了高线程的优先来避免优先级反转的问题，但是我翻了下 libdispatch 的源码倒是没发现相关逻辑，也可能是我忽略了什么。在我的一些测试中，<code>OSSpinLock</code> 和 <code>dispatch_semaphore</code> 都不会产生特别明显的死锁，所以我也无法确定用 <code>dispatch_semaphore</code> 代替 <code>OSSpinLock</code> 是否正确。能够肯定的是，用 <code>pthread_mutex</code> 是安全的。</p>
@@ -837,7 +833,7 @@
 <li>Pannier: Container-based caching algorithm for compound objects</li>
 </ul>
 <p>是不是被唬到了？不要担心，我这里会表述的尽量易懂。</p>
-<h4 id="缓存命中率"><a href="#缓存命中率" class="headerlink" title="缓存命中率"></a>缓存命中率</h4><img src="/yycache/cache_hit_ratio.png">
+<h4 id="缓存命中率"><a href="#缓存命中率" class="headerlink" title="缓存命中率"></a>缓存命中率</h4><img src="/ios/yycache/cache_hit_ratio.png">
 <p>为什么有这么多缓存替换策略，或者说搞这么多名堂究竟是为了什么呢？</p>
 <p>答案是提高缓存命中率，那么何谓缓存命中率呢？</p>
 <p>Google 一下自然是有不少解释，不过很多都是 web 相关的，而且不说人话（很难理解），我个人非常讨厌各种不说人话的“高深”抽象概念。</p>
@@ -882,7 +878,7 @@
 <p>而上面代码中的 YYMemoryCacheGetReleaseQueue 这个队列源码为：</p>
 <figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 静态内联 dispatch_queue_t</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="built_in">dispatch_queue_t</span> YYMemoryCacheGetReleaseQueue() &#123;</span><br><span class="line">    <span class="keyword">return</span> dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在源码中可以看到 YYMemoryCacheGetReleaseQueue 是一个低优先级 <code>DISPATCH_QUEUE_PRIORITY_LOW</code> 队列，猜测这样设计的原因是可以让 iOS 在系统相对空闲时再来异步释放缓存对象。</p>
-<h2 id="YYDiskCache-细节剖析"><a href="#YYDiskCache-细节剖析" class="headerlink" title="YYDiskCache 细节剖析"></a>YYDiskCache 细节剖析</h2><img src="/yycache/yydiskcache.jpg">
+<h2 id="YYDiskCache-细节剖析"><a href="#YYDiskCache-细节剖析" class="headerlink" title="YYDiskCache 细节剖析"></a>YYDiskCache 细节剖析</h2><img src="/ios/yycache/yydiskcache.jpg">
 <p>YYDiskCache 是一个线程安全的磁盘缓存，用于存储由 SQLite 和文件系统支持的键值对（类似于 NSURLCache 的磁盘缓存）。</p>
 <p>YYDiskCache 具有以下功能：</p>
 <ul>
@@ -938,7 +934,7 @@
 <p>sqlite3_stmt: 该对象的实例表示已经编译成二进制形式并准备执行的单个 SQL 语句。</p>
 </blockquote>
 <p>更多关于 SQLite 的信息请点击 <a href="http://www.sqlite.org/docs.html" target="_blank" rel="noopener">SQLite 官方文档</a> 查阅。</p>
-<h2 id="优秀的缓存应该具备哪些特质"><a href="#优秀的缓存应该具备哪些特质" class="headerlink" title="优秀的缓存应该具备哪些特质"></a>优秀的缓存应该具备哪些特质</h2><img src="/yycache/good_cache.jpg">
+<h2 id="优秀的缓存应该具备哪些特质"><a href="#优秀的缓存应该具备哪些特质" class="headerlink" title="优秀的缓存应该具备哪些特质"></a>优秀的缓存应该具备哪些特质</h2><img src="/ios/yycache/good_cache.jpg">
 <p>嘛~ 我们回到文章最初提到的问题，优秀的缓存应该具备哪些特质？</p>
 <p>如果跟着文章一步步读到这里，相信很容易举出以下几点：</p>
 <ul>
@@ -1044,6 +1040,18 @@
   </div>
 
   
+<script>
+  var disqus_shortname = 'lision-me';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
 
 
 

@@ -66,10 +66,6 @@
           Home
         </a>
       
-        <a href="/about" class="nav-about nav">
-          About
-        </a>
-      
         <a href="/archives" class="nav-archives nav">
           Archives
         </a>
@@ -97,7 +93,7 @@
 
   
   <h2 class="title">
-    <a href="/ios-rendering-process/">
+    <a href="/ios/ios-rendering-process/">
       深入理解 iOS Rendering Process
     </a>
   </h2>
@@ -106,7 +102,7 @@
     4月 15, 2018
   </time>
   <section class="content">
-	  <img src="/ios-rendering-process/rendering.jpg">
+	  <img src="/ios/ios-rendering-process/rendering.jpg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>iOS 最早名为 iPhone OS，是 <a href="https://www.apple.com/" target="_blank" rel="noopener">Apple</a> 公司专门为其硬件设备开发的操作系统，最初于 2007 年随第一代 iPhone 推出，后扩展为支持 Apple 公司旗下的其他硬件设备，如 iPod、iPad 等。</p>
 <p>作为一名 iOS Developer，相信大多数人都有写出过造成 iOS 设备卡顿的代码经历，相应的也有过想方设法优化卡顿代码的经验。</p>
 <p>本文将从 OpenGL 的角度结合 Apple 官方给出的部分资料，介绍 iOS Rendering Process 的概念及其整个底层渲染管道的各个流程。</p>
@@ -125,13 +121,13 @@
 <h2 id="iOS-Rendering-Process-概念"><a href="#iOS-Rendering-Process-概念" class="headerlink" title="iOS Rendering Process 概念"></a>iOS Rendering Process 概念</h2><p>iOS Rendering Process 译为 iOS 渲染流程，本文特指 iOS 设备从设置将要显示的图元数据到最终在设备屏幕成像的整个过程。</p>
 <p>在开始剖析 iOS Rendering Process 之前，我们需要对 iOS 的渲染概念有一个基本的认知：</p>
 <h3 id="基于平铺的渲染"><a href="#基于平铺的渲染" class="headerlink" title="基于平铺的渲染"></a>基于平铺的渲染</h3><p>iOS 设备的屏幕分为 N * N 像素的图块，每个图块都适合于 <a href="https://en.wikipedia.org/wiki/System_on_a_chip" target="_blank" rel="noopener">SoC</a> 缓存，几何体在图块内被大量拆分，只有在所有几何体全部提交之后才可以进行光栅化（Rasterization）。</p>
-<img src="/ios-rendering-process/tile_based_rendering.jpg">
+<img src="/ios/ios-rendering-process/tile_based_rendering.jpg">
 <blockquote>
 <p>Note: 这里的光栅化指将屏幕上面被大量拆分出来的几何体渲染为像素点的过程。</p>
 </blockquote>
-<img src="/ios-rendering-process/rasterization.jpg">
+<img src="/ios/ios-rendering-process/rasterization.jpg">
 <h2 id="iOS-Rendering-技术框架"><a href="#iOS-Rendering-技术框架" class="headerlink" title="iOS Rendering 技术框架"></a>iOS Rendering 技术框架</h2><p>事实上 iOS 渲染相关的层级划分大概如下：</p>
-<img src="/ios-rendering-process/ios_rendering_framework.png">
+<img src="/ios/ios-rendering-process/ios_rendering_framework.png">
 <h3 id="UIKit"><a href="#UIKit" class="headerlink" title="UIKit"></a>UIKit</h3><p>嘛~ 作为一名 iOS Developer 来说，应该对 UIKit 都不陌生，我们日常开发中使用的用户交互组件都来自于 UIKit Framework，我们通过设置 UIKit 组件的 Layout 以及 BackgroundColor 等属性来完成日常的界面绘画工作。</p>
 <p>其实 UIKit Framework 自身并不具备在屏幕成像的能力，它主要负责对用户操作事件的响应，事件响应的传递大体是经过逐层的<strong>视图树</strong>遍历实现的。</p>
 <blockquote>
@@ -174,7 +170,7 @@
 <p>其实 Render Pipeline 指的是<strong>从应用程序数据转换到最终渲染的图像之间的一系列数据处理过程</strong>。</p>
 <p>好比我们上文中提到的 OpenGL 主要渲染步骤一样，我们开发应用程序时在<strong>设置图元数据</strong>这步为视图控件的设定布局，背景颜色，透明度以及阴影等等数据。</p>
 <p>下面以 OpenGL 4.5 的 Render Pipeline 为例介绍一下：</p>
-<img src="/ios-rendering-process/opengl_rendering_pipeline.png">
+<img src="/ios/ios-rendering-process/opengl_rendering_pipeline.png">
 <p>这些图元数据流入 OpenGL 中，传入<strong>顶点着色器（vetex shader）</strong>，然后顶点着色器对其进行着色器内部的处理后流出。之后可能进入<strong>细分着色阶段（tessellation shading stage）</strong>，其中又有可能分为细分控制着色器和细分赋值着色器两部分处理，还可能会进入<strong>几何着色阶段（geometry shading stage）</strong>，数据从中传递。最后都会走<strong>片元着色阶段（fragment shading stage）</strong>。</p>
 <blockquote>
 <p>Note: 图元数据是以 copy 的形式流入 shader 的，shader 一般会以特殊的<strong>类似全局变量的形式</strong>接收数据。</p>
@@ -192,7 +188,7 @@
 <li>Render Server 将与 GPU 通信把数据经过处理之后传递给 GPU</li>
 <li>GPU 调用 iOS 当前设备渲染相关的图形设备 Display</li>
 </ul>
-<img src="/ios-rendering-process/core_animation_pipeline.png">
+<img src="/ios/ios-rendering-process/core_animation_pipeline.png">
 <blockquote>
 <p>Note: 由于 iOS 设备目前的显示屏最大支持 <strong>60 FPS</strong> 的刷新率，所以每个处理间隔为 16.67 ms。</p>
 </blockquote>
@@ -237,7 +233,7 @@
 <li>在 Animation Block 中进行 Layout，Display，Prepare，Commit</li>
 <li>Render Server 根据 Animation 逐帧渲染</li>
 </ul>
-<img src="/ios-rendering-process/animation.png">
+<img src="/ios/ios-rendering-process/animation.png">
 <blockquote>
 <p>Note: 原理是 <code>animateWithDuration:animations:</code> 内部使用了 CATransaction 来将整个 Animation Block 中的代码作为原子操作 commit 给了 RunLoop。</p>
 </blockquote>
@@ -248,7 +244,7 @@
 <p>Note: 我的一个开源库 <a href="https://github.com/Lision/LSAnimator" target="_blank" rel="noopener"><strong>LSAnimator - 可多链式动画库</strong></a> 在<strong>动画顺序链接时也用到了 CATransaction</strong>。</p>
 </blockquote>
 <h2 id="全文总结"><a href="#全文总结" class="headerlink" title="全文总结"></a>全文总结</h2><p>结合上下文不难梳理出一个 iOS <strong>最基本的完整渲染经过（Rendering pass）</strong>。</p>
-<img src="/ios-rendering-process/rendering_pass.png">
+<img src="/ios/ios-rendering-process/rendering_pass.png">
 <h3 id="性能检测思路"><a href="#性能检测思路" class="headerlink" title="性能检测思路"></a>性能检测思路</h3><p>基于整篇文章的内容归纳一下我们在日常的开发工作中遇到性能问题时检测问题代码的思路：</p>
 <table>
 <thead>
@@ -324,7 +320,7 @@
 
   
   <h2 class="title">
-    <a href="/hhkb-bt/">
+    <a href="/chat/hhkb-bt/">
       HHKB 开箱留念
     </a>
   </h2>
@@ -333,7 +329,7 @@
     4月 5, 2018
   </time>
   <section class="content">
-	  <img src="/hhkb-bt/hhkb_c_00.jpg">
+	  <img src="/chat/hhkb-bt/hhkb_c_00.jpg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Emmmmm… 这个清明节本来打算去青海湖骑行的，不过因为北京 4 月飞雪的天气骤变加上自己没注意添衣… 最终还是没能出了帝都 ╮(╯▽╰)╭ </p>
 <p>不过这也省下了一些开销~ 于是用本来准备出去踏青的 💰 入了一把垂涎已久的键盘，也就是本文的主角 —— HHKB 酱！</p>
 <p>嘛~ 知道 HHKB 是在 2015 年，记得还是在某乎的一篇回答中看到的，答主是一个妹子，大意是这个妹子偷偷看到了程序猿男票的购物车中躺着一把 HHKB，然后这个对键盘一窍不通的妹子历尽波折将 HHKB 入手送给自己程序猿男票的暖心小故事。</p>
@@ -383,17 +379,17 @@
 <blockquote>
 <p>Note: 再次提示，多图预警！</p>
 </blockquote>
-<img src="/hhkb-bt/hhkb_00.jpg">
-<img src="/hhkb-bt/hhkb_01.jpg">
-<img src="/hhkb-bt/hhkb_02.jpg">
-<img src="/hhkb-bt/hhkb_03.jpg">
-<img src="/hhkb-bt/hhkb_04.jpg">
-<img src="/hhkb-bt/hhkb_05.jpg">
-<img src="/hhkb-bt/hhkb_06.jpg">
-<img src="/hhkb-bt/hhkb_07.jpg">
-<img src="/hhkb-bt/hhkb_08.jpg">
-<img src="/hhkb-bt/hhkb_09.jpg">
-<img src="/hhkb-bt/hhkb_10.jpg">
+<img src="/chat/hhkb-bt/hhkb_00.jpg">
+<img src="/chat/hhkb-bt/hhkb_01.jpg">
+<img src="/chat/hhkb-bt/hhkb_02.jpg">
+<img src="/chat/hhkb-bt/hhkb_03.jpg">
+<img src="/chat/hhkb-bt/hhkb_04.jpg">
+<img src="/chat/hhkb-bt/hhkb_05.jpg">
+<img src="/chat/hhkb-bt/hhkb_06.jpg">
+<img src="/chat/hhkb-bt/hhkb_07.jpg">
+<img src="/chat/hhkb-bt/hhkb_08.jpg">
+<img src="/chat/hhkb-bt/hhkb_09.jpg">
+<img src="/chat/hhkb-bt/hhkb_10.jpg">
 <p>嘛~ 吐槽一下，HHKB Pro BT 的这个电池仓略丑，好在宝宝敲键盘的时候看不到它…</p>
 <h2 id="手感体验"><a href="#手感体验" class="headerlink" title="手感体验"></a>手感体验</h2><p>买之前体验了同事的 HHKB Pro Type-S 和 HHKB Pro BT，对比发现手感上并无太大偏差，不过虽然 Type-S 缩短键程没有特别明显的手感体验差异，但是静音是真的差了一个梯度。BT 版本的声音并不吵，个人感觉应该比 Filco 红轴要略小，开放式办公应该问题不大。</p>
 <p>不过讲真，HHKB 的手感并没有网上传的那么绵软流畅，质感也差了手边 Filco 青轴一段距离，也可能是我青轴用多了吧…</p>
@@ -404,8 +400,8 @@
 <p>不过在连续敲了两天键盘之后，感觉手感真的是玄学啊~ 慢慢的竟然有点喜欢 HHKB 这种静电容轴的手感了，尽管目前仍然认为不及我的大 F 青轴，但是并不排斥~</p>
 <p>终于在网上看了很多搭配了 HHKB 官方彩色键帽的毒图之后，下单入手！</p>
 <p>嘛~ 头图就是搭配了彩色键帽之后的 HHKB (＾Ｕ＾)ノ~ＹＯ</p>
-<img src="/hhkb-bt/hhkb_c_00.jpg">
-<img src="/hhkb-bt/hhkb_c_01.jpg">
+<img src="/chat/hhkb-bt/hhkb_c_00.jpg">
+<img src="/chat/hhkb-bt/hhkb_c_01.jpg">
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
 <li>HHKB 键盘配列不太适合 Windows 用户，不过非常适合 Mac OS X 下使用，一但养成肌肉记忆将会非常方便。</li>
 <li>HHKB 手感偏绵软，给我个人的感觉还算比较舒服，但是不及大 F 青轴的手感。</li>
@@ -413,8 +409,8 @@
 <li>彩色键帽真的是可以瞬间提升 HHKB 极具内敛的颜值。</li>
 </ul>
 <p>最后放一下已经服役了将近 3 年的大 F 和新伙伴的合影。</p>
-<img src="/hhkb-bt/iterative_filco.jpg">
-<img src="/hhkb-bt/iterative_hhkb.jpg">
+<img src="/chat/hhkb-bt/iterative_filco.jpg">
+<img src="/chat/hhkb-bt/iterative_hhkb.jpg">
 
 
     
@@ -432,7 +428,7 @@
 
   
   <h2 class="title">
-    <a href="/oc-class-properties/">
+    <a href="/ios/oc-class-properties/">
       巧用 Objective-C Class Properties 解耦
     </a>
   </h2>
@@ -441,7 +437,7 @@
     3月 25, 2018
   </time>
   <section class="content">
-	  <img src="/oc-class-properties/oc_class_properties.jpg">
+	  <img src="/ios/oc-class-properties/oc_class_properties.jpg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Emmmmm… Objective-C Class Properties 早在 WWDC 2016 中就已经公示，给 Objective-C 加入这个特性主要是为了与 Swift 类型属性相互操作。</p>
 <p>官方是这么说明的：</p>
 <blockquote>
@@ -457,7 +453,7 @@
 <li>解耦</li>
 <li>总结</li>
 </ul>
-<h2 id="LLVM"><a href="#LLVM" class="headerlink" title="LLVM"></a>LLVM</h2><img src="/oc-class-properties/llvm.jpg">
+<h2 id="LLVM"><a href="#LLVM" class="headerlink" title="LLVM"></a>LLVM</h2><img src="/ios/oc-class-properties/llvm.jpg">
 <p><a href="https://llvm.org/" target="_blank" rel="noopener">LLVM 官网</a> 对于 LLVM 的定义：</p>
 <blockquote>
 <p>Note: The LLVM Project is a collection of modular and reusable compiler and toolchain technologies. </p>
@@ -478,7 +474,7 @@
 <h3 id="LLVM-Compiler"><a href="#LLVM-Compiler" class="headerlink" title="LLVM Compiler"></a>LLVM Compiler</h3><p>前面介绍过 GCC 支持很多语言，系统架构庞大而笨重，而 Apple 大量使用的 Objective-C 在 GCC 中顺位（优先级）较低。此外，GCC 作为一个纯粹的编译系统，在与 IDE 配合方面的表现也很差。</p>
 <p>So，Apple 决定从零开始写 C，C++，Objective-C 的编译器 Clang。</p>
 <p>至此，Apple 彻底与 GCC 了断。</p>
-<h2 id="Objective-C-Class-Properties"><a href="#Objective-C-Class-Properties" class="headerlink" title="Objective-C Class Properties"></a>Objective-C Class Properties</h2><img src="/oc-class-properties/oc_feature.jpg">
+<h2 id="Objective-C-Class-Properties"><a href="#Objective-C-Class-Properties" class="headerlink" title="Objective-C Class Properties"></a>Objective-C Class Properties</h2><img src="/ios/oc-class-properties/oc_feature.jpg">
 <p>Objective-C Class Properties 作为 Objective-C 新语法特性在 <a href="https://developer.apple.com/videos/play/wwdc2016/405/" target="_blank" rel="noopener">WWDC2016 What’s New in LLVM</a> 中公示，表示 Xcode 8 之后可以使用这一新语法特性。</p>
 <p>使用方式很简单：</p>
 <ul>
@@ -492,14 +488,14 @@
 <h3 id="Never-synthesized"><a href="#Never-synthesized" class="headerlink" title="Never synthesized"></a>Never synthesized</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyType</span></span></span><br><span class="line"><span class="keyword">static</span> <span class="built_in">NSString</span> *_someString = <span class="literal">nil</span>;</span><br><span class="line">+ (<span class="built_in">NSString</span> *)someString &#123; <span class="keyword">return</span> _someString; &#125;</span><br><span class="line">+ (<span class="keyword">void</span>)setSomeString:(<span class="built_in">NSString</span> *)newString &#123; _someString = newString; &#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
 <h3 id="Use-dynamic-to-defer-to-runtime"><a href="#Use-dynamic-to-defer-to-runtime" class="headerlink" title="Use @dynamic to defer to runtime"></a>Use <code>@dynamic</code> to defer to runtime</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyType</span></span></span><br><span class="line"><span class="keyword">@dynamic</span> (<span class="keyword">class</span>) someString;</span><br><span class="line">+ (<span class="built_in">BOOL</span>)resolveClassMethod:(SEL) name &#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
 <h2 id="解耦"><a href="#解耦" class="headerlink" title="解耦"></a>解耦</h2><p>笔者在做项目组件下沉时，遇到一个问题，正好适用于 Objective-C Class Properties 发挥：将要下沉的组件库中某系统类 Categroy 引用了业务层某方法。</p>
-<img src="/oc-class-properties/before_decoupling.png">
+<img src="/ios/oc-class-properties/before_decoupling.png">
 <p>业务层应该依赖于将要下沉的组件，而组件既然要下沉就不应该再反过来依赖上层业务实现！</p>
 <p>按照常规思路，想要把上层业务中被依赖的部分一起随组件下沉，但是发现被依赖的部分虽然也属于一个较为基础的模块，不过此模块现阶段不做下沉…</p>
 <p>后来经过组内大佬指点，使用 Objective-C Class Properties 解决了这个问题，即将上层业务被依赖的部分化作将要下沉组件依赖方系统类 Categroy 的 Class Properties。</p>
 <blockquote>
 <p>Note: 在 Categroy 中写 Objective-C Class Properties 需要使用 Runtime 关联方法。</p>
 </blockquote>
-<img src="/oc-class-properties/after_decoupling.png">
+<img src="/ios/oc-class-properties/after_decoupling.png">
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
 <li>介绍了 LLVM 顺便提到了 Apple 的编译系统发展简史。</li>
 <li>使用官方 Demo 简单介绍了 Objective-C Class Properties 语法特性的书写方式。</li>
@@ -524,7 +520,7 @@
 
   
   <h2 class="title">
-    <a href="/2017-2018/">
+    <a href="/chat/2017-2018/">
       嘛~ 又一年了啊...
     </a>
   </h2>
@@ -533,7 +529,7 @@
     3月 10, 2018
   </time>
   <section class="content">
-	  <img src="/2017-2018/sd.jpeg">
+	  <img src="/chat/2017-2018/sd.jpeg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Emmmmm… 不知不觉已经一个多月没有提笔写文章了。</p>
 <p>年前的一段时间确实比较忙，一方面想要尽可能的站好最后一班岗，把公司交给自己的事情做好；另一方面也在寻找新的机会，幸运的是在这一过程中得到了很多牛人的赏识和认可，获得了一些帮助以及内推机会，真的很感恩。</p>
 <p>这次看机会都是在比较知名的项目或大厂中寻找的，前前后后忙碌了一个多月的时间，分别面试了头条，知乎，美团·点评，新浪，阿里巴巴这 5 家公司。</p>
@@ -552,14 +548,14 @@
 <p>还记得刚毕业的那段日子，住在公司提供的应届生宿舍里，与其他小伙伴吃在一起，住在一起。随后从公司宿舍搬出来，拿着仅够维持在深圳生活的工资，过着紧张而迷茫的日子。拿出自己一年多攒下的钱买了人生中第一台 Mac 和 iPhone，开始自学 iOS 开发并且第一次跳槽。</p>
 <p>后面又经历了许许多多的第一次，也包括这次迁徙。</p>
 <p>嘛~ 毕竟是北方长大的孩子，初来北京的感觉就是亲切，这里的建筑，植物，小吃… 一切的一切都有着久违的亲切感。</p>
-<h2 id="ELSEWHERE"><a href="#ELSEWHERE" class="headerlink" title="ELSEWHERE"></a>ELSEWHERE</h2><img src="/2017-2018/hutong.jpg">
+<h2 id="ELSEWHERE"><a href="#ELSEWHERE" class="headerlink" title="ELSEWHERE"></a>ELSEWHERE</h2><img src="/chat/2017-2018/hutong.jpg">
 <p>来北京的第一份工作是在皇城根儿旁边的胡同里，一如既往的创业公司（笑），貌似除了校招去的公司是比较大的上市公司之外，自从转了 iOS 开发之后的几次选择都选了创业公司… </p>
 <p>当时清楚记得是 CTO 亲自面试，见面的第一印象就是很亲切和善，风度翩翩。聊了聊发现公司虽然是初创团队，但是每个人的素质和背景都很出众，尤其是研发团队的综合素质很高，我一个 211 垫底大学进去的时候不敢大声说话（笑）。</p>
 <p>半年多的工作中，兢兢业业，生怕因为自己的失误拖了整个团队的后腿，好在一直没有出什么纰漏，上级对我的工作也比较满意，在里面与各位同事相处的也很愉快…</p>
 <p>不过好事多磨，团队内部也发生过一些摩擦，带我一起去胡同里面小学打球的两个大哥先后离职，最后我也由于种种原因离开了…</p>
 <p>虽然相处时间算不上长，但是在 ELSEWHERE 的这段时间成长很多，与大家相处的也很愉快，特别是研发部的小伙伴们，现在还一直有来往呢。也许，下次搬家会考虑在一起合租一套大房子呢~</p>
 <p>这里也被我命名为 ELSEWHERE，旨在纪念这段来北京后的第一份工作，也顺便祝福 ELSEWHERE 能杀出重围，越走越远吧…</p>
-<img src="/2017-2018/elsewhere.jpeg">
+<img src="/chat/2017-2018/elsewhere.jpeg">
 <h2 id="未来"><a href="#未来" class="headerlink" title="未来"></a>未来</h2><p>想自己毕业三年有余，却一事无成…</p>
 <p>说出来自己都想笑，一直选择创业公司是因为想要改变世界…</p>
 <p>自己当初在大学里拿到奖牌后吹过的牛逼还历历在目…</p>
@@ -567,7 +563,7 @@
 <p>对自己说，也许现在我还没有创业的资本，等日后多些积累定要卷土重来…</p>
 <p>对自己说，也许去大厂并非只是做一颗螺丝钉，毕竟用户量大，自己做的事情即使再小再微不足道，都是可以对用户端有些许影响的，从某种意义上讲也实现了改变人们的生活，改变了世界…</p>
 <p>以后的事，谁又能说的准呢？只希望自己可以变得越来越强…</p>
-<img src="/2017-2018/cat.jpg">
+<img src="/chat/2017-2018/cat.jpg">
 
 
     
@@ -585,7 +581,7 @@
 
   
   <h2 class="title">
-    <a href="/aspects/">
+    <a href="/ios/aspects/">
       从 Aspects 源码中我学到了什么？
     </a>
   </h2>
@@ -594,7 +590,7 @@
     1月 17, 2018
   </time>
   <section class="content">
-	  <img src="/aspects/aspects.jpg">
+	  <img src="/ios/aspects/aspects.jpg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a href="https://en.wikipedia.org/wiki/Aspect-oriented_programming" target="_blank" rel="noopener">AOP (Aspect-oriented programming)</a> 译为 “面向切面编程”，是通过预编译方式和运行期动态代理实现程序功能统一维护的一种技术。利用 AOP 可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，同时提高了开发的效率。</p>
 <p>Emmmmm…AOP 目前是较为热门的一个话题，尽管你也许没有听说过它，但是你的项目中可能已经渗入了它，例如：用户统计（不添加一行代码即实现对所有 ViewController 的跟踪日志）。</p>
 <p>对于 iOS 开发者而言，无外乎 Swift 和 Objective-C 两种主流开发语言：</p>
@@ -614,7 +610,7 @@
 <li>优秀 AOP 库应该具备的特质</li>
 <li>总结</li>
 </ul>
-<h2 id="AOP-简介"><a href="#AOP-简介" class="headerlink" title="AOP 简介"></a>AOP 简介</h2><img src="/aspects/aop.jpg">
+<h2 id="AOP-简介"><a href="#AOP-简介" class="headerlink" title="AOP 简介"></a>AOP 简介</h2><img src="/ios/aspects/aop.jpg">
 <blockquote>
 <p>在<strong>运行时，动态地</strong>将代码切入到类的指定方法、指定位置上的编程思想就是面向切面的编程。</p>
 </blockquote>
@@ -633,7 +629,7 @@
 <blockquote>
 <p>Note: 简单通过 Method Swizzling 来 Hook 不是不可以，但是有很多安全隐患！</p>
 </blockquote>
-<h2 id="Aspects-简介"><a href="#Aspects-简介" class="headerlink" title="Aspects 简介"></a>Aspects 简介</h2><img src="/aspects/aspects_logo.jpg">
+<h2 id="Aspects-简介"><a href="#Aspects-简介" class="headerlink" title="Aspects 简介"></a>Aspects 简介</h2><img src="/ios/aspects/aspects_logo.jpg">
 <p><a href="https://github.com/steipete/Aspects" target="_blank" rel="noopener">Aspects</a> 是一个使用起来简单愉快的 AOP 库，使用 Objective-C 编写，适用于 iOS 与 Mac OS X。</p>
 <blockquote>
 <p>Aspects 内部实现考虑到了很多 Hook 可能引发的问题，笔者在看源码的过程中抠的比较细，真的是受益匪浅。</p>
@@ -641,7 +637,7 @@
 <p>Aspects 简单易用，作者通过在 <code>NSObject (Aspects)</code> 分类中暴露出的两个接口分别提供了对实例和 Class 的 Hook 实现：</p>
 <figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSObject</span> (<span class="title">Aspects</span>)</span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">id</span>&lt;AspectToken&gt;)aspect_hookSelector:(SEL)selector</span><br><span class="line">                      withOptions:(AspectOptions)options</span><br><span class="line">                       usingBlock:(<span class="keyword">id</span>)block</span><br><span class="line">                            error:(<span class="built_in">NSError</span> **)error;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">id</span>&lt;AspectToken&gt;)aspect_hookSelector:(SEL)selector</span><br><span class="line">                      withOptions:(AspectOptions)options</span><br><span class="line">                       usingBlock:(<span class="keyword">id</span>)block</span><br><span class="line">                            error:(<span class="built_in">NSError</span> **)error;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
 <p>Aspects 支持实例 Hook，相较其他 Objective-C AOP 库而言可操作粒度更小，适合的场景更加多样化。作为使用者无需进行更多的操作即可 Hook 指定实例或者 Class 的指定 SEL，AspectOptions 参数可以指定 Hook 的点，以及是否执行一次之后就撤销 Hook。</p>
-<h2 id="Aspects-结构剖析"><a href="#Aspects-结构剖析" class="headerlink" title="Aspects 结构剖析"></a>Aspects 结构剖析</h2><img src="/aspects/aspects_struct.png">
+<h2 id="Aspects-结构剖析"><a href="#Aspects-结构剖析" class="headerlink" title="Aspects 结构剖析"></a>Aspects 结构剖析</h2><img src="/ios/aspects/aspects_struct.png">
 <p>Emmmmm…尽管 Aspects 只有不到千行的源码，但是其内部实现考虑到了很多 Hook 相关的安全问题和其他细节，对比其他 Objective-C AOP 开源项目来说 Aspects 更为健全，所以我自己在扒 Aspects 源码时也看的比较仔细。</p>
 <h3 id="Aspects-内部结构"><a href="#Aspects-内部结构" class="headerlink" title="Aspects 内部结构"></a>Aspects 内部结构</h3><p>Aspects 内部定义了两个协议：</p>
 <ul>
@@ -737,7 +733,7 @@
 <blockquote>
 <p>Note: 注意在用途上与 <code>static NSMutableDictionary *swizzledClassesDict;</code> 区分理解。</p>
 </blockquote>
-<h2 id="Aspects-核心代码剖析"><a href="#Aspects-核心代码剖析" class="headerlink" title="Aspects 核心代码剖析"></a>Aspects 核心代码剖析</h2><img src="/aspects/aspects_core.png">
+<h2 id="Aspects-核心代码剖析"><a href="#Aspects-核心代码剖析" class="headerlink" title="Aspects 核心代码剖析"></a>Aspects 核心代码剖析</h2><img src="/ios/aspects/aspects_core.png">
 <p>嘛~ Aspects 的整体实现代码不超过一千行，而且考虑的情况也比较全面，非常值得大家花时间去读一下，这里我只准备给出自己对其核心代码的理解。</p>
 <h3 id="Hook-Class-amp-amp-Hook-Instance"><a href="#Hook-Class-amp-amp-Hook-Instance" class="headerlink" title="Hook Class &amp;&amp; Hook Instance"></a>Hook Class &amp;&amp; Hook Instance</h3><p>Aspects 不光支持 Hook Class 还支持 Hook Instance，这提供了更小粒度的控制，配合 Hook 的撤销功能可以更加灵活精准的做我们想做的事~</p>
 <p>Aspects 为了能区别 Class 和 Instance 的逻辑，实现了名为 <code>aspect_hookClass</code> 的方法，我认为其中的实现值得我用一部分篇幅来单独讲解，也觉得读者们有必要花点时间理解这里的实现逻辑。</p>
@@ -779,7 +775,7 @@
 <li><code>for (NSUInteger idx = 2; idx &lt; numberOfArguments; idx++)</code> 为什么要从索引 2 开始遍历参数呢？</li>
 </ul>
 <p>嘛~ 如果你对 Block 的 Runtime 结构以及执行过程下断点研究一下就全都明白了，感兴趣的同学有疑问可以联系我（与真正勤奋好学的人交流又有谁会不乐意呢？笑~）</p>
-<h2 id="优秀-AOP-库应该具备的特质"><a href="#优秀-AOP-库应该具备的特质" class="headerlink" title="优秀 AOP 库应该具备的特质"></a>优秀 AOP 库应该具备的特质</h2><img src="/aspects/aspects_rank.jpg">
+<h2 id="优秀-AOP-库应该具备的特质"><a href="#优秀-AOP-库应该具备的特质" class="headerlink" title="优秀 AOP 库应该具备的特质"></a>优秀 AOP 库应该具备的特质</h2><img src="/ios/aspects/aspects_rank.jpg">
 <ul>
 <li>良好的使用体验</li>
 <li>可控粒度小</li>
@@ -879,6 +875,18 @@
   </div>
 
   
+<script>
+  var disqus_shortname = 'lision-me';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
 
 
 
