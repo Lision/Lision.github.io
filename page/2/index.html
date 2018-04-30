@@ -88,7 +88,7 @@
 
   
   <h2 class="title">
-    <a href="/ios/ios-native-js/">
+    <a href="/ios-native-js/">
       iOS 与 JS 交互开发知识总结
     </a>
   </h2>
@@ -97,11 +97,11 @@
     10月 23, 2017
   </time>
   <section class="content">
-	  <img src="/ios/ios-native-js/hybrid.jpg">
+	  <img src="/ios-native-js/hybrid.jpg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Web 页面中的 JS 与 iOS Native 如何交互是每个 iOS 猿必须掌握的技能。而说到 Native 与 JS 交互，就不得不提一嘴 Hybrid。</p>
 <p>Hybrid 的翻译结果并不是很文明（擦汗，不知道为啥很多翻译软件会译为“杂种”，但我更喜欢将它翻译为“混合、混血”），Hybrid Mobile App 我对它的理解为通过 Web 网络技术（如 HTML，CSS 和 JavaScript）与 Native 相结合的混合移动应用程序。</p>
 <p>那么我们来看一下 Hybrid 对比 Native 有哪些优劣：</p>
-<img src="/ios/ios-native-js/hybrid_vs_native.jpg">
+<img src="/ios-native-js/hybrid_vs_native.jpg">
 <p>因为 Hybrid 的灵活性（更改 Web 页面不必重新发版）以及通用性（一份 H5 玩遍所有平台）再加上门槛低（前端猿可以无痛上手开撸）的优势，所以在非核心功能模块使用 Web 通过 Hybrid 的方式来实现可能从各方面都会优于 Native。而 Native 则可以在核心功能和设备硬件的调用上为 JS 提供强有力的支持。</p>
 <h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
 <li>Hybrid 的发展简史</li>
@@ -112,14 +112,14 @@
 <li>总结</li>
 </ul>
 <h2 id="Hybrid-的发展简史"><a href="#Hybrid-的发展简史" class="headerlink" title="Hybrid 的发展简史"></a>Hybrid 的发展简史</h2><p>下面简述一下 Hybrid 的发展史：</p>
-<h3 id="1-H5-发布"><a href="#1-H5-发布" class="headerlink" title="1.H5 发布"></a>1.H5 发布</h3><img src="/ios/ios-native-js/html5.png">
+<h3 id="1-H5-发布"><a href="#1-H5-发布" class="headerlink" title="1.H5 发布"></a>1.H5 发布</h3><img src="/ios-native-js/html5.png">
 <p>Html5 是在 2014 年 9 月份正式发布的，这一次的发布做了一个最大的改变就是“从以前的 XML 子集升级成为一个独立集合”。</p>
 <h3 id="2-H5-渗入-Mobile-App-开发"><a href="#2-H5-渗入-Mobile-App-开发" class="headerlink" title="2.H5 渗入 Mobile App 开发"></a>2.H5 渗入 Mobile App 开发</h3><p>Native APP 开发中有一个 webview 的组件（Android 中是 webview，iOS 有 UIWebview和 WKWebview），这个组件可以加载 Html 文件。</p>
 <p>在 H5 大行其道之前，webview 加载的 web 页面很单调（因为只能加载一些静态资源），自从 H5 火了之后，前端猿们开发的 H5 页面在 webview 中的表现不俗使得 H5 开发慢慢渗透到了 Mobile App 开发中来。</p>
 <h3 id="3-Hybrid-现状"><a href="#3-Hybrid-现状" class="headerlink" title="3.Hybrid 现状"></a>3.Hybrid 现状</h3><p>虽然目前已经出现了 RN 和 Weex 这些使用 JS 写 Native App 的技术，但是 Hybrid 仍然没有被淘汰，市面上大多数应用都不同程度的引入了 Web 页面。</p>
 <h2 id="JavaScriptCore"><a href="#JavaScriptCore" class="headerlink" title="JavaScriptCore"></a>JavaScriptCore</h2><p>JavaScriptCore 这个库是 Apple 在 iOS 7 之后加入到标准库的，它对 iOS Native 与 JS 做交互调用产生了划时代的影响。</p>
 <p>JavaScriptCore 大体是由 4 个类以及 1 个协议组成的：</p>
-<img src="/ios/ios-native-js/javascriptcore_framework.jpg">
+<img src="/ios-native-js/javascriptcore_framework.jpg">
 <ul>
 <li>JSContext 是 JS 执行上下文，你可以把它理解为 JS 运行的环境。</li>
 <li>JSValue 是对 JavaScript 值的引用，任何 JS 中的值都可以被包装为一个 JSValue。</li>
@@ -131,7 +131,7 @@
 <p>实现将 Objective-C 类及其实例方法，类方法和属性导出为 JavaScript 代码的协议。</p>
 </blockquote>
 <p>这里的 JSContext，JSValue，JSManagedValue 相对比较好理解，下面我们把 JSVirtualMachine 单拎出来说明一下：</p>
-<h3 id="JSVirtualMachine-的用法和其与-JSContext-的关系"><a href="#JSVirtualMachine-的用法和其与-JSContext-的关系" class="headerlink" title="JSVirtualMachine 的用法和其与 JSContext 的关系"></a>JSVirtualMachine 的用法和其与 JSContext 的关系</h3><img src="/ios/ios-native-js/jsvirtualmachine.jpg">
+<h3 id="JSVirtualMachine-的用法和其与-JSContext-的关系"><a href="#JSVirtualMachine-的用法和其与-JSContext-的关系" class="headerlink" title="JSVirtualMachine 的用法和其与 JSContext 的关系"></a>JSVirtualMachine 的用法和其与 JSContext 的关系</h3><img src="/ios-native-js/jsvirtualmachine.jpg">
 <p>官方文档的介绍：</p>
 <blockquote>
 <p>JSVirtualMachine 实例表示用于 JavaScript 执行的独立环境。 您使用此类有两个主要目的：支持并发 JavaScript 执行，并管理 JavaScript 和 Objective-C 或 Swift 之间桥接的对象的内存。</p>
@@ -215,7 +215,7 @@
 <li>JS 调用 Native</li>
 <li>Native 调用 JS</li>
 </ul>
-<img src="/ios/ios-native-js/call_eachother.jpg">
+<img src="/ios-native-js/call_eachother.jpg">
 <h3 id="JS-调用-Native"><a href="#JS-调用-Native" class="headerlink" title="JS 调用 Native"></a>JS 调用 Native</h3><p>其实 JS 调用 iOS Native 也分为两种实现方式：</p>
 <ul>
 <li>假 Request 方法</li>
@@ -263,7 +263,7 @@
 <figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 首先引入 JavaScriptCore 库</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;JavaScriptCore/JavaScriptCore.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 先获取 JS 上下文</span></span><br><span class="line"><span class="keyword">self</span>.jsContext = [webView valueForKeyPath:<span class="string">@"documentView.webView.mainFrame.javaScriptContext"</span>];</span><br><span class="line"><span class="comment">// 如果涉及 UI 操作，切回主线程调用 JS 代码中的 YourFuncName，通过数组@[parameter] 入参</span></span><br><span class="line"><span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">    JSValue *jsValue = <span class="keyword">self</span>.jsContext[<span class="string">@"YourFuncName"</span>];</span><br><span class="line">    [jsValue callWithArguments:@[parameter]];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 <p>上面的代码调用了 JS 代码中 YourFuncName 函数，并且给函数加了 @[parameter] 作为入参。为了方便阅读理解，这里再贴一下 JS 代码：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">YourFuncName</span>(<span class="params">arguments</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> result = <span class="built_in">arguments</span>;</span><br><span class="line">    <span class="comment">// do what u want to do</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="WKWebView-与-JS-交互的特有方法"><a href="#WKWebView-与-JS-交互的特有方法" class="headerlink" title="WKWebView 与 JS 交互的特有方法"></a>WKWebView 与 JS 交互的特有方法</h2><img src="/ios/ios-native-js/wkwebview.jpg">
+<h2 id="WKWebView-与-JS-交互的特有方法"><a href="#WKWebView-与-JS-交互的特有方法" class="headerlink" title="WKWebView 与 JS 交互的特有方法"></a>WKWebView 与 JS 交互的特有方法</h2><img src="/ios-native-js/wkwebview.jpg">
 <p>关于 WKWebView 与 UIWebView 的区别就不在本文加以详细说明了，更多信息还请自行查阅。这里要讲的是 WKWebView 在与 JS 的交互时特有的方法：</p>
 <ul>
 <li>WKUIDelegate 方法</li>
@@ -285,9 +285,9 @@
 <p>该方法用来添加一个脚本处理器，可以在处理器内对 JS 脚本调用的方法做出处理，从而达到 JS 调用 Native 的目的。</p>
 <p>那么 WKUserContentController 类和 WKWebView 有毛关系呢？</p>
 <p>在 WKWebView 的初始化函数中有一个入参 configuration，它的类型是 WKWebViewConfiguration。WKWebViewConfiguration 中包含一个属性 userContentController，这个 userContentController 就是 WKUserContentController 类型的实例，我们可以用这个 userContentController 来添加不同名称的脚本处理器。</p>
-<img src="/ios/ios-native-js/wkusercontentcontroller.jpg">
+<img src="/ios-native-js/wkusercontentcontroller.jpg">
 <h5 id="MessageHandler-的坑"><a href="#MessageHandler-的坑" class="headerlink" title="MessageHandler 的坑"></a>MessageHandler 的坑</h5><p>那么回到 <code>- (void)addScriptMessageHandler:name:</code> 方法上面，该方法添加一个脚本消息处理器（第一个入参 scriptMessageHandler），并且给这个处理器起一个名字（第二个入参 name）。不过这个函数在使用的时候有个坑：scriptMessageHandler 入参会被强引用，那么如果你把当前 WKWebView 所在的 UIViewController 作为第一个入参，这个 viewController 被他自己所持有的 <code>webview.configuration. userContentController</code> 所持有，就会造成循环引用。</p>
-<img src="/ios/ios-native-js/retaincycle.jpg">
+<img src="/ios-native-js/retaincycle.jpg">
 <p>我们可以通过 <code>- (void)removeScriptMessageHandlerForName:</code> 方法删掉 userContentController 对 viewController 的强引用。所以一般情况下我们的代码会在 <code>viewWillAppear</code> 和 <code>viewWillDisappear</code> 成对儿的添加和删除 MessageHandler：</p>
 <figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)viewWillAppear:(<span class="built_in">BOOL</span>)animated &#123;</span><br><span class="line">    [<span class="keyword">super</span> viewWillAppear:animated];</span><br><span class="line">    [<span class="keyword">self</span>.webview.configuration.userContentController addScriptMessageHandler:<span class="keyword">self</span> name:<span class="string">@"YourFuncName"</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewWillDisappear:(<span class="built_in">BOOL</span>)animated &#123;</span><br><span class="line">    [<span class="keyword">super</span> viewWillDisappear:animated];</span><br><span class="line">    [<span class="keyword">self</span>.webview.configuration.userContentController removeScriptMessageHandlerForName:<span class="string">@"YourFuncName"</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h5 id="WKScriptMessageHandler-协议"><a href="#WKScriptMessageHandler-协议" class="headerlink" title="WKScriptMessageHandler 协议"></a>WKScriptMessageHandler 协议</h5><p>WKScriptMessageHandler 是脚本信息处理器协议，如果想让一个对象具有脚本信息处理能力（比如上文中 webview 的所属 viewController 也就是上面代码的 self）就必须使其遵循该协议。</p>

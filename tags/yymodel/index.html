@@ -92,7 +92,7 @@
 
   
   <h2 class="title">
-    <a href="/ios/yymodel0x02/">
+    <a href="/yymodel0x02/">
       揭秘 YYModel 的魔法 0x02
     </a>
   </h2>
@@ -101,7 +101,7 @@
     11月 19, 2017
   </time>
   <section class="content">
-	  <img src="/ios/yymodel0x02/design_model_0x02.jpg">
+	  <img src="/yymodel0x02/design_model_0x02.jpg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在上文<a href="https://lision.me/yymodel_x01/">《揭秘 YYModel 的魔法（上）》</a> 中主要剖析了 <a href="https://github.com/ibireme/YYModel" target="_blank" rel="noopener">YYModel</a> 的源码结构，并且分享了 YYClassInfo 与 NSObject+YYModel 内部有趣的实现细节。</p>
 <p>紧接上篇，本文将解读 YYModel 关于 JSON 模型转换的源码，旨在揭秘 JSON 模型自动转换魔法。</p>
 <h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
@@ -115,7 +115,7 @@
 <li>JSON to Model</li>
 <li>Model to JSON</li>
 </ul>
-<img src="/ios/yymodel0x02/switch.jpg">
+<img src="/yymodel0x02/switch.jpg">
 <h3 id="JSON-to-Model"><a href="#JSON-to-Model" class="headerlink" title="JSON to Model"></a>JSON to Model</h3><p>我们从 YYModel 的接口开始解读。</p>
 <figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">+ (<span class="keyword">instancetype</span>)yy_modelWithJSON:(<span class="keyword">id</span>)json &#123;</span><br><span class="line">    <span class="comment">// 将 json 转为字典 dic</span></span><br><span class="line">    <span class="built_in">NSDictionary</span> *dic = [<span class="keyword">self</span> _yy_dictionaryWithJSON:json];</span><br><span class="line">    <span class="comment">// 再通过 dic 得到 model 并返回</span></span><br><span class="line">    <span class="keyword">return</span> [<span class="keyword">self</span> yy_modelWithDictionary:dic];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>上面接口把 JSON 转 Model 很简单的分为了两个子任务：</p>
@@ -123,7 +123,7 @@
 <li>JSON to NSDictionary</li>
 <li>NSDictionary to Model</li>
 </ul>
-<img src="/ios/yymodel0x02/j2d2m.jpg">
+<img src="/yymodel0x02/j2d2m.jpg">
 <h4 id="JSON-to-NSDictionary"><a href="#JSON-to-NSDictionary" class="headerlink" title="JSON to NSDictionary"></a>JSON to NSDictionary</h4><p>我们先看一下 <code>_yy_dictionaryWithJSON</code> 是怎么将 json 转为 NSDictionary 的。</p>
 <figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">+ (<span class="built_in">NSDictionary</span> *)_yy_dictionaryWithJSON:(<span class="keyword">id</span>)json &#123;</span><br><span class="line">    <span class="comment">// 入参判空</span></span><br><span class="line">    <span class="keyword">if</span> (!json || json == (<span class="keyword">id</span>)kCFNull) <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">NSDictionary</span> *dic = <span class="literal">nil</span>;</span><br><span class="line">    <span class="built_in">NSData</span> *jsonData = <span class="literal">nil</span>;</span><br><span class="line">    <span class="comment">// 根据 json 的类型对应操作</span></span><br><span class="line">    <span class="keyword">if</span> ([json isKindOfClass:[<span class="built_in">NSDictionary</span> <span class="keyword">class</span>]]) &#123;</span><br><span class="line">        <span class="comment">// 如果是 NSDictionary 类则直接赋值</span></span><br><span class="line">        dic = json;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> ([json isKindOfClass:[<span class="built_in">NSString</span> <span class="keyword">class</span>]]) &#123;</span><br><span class="line">        <span class="comment">// 如果是 NSString 类则用 UTF-8 编码转 NSData</span></span><br><span class="line">        jsonData = [(<span class="built_in">NSString</span> *)json dataUsingEncoding : <span class="built_in">NSUTF8StringEncoding</span>];</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> ([json isKindOfClass:[<span class="built_in">NSData</span> <span class="keyword">class</span>]]) &#123;</span><br><span class="line">        <span class="comment">// 如果是 NSData 则直接赋值给 jsonData</span></span><br><span class="line">        jsonData = json;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// jsonData 不为 nil，则表示上面的 2、3 情况中的一种</span></span><br><span class="line">    <span class="keyword">if</span> (jsonData) &#123;</span><br><span class="line">        <span class="comment">// 利用 NSJSONSerialization 方法将 jsonData 转为 dic</span></span><br><span class="line">        dic = [<span class="built_in">NSJSONSerialization</span> JSONObjectWithData:jsonData options:kNilOptions error:<span class="literal">NULL</span>];</span><br><span class="line">        <span class="comment">// 判断转换结果 </span></span><br><span class="line">        <span class="keyword">if</span> (![dic isKindOfClass:[<span class="built_in">NSDictionary</span> <span class="keyword">class</span>]]) dic = <span class="literal">nil</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> dic;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这个函数主要是根据入参的类型判断如何将其转为 NSDictionary 类型并返回。</p>
@@ -179,9 +179,9 @@
 </ul>
 <p>嘛~ 其实上面的代码除了长以外逻辑还是很简单的，总结起来就是根据可能出现的类型去做出对应的逻辑操作，建议各位有时间还是去读下源码，尤其是自己项目中用到 YYModel 的同学。相信看完之后会对 YYModel 属性赋值一清二楚，这样在使用 YYModel 的日常中出现任何问题都可以心中有数，改起代码自然如有神助哈。</p>
 <p>额…考虑到 NSDictionary to Model 的整个过程代码量不小，我花了一些时间将其逻辑总结归纳为一张图：</p>
-<img src="/ios/yymodel0x02/d2m.png">
+<img src="/yymodel0x02/d2m.png">
 <p>希望可以尽自己的努力让文章的表述变得更直白。</p>
-<h3 id="Model-to-JSON"><a href="#Model-to-JSON" class="headerlink" title="Model to JSON"></a>Model to JSON</h3><img src="/ios/yymodel0x02/m2j.jpg">
+<h3 id="Model-to-JSON"><a href="#Model-to-JSON" class="headerlink" title="Model to JSON"></a>Model to JSON</h3><img src="/yymodel0x02/m2j.jpg">
 <p>相比于 JSON to Model 来说，Model to JSON 更简单一些。其中因为 NSJSONSerialization 在对 JSON 的转换时做了一些规定：</p>
 <ul>
 <li>顶级对象是 NSArray 或者 NSDictionary 类型</li>
@@ -229,7 +229,7 @@
 
   
   <h2 class="title">
-    <a href="/ios/yymodel0x01/">
+    <a href="/yymodel0x01/">
       揭秘 YYModel 的魔法 0x01
     </a>
   </h2>
@@ -238,7 +238,7 @@
     11月 12, 2017
   </time>
   <section class="content">
-	  <img src="/ios/yymodel0x01/design_model_0x01.jpg">
+	  <img src="/yymodel0x01/design_model_0x01.jpg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>iOS 开发中少不了各种各样的模型，不论是采用 MVC、MVP 还是 MVVM 设计模式都逃不过 Model。</p>
 <p>那么大家在使用 Model 的时候肯定遇到过一个问题，即接口传递过来的数据（一般是 JSON 格式）需要转换为 iOS 内我们能直接使用的模型（类）。iOS 开发早期第三方框架没有那么多，大家可能会手写相关代码，但是随着业务的扩展，模型的增多，这些没什么技术含量的代码只是在重复的浪费我们的劳动力而已。</p>
 <p>这时候就需要一种工具来帮助我们把劳动力从这些无意义的繁琐代码中解放出来，于是 GitHub 上出现了很多解决此类问题的第三方库，诸如 Mantle、JSONModel、MJExtension 以及 YYModel 等等。</p>
@@ -248,7 +248,7 @@
 <blockquote>
 <p>处理 GithubUser 数据 10000 次耗时统计 (iPhone 6):</p>
 </blockquote>
-<img src="/ios/yymodel0x01/yymodel_performance.png">
+<img src="/yymodel0x01/yymodel_performance.png">
 <h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
 <li>YYModel 简介</li>
 <li>YYClassInfo 剖析</li>
@@ -256,14 +256,14 @@
 <li>JSON 与 Model 相互转换</li>
 <li>总结</li>
 </ul>
-<h2 id="YYModel-简介"><a href="#YYModel-简介" class="headerlink" title="YYModel 简介"></a>YYModel 简介</h2><img src="/ios/yymodel0x01/yymodel.png">
+<h2 id="YYModel-简介"><a href="#YYModel-简介" class="headerlink" title="YYModel 简介"></a>YYModel 简介</h2><img src="/yymodel0x01/yymodel.png">
 <p>撸了一遍 YYModel 的源码，果然是非常轻量级的 JSON 模型自动转换库，加上 YYModel.h 一共也只有 5 个文件。</p>
 <p>抛开 YYModel.h 来看，其实只有 YYClassInfo 和 NSObject+YYModel 两个模块。</p>
 <ul>
 <li>YYClassInfo 主要将 Runtime 层级的一些结构体封装到 NSObject 层级以便调用。</li>
 <li>NSObject+YYModel 负责提供方便调用的接口以及实现具体的模型转换逻辑（借助 YYClassInfo 中的封装）。</li>
 </ul>
-<h2 id="YYClassInfo-剖析"><a href="#YYClassInfo-剖析" class="headerlink" title="YYClassInfo 剖析"></a>YYClassInfo 剖析</h2><img src="/ios/yymodel0x01/yyclassinfo.jpg">
+<h2 id="YYClassInfo-剖析"><a href="#YYClassInfo-剖析" class="headerlink" title="YYClassInfo 剖析"></a>YYClassInfo 剖析</h2><img src="/yymodel0x01/yyclassinfo.jpg">
 <p>前面说到 YYClassInfo 主要将 Runtime 层级的一些结构体封装到 NSObject 层级以便调用，我觉得如果需要与 Runtime 层级的结构体做对比的话，没什么比表格来的更简单直观了：</p>
 <table>
 <thead>
@@ -364,7 +364,7 @@
 </ul>
 <figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// objc.h</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> objc_class *Class;</span><br><span class="line"></span><br><span class="line"><span class="comment">// runtime.h</span></span><br><span class="line"><span class="keyword">struct</span> objc_class &#123;</span><br><span class="line">    Class _Nonnull isa OBJC_ISA_AVAILABILITY; <span class="comment">// isa 指针</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#if !__OBJC2__</span></span><br><span class="line">    Class _Nullable super_class OBJC2_UNAVAILABLE; <span class="comment">// 父类（超类）指针</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> * _Nonnull name OBJC2_UNAVAILABLE; <span class="comment">// 类名</span></span><br><span class="line">    <span class="keyword">long</span> version OBJC2_UNAVAILABLE; <span class="comment">// 版本</span></span><br><span class="line">    <span class="keyword">long</span> info OBJC2_UNAVAILABLE; <span class="comment">// 信息</span></span><br><span class="line">    <span class="keyword">long</span> instance_size OBJC2_UNAVAILABLE; <span class="comment">// 初始尺寸</span></span><br><span class="line">    <span class="keyword">struct</span> objc_ivar_list * _Nullable ivars OBJC2_UNAVAILABLE; <span class="comment">// 变量列表</span></span><br><span class="line">    <span class="keyword">struct</span> objc_method_list * _Nullable * _Nullable methodLists OBJC2_UNAVAILABLE; <span class="comment">// 方法列表</span></span><br><span class="line">    <span class="keyword">struct</span> objc_cache * _Nonnull cache OBJC2_UNAVAILABLE; <span class="comment">// 缓存</span></span><br><span class="line">    <span class="keyword">struct</span> objc_protocol_list * _Nullable protocols OBJC2_UNAVAILABLE; <span class="comment">// 协议列表</span></span><br><span class="line"><span class="meta">#endif</span></span><br><span class="line"></span><br><span class="line">&#125; OBJC2_UNAVAILABLE;</span><br></pre></td></tr></table></figure>
 <p>额… 看来想完全避开 Runtime 的知识来讲 YYModel 源码是不现实的。这里简单介绍一下 Runtime 中关于 Class 的知识以便阅读，已经熟悉这方面知识的同学就当温习一下好了。</p>
-<img src="/ios/yymodel0x01/class_diagram.jpg">
+<img src="/yymodel0x01/class_diagram.jpg">
 <ul>
 <li>isa 指针，用于找到所属类，类对象的 isa 一般指向对应元类。</li>
 <li>元类，由于 objc_class 继承于 objc_object，即类本身同时也是一个对象，所以 Runtime 库设计出元类用以表述类对象自身所具备的元数据。</li>
@@ -392,7 +392,7 @@
 <figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (info &amp;&amp; info-&gt;_needUpdate) &#123;</span><br><span class="line">    [info _update];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>简单介绍一下 <code>_update</code>，它是 YYClassInfo 的私有方法，它的实现逻辑简单介绍就是清空当前 YYClassInfo 实例变量，方法以及属性，之后再重新初始化它们。由于 <code>_update</code> 实现源码并没有什么特别之处，我这里就不贴源码了。</p>
 <p>嘛~ 对 YYClassInfo 的剖析到这里就差不多了。</p>
-<h2 id="NSObject-YYModel-探究"><a href="#NSObject-YYModel-探究" class="headerlink" title="NSObject+YYModel 探究"></a>NSObject+YYModel 探究</h2><img src="/ios/yymodel0x01/nsobject_yymodel.jpg">
+<h2 id="NSObject-YYModel-探究"><a href="#NSObject-YYModel-探究" class="headerlink" title="NSObject+YYModel 探究"></a>NSObject+YYModel 探究</h2><img src="/yymodel0x01/nsobject_yymodel.jpg">
 <p>如果说 YYClassInfo 主要是作者对 Runtime 层在 JSON 模型转换中需要用到的结构体的封装，那么 NSObject+YYModel 在 YYModel 中担当的责任则是利用 YYClassInfo 层级封装好的类切实的执行 JSON 模型之间的转换逻辑，并且提供了无侵入性的接口。</p>
 <p>第一次阅读 NSObject+YYModel.m 的源码可能会有些不适应，这很正常。因为其大量使用了 Runtime 函数与 CoreFoundation 库，加上各种类型编码和递归解析，代码量也有 1800 多行了。</p>
 <p>我简单把 NSObject+YYModel.m 的源码做了一下划分，这样划分之后代码看起来一样很简单清晰：</p>

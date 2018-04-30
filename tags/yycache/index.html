@@ -92,7 +92,7 @@
 
   
   <h2 class="title">
-    <a href="/ios/yycache/">
+    <a href="/yycache/">
       从 YYCache 源码 Get 到如何设计一个优秀的缓存
     </a>
   </h2>
@@ -101,15 +101,15 @@
     10月 30, 2017
   </time>
   <section class="content">
-	  <img src="/ios/yycache/how_to_design_a_good_cache.jpg">
+	  <img src="/yycache/how_to_design_a_good_cache.jpg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>iOS 开发中总会用到各种缓存，但是各位有没有考虑过什么样的缓存才能被叫做优秀的缓存，或者说优秀的缓存应该具备哪些特质？</p>
 <p><strong>闭上眼睛，想一想如果面试官让你设计一个缓存你会怎么回答？</strong></p>
 <p>本文将结合 YYCache 的源码逐步带大家找到答案。</p>
 <p><a href="https://github.com/ibireme/YYCache" target="_blank" rel="noopener">YYCache</a> 是一个线程安全的高性能键值缓存（该项目是 <a href="https://github.com/ibireme/YYKit" target="_blank" rel="noopener">YYKit</a> 组件之一）。YYKit 是在 2015 年发布到 Github 的，由于其代码质量很高，在短时间内就收获了大量的 Star（目前已经 1w+ Star 了），而且在 iOS 各大社区反响广泛，Google 一下也是漫天赞叹。</p>
 <p>YYKit 作者是 <a href="https://github.com/ibireme" target="_blank" rel="noopener">@ibireme</a>，原名郭曜源（猜测 YY 前缀来源于曜源？），是我个人非常喜欢的国人开发者（何止喜欢，简直是迷弟😘）。</p>
 <p>YYCache 的代码逻辑清晰，注释详尽，加上自身不算太大的代码量使得其阅读非常简单，更加难能可贵的是它的性能还非常高。</p>
-<img src="/ios/yycache/performance_yymemorycache.jpg">
-<img src="/ios/yycache/performance_yydiskcache.jpg">
+<img src="/yycache/performance_yymemorycache.jpg">
+<img src="/yycache/performance_yydiskcache.jpg">
 <p>我对它的评价是<strong>小而美</strong>，这种小而美的缓存源码对于我们今天的主题太合适不过了（本文中 YYCache 源码版本为 v1.0.4）。</p>
 <h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
 <li>YYCache 简介</li>
@@ -118,7 +118,7 @@
 <li>优秀的缓存应该具备哪些特质</li>
 <li>总结</li>
 </ul>
-<h2 id="YYCache-简介"><a href="#YYCache-简介" class="headerlink" title="YYCache 简介"></a>YYCache 简介</h2><img src="/ios/yycache/yycache.jpg">
+<h2 id="YYCache-简介"><a href="#YYCache-简介" class="headerlink" title="YYCache 简介"></a>YYCache 简介</h2><img src="/yycache/yycache.jpg">
 <p>简单把 YYCache 从头到尾撸了一遍，最大的感触就是代码风格干净整洁，代码思路清晰明了。</p>
 <p>由于代码整体阅读难度不是非常大，本文不会去逐字逐句的解读源码，而是提炼 YYCache 作为一个小而美的缓存实现了哪些缓存该具备的特质，并且分析实现细节。</p>
 <p>我们先来简单看一下 YYCache 的代码结构，YYCache 是由 YYMemoryCache 与 YYDiskCache 两部分组成的，其中 YYMemoryCache 作为高速内存缓存，而 YYDiskCache 则作为低速磁盘缓存。</p>
@@ -132,7 +132,7 @@
 <p>类似上述的编码技巧还有很多，我并非不想与大家分享我 get 到的这些编码技巧，只是觉得它与本文的主题似乎不太相符。我准备在之后专门写一篇文章来与大家分享我在阅读各大源码库过程中 get 到的编码技巧（感兴趣的话可以 <a href="https://weibo.com/5071795354/profile" target="_blank" rel="noopener">关注我</a>）。</p>
 </blockquote>
 <p>从代码中我们可以看到 YYCache 中持有 YYMemoryCache 与 YYDiskCache，并且对外提供了一些接口。这些接口基本都是基于 Key 和 Value 设计的，类似于 iOS 原生的字典类接口（增删改查）。</p>
-<h2 id="YYMemoryCache-细节剖析"><a href="#YYMemoryCache-细节剖析" class="headerlink" title="YYMemoryCache 细节剖析"></a>YYMemoryCache 细节剖析</h2><img src="/ios/yycache/yymemorycache.jpg">
+<h2 id="YYMemoryCache-细节剖析"><a href="#YYMemoryCache-细节剖析" class="headerlink" title="YYMemoryCache 细节剖析"></a>YYMemoryCache 细节剖析</h2><img src="/yycache/yymemorycache.jpg">
 <p>YYMemoryCache 是一个高速的内存缓存，用于存储键值对。它与 NSDictionary 相反，Key 被保留并且不复制。API 和性能类似于 NSCache，所有方法都是线程安全的。</p>
 <p>YYMemoryCache 对象与 NSCache 的不同之处在于：</p>
 <ul>
@@ -150,7 +150,7 @@
 <blockquote>
 <p>有趣的是，这里 ibireme 使用 <code>pthread_mutex</code> 是有一段小故事的。在最初 YYMemoryCache 这里使用的锁是 <code>OSSpinLock</code> 自旋锁（详见 <a href="https://blog.ibireme.com/2015/10/26/yycache/" target="_blank" rel="noopener">YYCache 设计思路</a> 备注-关于锁），后面有人在 Github 向作者提 <a href="https://github.com/ibireme/YYModel/issues/43" target="_blank" rel="noopener">issue</a> 反馈 <code>OSSpinLock</code> 不安全，经过作者的确认（详见 <a href="https://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/" target="_blank" rel="noopener">不再安全的 OSSpinLock</a>）最后选择用 <code>pthread_mutex</code> 替代 <code>OSSpinLock</code>。</p>
 </blockquote>
-<img src="/ios/yycache/lock_benchmark.jpg">
+<img src="/yycache/lock_benchmark.jpg">
 <p>上面是 ibireme 在确认 <code>OSSpinLock</code> 不再安全之后为了寻找替代方案做的简单性能测试，对比了一下几种能够替代 <code>OSSpinLock</code> 锁的性能。在 <a href="https://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/" target="_blank" rel="noopener">不再安全的 OSSpinLock</a> 文末的评论中，我找到了作者使用 <code>pthread_mutex</code> 的原因。</p>
 <blockquote>
 <p>ibireme: 苹果员工说 libobjc 里 <code>spinlock</code> 是用了一些私有方法 (<code>mach_thread_switch</code>)，贡献出了高线程的优先来避免优先级反转的问题，但是我翻了下 libdispatch 的源码倒是没发现相关逻辑，也可能是我忽略了什么。在我的一些测试中，<code>OSSpinLock</code> 和 <code>dispatch_semaphore</code> 都不会产生特别明显的死锁，所以我也无法确定用 <code>dispatch_semaphore</code> 代替 <code>OSSpinLock</code> 是否正确。能够肯定的是，用 <code>pthread_mutex</code> 是安全的。</p>
@@ -181,7 +181,7 @@
 <li>Pannier: Container-based caching algorithm for compound objects</li>
 </ul>
 <p>是不是被唬到了？不要担心，我这里会表述的尽量易懂。</p>
-<h4 id="缓存命中率"><a href="#缓存命中率" class="headerlink" title="缓存命中率"></a>缓存命中率</h4><img src="/ios/yycache/cache_hit_ratio.png">
+<h4 id="缓存命中率"><a href="#缓存命中率" class="headerlink" title="缓存命中率"></a>缓存命中率</h4><img src="/yycache/cache_hit_ratio.png">
 <p>为什么有这么多缓存替换策略，或者说搞这么多名堂究竟是为了什么呢？</p>
 <p>答案是提高缓存命中率，那么何谓缓存命中率呢？</p>
 <p>Google 一下自然是有不少解释，不过很多都是 web 相关的，而且不说人话（很难理解），我个人非常讨厌各种不说人话的“高深”抽象概念。</p>
@@ -226,7 +226,7 @@
 <p>而上面代码中的 YYMemoryCacheGetReleaseQueue 这个队列源码为：</p>
 <figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 静态内联 dispatch_queue_t</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">inline</span> <span class="built_in">dispatch_queue_t</span> YYMemoryCacheGetReleaseQueue() &#123;</span><br><span class="line">    <span class="keyword">return</span> dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在源码中可以看到 YYMemoryCacheGetReleaseQueue 是一个低优先级 <code>DISPATCH_QUEUE_PRIORITY_LOW</code> 队列，猜测这样设计的原因是可以让 iOS 在系统相对空闲时再来异步释放缓存对象。</p>
-<h2 id="YYDiskCache-细节剖析"><a href="#YYDiskCache-细节剖析" class="headerlink" title="YYDiskCache 细节剖析"></a>YYDiskCache 细节剖析</h2><img src="/ios/yycache/yydiskcache.jpg">
+<h2 id="YYDiskCache-细节剖析"><a href="#YYDiskCache-细节剖析" class="headerlink" title="YYDiskCache 细节剖析"></a>YYDiskCache 细节剖析</h2><img src="/yycache/yydiskcache.jpg">
 <p>YYDiskCache 是一个线程安全的磁盘缓存，用于存储由 SQLite 和文件系统支持的键值对（类似于 NSURLCache 的磁盘缓存）。</p>
 <p>YYDiskCache 具有以下功能：</p>
 <ul>
@@ -282,7 +282,7 @@
 <p>sqlite3_stmt: 该对象的实例表示已经编译成二进制形式并准备执行的单个 SQL 语句。</p>
 </blockquote>
 <p>更多关于 SQLite 的信息请点击 <a href="http://www.sqlite.org/docs.html" target="_blank" rel="noopener">SQLite 官方文档</a> 查阅。</p>
-<h2 id="优秀的缓存应该具备哪些特质"><a href="#优秀的缓存应该具备哪些特质" class="headerlink" title="优秀的缓存应该具备哪些特质"></a>优秀的缓存应该具备哪些特质</h2><img src="/ios/yycache/good_cache.jpg">
+<h2 id="优秀的缓存应该具备哪些特质"><a href="#优秀的缓存应该具备哪些特质" class="headerlink" title="优秀的缓存应该具备哪些特质"></a>优秀的缓存应该具备哪些特质</h2><img src="/yycache/good_cache.jpg">
 <p>嘛~ 我们回到文章最初提到的问题，优秀的缓存应该具备哪些特质？</p>
 <p>如果跟着文章一步步读到这里，相信很容易举出以下几点：</p>
 <ul>

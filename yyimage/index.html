@@ -14,22 +14,22 @@
 <meta name="keywords" content="yykit,yyimage">
 <meta property="og:type" content="article">
 <meta property="og:title" content="YYImage 设计思路，实现细节剖析">
-<meta property="og:url" content="https://lision.me/ios/yyimage/index.html">
+<meta property="og:url" content="https://lision.me/yyimage/index.html">
 <meta property="og:site_name" content="漫碼">
 <meta property="og:description" content="前言图片的历史早于文字，是最原始的信息传递方式。六书中的象形文构造思想就是用文字的线条或笔画，把要表达物体的外形特征，具体地勾画出来。  许慎《说文解字》云：“象形者，画成其物，随体诘诎，日、月是也。”  现代社会的信息传递中，图片仍然是不可或缺的一环，不论是报纸、杂志、漫画等实体刊物还是生活中超市地铁广告活动，都会有专门的配图抓人眼球。 在移动端 App 中，图片通常占据着重要的视觉空间，作为">
 <meta property="og:locale" content="zh-cn">
-<meta property="og:image" content="https://lision.me/ios/yyimage/yyimage_h.jpg">
-<meta property="og:image" content="https://lision.me/ios/yyimage/xiaomai.gif">
-<meta property="og:image" content="https://lision.me/ios/yyimage/yyimage.jpg">
-<meta property="og:image" content="https://lision.me/ios/yyimage/yyimage_struct.png">
-<meta property="og:image" content="https://lision.me/ios/yyimage/ss_wukong.png">
-<meta property="og:image" content="https://lision.me/ios/yyimage/blood_wheel_eye.jpeg">
-<meta property="og:image" content="https://lision.me/ios/yyimage/image_coder.jpg">
+<meta property="og:image" content="https://lision.me/yyimage/yyimage_h.jpg">
+<meta property="og:image" content="https://lision.me/yyimage/xiaomai.gif">
+<meta property="og:image" content="https://lision.me/yyimage/yyimage.jpg">
+<meta property="og:image" content="https://lision.me/yyimage/yyimage_struct.png">
+<meta property="og:image" content="https://lision.me/yyimage/ss_wukong.png">
+<meta property="og:image" content="https://lision.me/yyimage/blood_wheel_eye.jpeg">
+<meta property="og:image" content="https://lision.me/yyimage/image_coder.jpg">
 <meta property="og:updated_time" content="2017-12-10T10:42:19.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="YYImage 设计思路，实现细节剖析">
 <meta name="twitter:description" content="前言图片的历史早于文字，是最原始的信息传递方式。六书中的象形文构造思想就是用文字的线条或笔画，把要表达物体的外形特征，具体地勾画出来。  许慎《说文解字》云：“象形者，画成其物，随体诘诎，日、月是也。”  现代社会的信息传递中，图片仍然是不可或缺的一环，不论是报纸、杂志、漫画等实体刊物还是生活中超市地铁广告活动，都会有专门的配图抓人眼球。 在移动端 App 中，图片通常占据着重要的视觉空间，作为">
-<meta name="twitter:image" content="https://lision.me/ios/yyimage/yyimage_h.jpg">
+<meta name="twitter:image" content="https://lision.me/yyimage/yyimage_h.jpg">
   
   
     <link rel="icon" href="/favicon.png">
@@ -90,7 +90,7 @@
   class="post article white-box article-type-post"
   itemscope itemprop="blogPost">
 	<h2 class="title">
-  	<a href="/ios/yyimage/">
+  	<a href="/yyimage/">
     	YYImage 设计思路，实现细节剖析
     </a>
   </h2>
@@ -99,7 +99,7 @@
 	</time>
 	<section class="content">
   	<div class="article-entry" itemprop="articleBody">
-    	<img src="/ios/yyimage/yyimage_h.jpg">
+    	<img src="/yyimage/yyimage_h.jpg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>图片的历史早于文字，是最原始的信息传递方式。<a href="https://zh.wikipedia.org/wiki/%E5%85%AD%E6%9B%B8" target="_blank" rel="noopener">六书</a>中的象形文构造思想就是用文字的线条或笔画，把要表达物体的外形特征，具体地勾画出来。</p>
 <blockquote>
 <p><a href="https://zh.wikipedia.org/wiki/%E8%A8%B1%E6%85%8E" target="_blank" rel="noopener">许慎</a>《<a href="https://zh.wikipedia.org/wiki/%E8%AF%B4%E6%96%87%E8%A7%A3%E5%AD%97" target="_blank" rel="noopener">说文解字</a>》云：“象形者，画成其物，随体诘诎，日、月是也。”</p>
@@ -113,7 +113,7 @@
 <li><a href="https://blog.ibireme.com/2015/11/02/ios_image_tips/" target="_blank" rel="noopener">iOS 处理图片的一些小 Tip</a></li>
 </ul>
 <p>本文引用代码均为 YYImage v1.0.4 版本源码，文章旨在剖析 YYImage 的架构思想以及设计思路并对笔者在阅读源码过程中发现的有趣实现细节探究分享，不会逐行翻译源码，建议对源码实现感兴趣的同学结合 YYImage v1.0.4 版本源码食用本文~</p>
-<img src="/ios/yyimage/xiaomai.gif">
+<img src="/yyimage/xiaomai.gif">
 <h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
 <li>YYImage 简介</li>
 <li>YYImage, YYFrameImage, YYSpriteSheetImage</li>
@@ -122,7 +122,7 @@
 <li>总结</li>
 <li>扩展阅读</li>
 </ul>
-<h2 id="YYImage-简介"><a href="#YYImage-简介" class="headerlink" title="YYImage 简介"></a>YYImage 简介</h2><img src="/ios/yyimage/yyimage.jpg">
+<h2 id="YYImage-简介"><a href="#YYImage-简介" class="headerlink" title="YYImage 简介"></a>YYImage 简介</h2><img src="/yyimage/yyimage.jpg">
 <p>YYImage 是一款功能强大的 iOS 图像框架，支持当前市场主流的静/动态图像编/解码与动态图像的动画播放显示，其具有以下特性：</p>
 <ul>
 <li>支持以下类型动画图像的播放/编码/解码: WebP, APNG, GIF。</li>
@@ -169,7 +169,7 @@
 <blockquote>
 <p>Note: <a href="https://developer.apple.com/documentation/imageio" target="_blank" rel="noopener">ImageIO.framework</a> 是 iOS 底层实现的图片编/解码库，负责管理颜色和访问图像元数据。其内部的实现使用了第三方编/解码库（如 libpng 等）并对第三方库进行调整优化。除此之外，iOS 还专门针对 JPEG 的编/解码开发了 AppleJPEG.framework，实现了性能更高的硬编码和硬解码。</p>
 </blockquote>
-<img src="/ios/yyimage/yyimage_struct.png">
+<img src="/yyimage/yyimage_struct.png">
 <h2 id="YYImage-YYFrameImage-YYSpriteSheetImage"><a href="#YYImage-YYFrameImage-YYSpriteSheetImage" class="headerlink" title="YYImage, YYFrameImage, YYSpriteSheetImage"></a>YYImage, YYFrameImage, YYSpriteSheetImage</h2><p>先来介绍 YYImage 库中图像层的三个类，它们分别是：</p>
 <ul>
 <li>YYImage</li>
@@ -206,7 +206,7 @@
 <li>用首图初始化 <code>_oneFrameBytes</code> ，如入参初始化 <code>_imageDatas</code> ，<code>_frameDurations</code> 和 <code>_loopCount</code></li>
 <li>用 <code>UIImage</code> 的 <code>initWithCGImage:scale:orientation:</code> 初始化并返回初始化结果</li>
 </ul>
-<h3 id="YYSpriteSheetImage"><a href="#YYSpriteSheetImage" class="headerlink" title="YYSpriteSheetImage"></a>YYSpriteSheetImage</h3><img src="/ios/yyimage/ss_wukong.png">
+<h3 id="YYSpriteSheetImage"><a href="#YYSpriteSheetImage" class="headerlink" title="YYSpriteSheetImage"></a>YYSpriteSheetImage</h3><img src="/yyimage/ss_wukong.png">
 <p>YYSpriteSheetImage 是用来做 Spritesheet 动画显示的图像类，它也是 UIImage 的子类。</p>
 <p>关于 Spritesheet 可能做过游戏开发或者以前鼓捣过简单网页游戏 Demo 的同学会很熟悉，其动画原理是把一个动画过程分解为多个动画帧，按照顺序将这些动画帧排布在一张大的画布中，播放动画时只需要按照每一帧图像的尺寸大小以及对应索引去画布中提取对应的帧替换显示以达到人眼判定动画的效果，点击 <a href="https://gamedevelopment.tutsplus.com/tutorials/an-introduction-to-spritesheet-animation--gamedev-13099" target="_blank" rel="noopener"><br>An Introduction to Spritesheet Animation</a> 或者 <a href="https://www.codeandweb.com/what-is-a-sprite-sheet" target="_blank" rel="noopener">What is a sprite sheet?</a> 了解更多关于 Spritesheet 动画的信息。</p>
 <blockquote>
@@ -226,7 +226,7 @@
 <li>将处理后的逻辑定位 LogicRect 作为图层定位 LayerRect 返回</li>
 </ul>
 <p>返回的 LayerRect 作为对应索引帧的画布内相对位置存在，结合画布就可以定位到对应帧图像的具体尺寸和位置。</p>
-<h2 id="YYAnimatedImageView"><a href="#YYAnimatedImageView" class="headerlink" title="YYAnimatedImageView"></a>YYAnimatedImageView</h2><img src="/ios/yyimage/blood_wheel_eye.jpeg">
+<h2 id="YYAnimatedImageView"><a href="#YYAnimatedImageView" class="headerlink" title="YYAnimatedImageView"></a>YYAnimatedImageView</h2><img src="/yyimage/blood_wheel_eye.jpeg">
 <p>人眼中呈现的动画是由一幅幅内容连贯的图像以较短时间按顺序替换形成的，所以要显示动画只需要知道动画顺序中每一帧图像以及对应的显示时间等信息即可。YYImage 中对应于 UIImage 层级的内容（YYImage, YYFrameImage, YYSpriteSheetImage）在上文已经介绍过了，虽然它们之间存在内容和形式上的差异，但是对于人眼动画呈现的原理却是不变的。</p>
 <p>YYAnimatedImageView 是 YYImage 的重要组成，它是 UIImageView 的子类，负责 YYImage 图像层中不同的图像类的视图显示（包含动态图像的动画播放），其内部包含 YYAnimatedImage 协议以及 YYAnimatedImageView 自身两部分。</p>
 <h3 id="YYAnimatedImage-协议"><a href="#YYAnimatedImage-协议" class="headerlink" title="YYAnimatedImage 协议"></a>YYAnimatedImage 协议</h3><p>上文提到不论是 YYImage, YYFrameImage, YYSpriteSheetImage 还是以后可能会扩展的图像类，虽然它们之间存在内容和形式上的差异，但是对于人眼动画呈现的原理却是不变的。</p>
@@ -297,7 +297,7 @@
 <blockquote>
 <p>Note: 消息转发产生的开销要比动态方法解析和消息重定向大。</p>
 </blockquote>
-<h2 id="YYImageCoder"><a href="#YYImageCoder" class="headerlink" title="YYImageCoder"></a>YYImageCoder</h2><img src="/ios/yyimage/image_coder.jpg">
+<h2 id="YYImageCoder"><a href="#YYImageCoder" class="headerlink" title="YYImageCoder"></a>YYImageCoder</h2><img src="/yyimage/image_coder.jpg">
 <p>YYImageCoder 作为 YYImage 的编/解码器，对应于 iOS 中的 ImageIO.framework 图片编/解码库，正是因为有了 YYImageCoder 的存在，YYImage 才得以支持如此多的图片格式，所以说 YYImageCoder 是 YYImage 的底层核心。</p>
 <p>YYImageCoder 内部定义了许多 YYImage 中用到的核心数据结构：</p>
 <ul>
@@ -425,7 +425,7 @@
 <script>
   var disqus_shortname = 'lision-me';
   
-  var disqus_url = 'https://lision.me/ios/yyimage/';
+  var disqus_url = 'https://lision.me/yyimage/';
   
   (function(){
     var dsq = document.createElement('script');
