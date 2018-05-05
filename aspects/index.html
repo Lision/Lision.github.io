@@ -42,15 +42,19 @@
       document.getElementById('loading-bar').style.width=num+"%";
     }
   </script>
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-118743071-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+  
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=" + "UA-118743071-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-    gtag('config', 'UA-118743071-1');
-  </script>
+  gtag('config', 'UA-118743071-1');
+</script>
+<!-- End Google Analytics -->
+
+
 </head>
 
 <body>
@@ -345,12 +349,18 @@
   
   
 	<div class="search">
-	  <form name="searchform" id="searchform" class="u-search-form">
-	    <input type="text" id="searchinput" class="u-search-input" placeholder="Looking for something?" />
-	    <button type="submit" id="u-search-btn-submit" class="u-search-btn-submit">
-	      <span class="icon icon-search"></span>
-	    </button>
-	  </form>
+	  <script>
+      (function() {
+        var cx = '001858749347000340533:drswradlp64';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:searchbox-only></gcse:searchbox-only>
 	</div>
 	
 
