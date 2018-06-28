@@ -269,50 +269,7 @@
 </blockquote>
 <h2 id="新指令集扩展"><a href="#新指令集扩展" class="headerlink" title="新指令集扩展"></a>新指令集扩展</h2><img src="/wwdc18-llvm/new_instruction_set_extensions.png">
 <p>Emmmmm… 这一节的内容是针对于 iMac Pro 以及 iPhone X 使用的 <a href="https://en.wikipedia.org/wiki/Instruction_set_architecture" target="_blank" rel="noopener">指令集架构（ISA - Instruction set architecture）</a> 所做的扩展。坦白说，我对这块并不是很感兴趣，也没有深入的研究，所以就不献丑了…</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文梳理了 WWDC18 Session 409 What’s New in LLVM 中的内容，并分享了我个人对这些内容的拙见（我是 Lision，我现在慌得一 bi ），让我们再回头看一下本次 What’s New in LLVM 有哪些内容吧：</p>
-<ul>
-<li>ARC 更新</li>
-<li><ul>
-<li>C struct 中允许使用 ARC Objective-C 对象</li>
-</ul>
-</li>
-<li><ul>
-<li>动态内存管理时的写法</li>
-</ul>
-</li>
-<li>Xcode 10 新增诊断</li>
-<li><ul>
-<li>Swift 与 Objective-C 互通性，将 Swift 中的闭包（Closures）导入 Objective-C</li>
-</ul>
-</li>
-<li><ul>
-<li>使用 <code>#pragma pack</code> 打包 Struct 成员，自定义 Struct 字节对齐方式</li>
-</ul>
-</li>
-<li>Clang 静态分析</li>
-<li><ul>
-<li>GCD 性能反模式，提供了一些同步方法</li>
-</ul>
-</li>
-<li><ul>
-<li>自动释放变量超出自动释放池，<code>NSError *__autoreleasing*</code> 需要注意写法</li>
-</ul>
-</li>
-<li><ul>
-<li>性能和可视化报告的提升</li>
-</ul>
-</li>
-<li>增加安全性</li>
-<li><ul>
-<li>Stack Protector，Stack Canary &amp; 局限性</li>
-</ul>
-</li>
-<li><ul>
-<li>Stack Checking，Stack Clash</li>
-</ul>
-</li>
-<li>新指令集扩展</li>
-</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文梳理了 WWDC18 Session 409 What’s New in LLVM 中的内容，并分享了我个人对这些内容的拙见，希望能够对各位因为种种原因还没有来得及看 WWDC18 Session 409 的同学有所帮助。</p>
 <p>文章写得比较用心（是我个人的原创文章，转载请注明 <a href="https://lision.me/">https://lision.me/</a>），如果发现错误会优先在我的个人博客中更新。如果有任何问题欢迎在我的微博 <a href="http://weibo.com/lisioncode" target="_blank" rel="noopener">@Lision</a> 联系我~</p>
 <p>希望我的文章可以为你带来价值~</p>
 
