@@ -196,9 +196,9 @@
 <img src="/wwdc18-llvm/pack.png">
 <h4 id="个人观点-2"><a href="#个人观点-2" class="headerlink" title="个人观点"></a>个人观点</h4><p>嘛~ 当在网络层面传输 struct 时，通过 <code>#pragma pack</code> 自定义内存布局的对齐方式可以为用户节约更多流量。</p>
 <h2 id="Clang-静态分析"><a href="#Clang-静态分析" class="headerlink" title="Clang 静态分析"></a>Clang 静态分析</h2><p>Xcode 一直都提供静态分析器（Static Analyzer），使用 Clang Static Analyzer 可以帮助我们找出边界情况以及难以发觉的 Bug。</p>
-<img src="/wwdc18-llvm/static_analyzer_00.png">
+<img src="/wwdc18-llvm/static_analyzer_00.jpg">
 <p>点击 Product -&gt; Analyze 或者使用快捷键 Shift+Command+B 就可以静态分析当前构建的项目了，当然也可以在项目的 Build Settings 中设置构建项目时自动执行静态分析（个人不推荐）：</p>
-<img src="/wwdc18-llvm/static_analyzer_01.png">
+<img src="/wwdc18-llvm/static_analyzer_01.jpg">
 <p>本地静态分析器有以下提升：</p>
 <ul>
 <li>GCD 性能反模式</li>
@@ -231,9 +231,9 @@
 </blockquote>
 <h3 id="性能和可视化报告的提升"><a href="#性能和可视化报告的提升" class="headerlink" title="性能和可视化报告的提升"></a>性能和可视化报告的提升</h3><p>Xcode 10 中静态分析器可以以更高效的方式工作，在相同的分析时间内平均可以发现比之前增加 15% 的 Bug 数量。</p>
 <p>不仅仅是性能的提升，Xcode 10 在报告的可视化方面也有所进步。在 Xcode 9 的静态分析器报告页面有着非必要且冗长的 Error Path：</p>
-<img src="/wwdc18-llvm/static_analyzer_xcode_9.png">
+<img src="/wwdc18-llvm/static_analyzer_xcode_9.jpg">
 <p>Xcode 10 中则对其进行了优化：</p>
-<img src="/wwdc18-llvm/static_analyzer_xcode_10.png">
+<img src="/wwdc18-llvm/static_analyzer_xcode_10.jpg">
 <h3 id="个人观点-3"><a href="#个人观点-3" class="headerlink" title="个人观点"></a>个人观点</h3><p>嘛~ 对于 Xcode 的静态分析，个人认为还是聊胜于无的。不过不建议每次构建项目时都去做静态分析，这样大大增加了构建项目的成本。</p>
 <p>个人建议在开发流程中自测完毕提交代码给组内小伙伴们 Code Review 之前做静态分析，可以避免一些 issue 的出现，也可以发现一些代码隐患。有些问题是可以使用静态分析器在提交代码之前就暴露出来的，没必要消耗组内 Code Review 的宝贵人力资源。</p>
 <p>还可以在 CI 设置每隔固定是时间间隔去跑一次静态分析，生成报表发到组内小群，根据问题指派责任人去检查是否需要修复（静态分析在比较复杂的代码结构下并不一定准确），这样定期维护从某种角度讲可以保持项目代码的健康状况。</p>
@@ -370,7 +370,7 @@
 <blockquote>
 <p>Note: 图元数据是以 copy 的形式流入 shader 的，shader 一般会以特殊的<strong>类似全局变量的形式</strong>接收数据。</p>
 </blockquote>
-<p>OpenGL 在最终成像之前还会经历一个阶段名为<strong>计算着色阶段（compute shaing stage）</strong>，这个阶段 OpenGL 会计算最重要在屏幕中成像的像素位置以及颜色，如果在之前提交代码时用到了 CALayer 会引起 <strong>blending</strong> 的显示效果（例如 Shadow）或者视图颜色或内容图片的 alpha 通道开启，都将会加大这个阶段 OpenGL 的工作量。</p>
+<p>OpenGL 在最终成像之前还会经历一个阶段名为<strong>计算着色阶段（compute shaing stage）</strong>，这个阶段 OpenGL 会计算最终要在屏幕中成像的像素位置以及颜色，如果在之前提交代码时用到了 CALayer 会引起 <strong>blending</strong> 的显示效果（例如 Shadow）或者视图颜色或内容图片的 alpha 通道开启，都将会加大这个阶段 OpenGL 的工作量。</p>
 <h2 id="Core-Animation-Pipeline"><a href="#Core-Animation-Pipeline" class="headerlink" title="Core Animation Pipeline"></a>Core Animation Pipeline</h2><p>上文说到了 iOS 设备之所以可以成像不是因为 UIKit 而是因为 LayerKit，即 Core Animation。</p>
 <p>Core Animation 图层，即 CALayer 中包含一个属性 contents，我们可以通过给这个属性赋值来<strong>控制 CALayer 成像的内容</strong>。这个属性的类型定义为 id，在程序编译时不论我们给 contents 赋予任何类型的值，都是可以编译通过的。但实践中，<strong>如果 contents 赋值类型不是 CGImage，那么你将会得到一个空白图层</strong>。</p>
 <blockquote>
@@ -387,7 +387,7 @@
 <blockquote>
 <p>Note: 由于 iOS 设备目前的显示屏最大支持 <strong>60 FPS</strong> 的刷新率，所以每个处理间隔为 16.67 ms。</p>
 </blockquote>
-<p>可以看到从 Commit Transaction 之后我们的图元数据就将会在下一次 RunLoop 时被 Application 发送给底层的 Render Server，底层 Render Server 直接面向 GPU 经过一些列的数据处理将处理完毕的数据传递给 GPU，然后 GPU 负责渲染工作，根据当前 iOS 设备的屏幕计算图像<strong>像素位置以及像素 alpha 通道混色计算</strong>等等最终在当前 iOS 设备的显示屏中呈现图像。</p>
+<p>可以看到从 Commit Transaction 之后我们的图元数据就将会在下一次 RunLoop 时被 Application 发送给底层的 Render Server，底层 Render Server 直接面向 GPU 经过一系列的数据处理将处理完毕的数据传递给 GPU，然后 GPU 负责渲染工作，根据当前 iOS 设备的屏幕计算图像<strong>像素位置以及像素 alpha 通道混色计算</strong>等等最终在当前 iOS 设备的显示屏中呈现图像。</p>
 <blockquote>
 <p>嘛~ 由于 Core Animation Pipeline 中 Render Server 包含 OpenGL ES &amp; Core Graphics，其中 OpenGL ES 的渲染可以参考上文 OpenGL Render Pipeline 理解。</p>
 </blockquote>

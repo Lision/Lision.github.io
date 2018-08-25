@@ -197,9 +197,9 @@
 <img src="/wwdc18-llvm/pack.png">
 <h4 id="个人观点-2"><a href="#个人观点-2" class="headerlink" title="个人观点"></a>个人观点</h4><p>嘛~ 当在网络层面传输 struct 时，通过 <code>#pragma pack</code> 自定义内存布局的对齐方式可以为用户节约更多流量。</p>
 <h2 id="Clang-静态分析"><a href="#Clang-静态分析" class="headerlink" title="Clang 静态分析"></a>Clang 静态分析</h2><p>Xcode 一直都提供静态分析器（Static Analyzer），使用 Clang Static Analyzer 可以帮助我们找出边界情况以及难以发觉的 Bug。</p>
-<img src="/wwdc18-llvm/static_analyzer_00.png">
+<img src="/wwdc18-llvm/static_analyzer_00.jpg">
 <p>点击 Product -&gt; Analyze 或者使用快捷键 Shift+Command+B 就可以静态分析当前构建的项目了，当然也可以在项目的 Build Settings 中设置构建项目时自动执行静态分析（个人不推荐）：</p>
-<img src="/wwdc18-llvm/static_analyzer_01.png">
+<img src="/wwdc18-llvm/static_analyzer_01.jpg">
 <p>本地静态分析器有以下提升：</p>
 <ul>
 <li>GCD 性能反模式</li>
@@ -232,9 +232,9 @@
 </blockquote>
 <h3 id="性能和可视化报告的提升"><a href="#性能和可视化报告的提升" class="headerlink" title="性能和可视化报告的提升"></a>性能和可视化报告的提升</h3><p>Xcode 10 中静态分析器可以以更高效的方式工作，在相同的分析时间内平均可以发现比之前增加 15% 的 Bug 数量。</p>
 <p>不仅仅是性能的提升，Xcode 10 在报告的可视化方面也有所进步。在 Xcode 9 的静态分析器报告页面有着非必要且冗长的 Error Path：</p>
-<img src="/wwdc18-llvm/static_analyzer_xcode_9.png">
+<img src="/wwdc18-llvm/static_analyzer_xcode_9.jpg">
 <p>Xcode 10 中则对其进行了优化：</p>
-<img src="/wwdc18-llvm/static_analyzer_xcode_10.png">
+<img src="/wwdc18-llvm/static_analyzer_xcode_10.jpg">
 <h3 id="个人观点-3"><a href="#个人观点-3" class="headerlink" title="个人观点"></a>个人观点</h3><p>嘛~ 对于 Xcode 的静态分析，个人认为还是聊胜于无的。不过不建议每次构建项目时都去做静态分析，这样大大增加了构建项目的成本。</p>
 <p>个人建议在开发流程中自测完毕提交代码给组内小伙伴们 Code Review 之前做静态分析，可以避免一些 issue 的出现，也可以发现一些代码隐患。有些问题是可以使用静态分析器在提交代码之前就暴露出来的，没必要消耗组内 Code Review 的宝贵人力资源。</p>
 <p>还可以在 CI 设置每隔固定是时间间隔去跑一次静态分析，生成报表发到组内小群，根据问题指派责任人去检查是否需要修复（静态分析在比较复杂的代码结构下并不一定准确），这样定期维护从某种角度讲可以保持项目代码的健康状况。</p>
