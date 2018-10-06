@@ -108,7 +108,7 @@
 
   
   <h2 class="title">
-    <a href="/wwdc18-llvm/">
+    <a href="/wwdc18_llvm/">
       WWDC18 What’s New in LLVM
     </a>
   </h2>
@@ -117,7 +117,7 @@
     6月 24, 2018
   </time>
   <section class="content">
-	  <img src="/wwdc18-llvm/wwdc18.jpg">
+	  <img src="/wwdc18_llvm/wwdc18.jpg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a href="https://llvm.org/" target="_blank" rel="noopener">LLVM</a> 作为 Apple 御用的编译基础设施其重要性不言而喻，Apple 从未停止对 LLVM 的维护和更新，并且几乎在每年的 <a href="https://developer.apple.com/wwdc/" target="_blank" rel="noopener">WWDC</a> 中都有专门的 Session 来针对 LLVM 的新特性做介绍和讲解，刚刚过去的 WWDC18 也不例外。</p>
 <p>WWDC18 Session 409 What’s New in LLVM 中 Apple 的工程师们又为我们介绍了 LLVM 最新的特性，这篇文章将会结合 WWDC18 Session 409 给出的 <a href="https://devstreaming-cdn.apple.com/videos/wwdc/2018/409t8zw7rumablsh/409/409_whats_new_in_llvm.pdf?dl=1" target="_blank" rel="noopener">官方演示文稿</a> 分享一下 LLVM 的新特性并谈谈笔者自己个人对这些特性的拙见。</p>
 <blockquote>
@@ -133,9 +133,9 @@
 </ul>
 <h2 id="ARC-更新"><a href="#ARC-更新" class="headerlink" title="ARC 更新"></a>ARC 更新</h2><p>本次 ARC 更新的亮点在于 C struct 中允许使用 ARC Objective-C 对象。</p>
 <p>在之前版本的 Xcode 中尝试在 C struct 的定义中使用 Obj—C 对象，编译器会抛出 <strong>Error: ARC forbids Objective-C objects in struct</strong>，如下图所示：</p>
-<img src="/wwdc18-llvm/arc_00.png">
+<img src="/wwdc18_llvm/arc_00.png">
 <p>嘛~ 这是因为之前 LLVM 不支持，如果在 Xcode 10 中书写同样的代码则不会有任何 Warning 与 Error：</p>
-<img src="/wwdc18-llvm/arc_01.png">
+<img src="/wwdc18_llvm/arc_01.png">
 <p>那么直接在 C struct 中使用 Objective-C 对象的话难道就没有内存上的问题吗？Objective-C 所占用的内存空间是何时被销毁的呢？</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ARC Object Pointers in C Structs!</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="built_in">NSString</span> *name;</span><br><span class="line">	<span class="built_in">NSNumber</span> *price;</span><br><span class="line">&#125; MenuItem;</span><br><span class="line"><span class="keyword">void</span> orderFreeFood(<span class="built_in">NSString</span> *name) &#123;	MenuItem item = &#123;		name,		[<span class="built_in">NSNumber</span> numberWithInt:<span class="number">0</span>]	&#125;;	<span class="comment">// [item.name retain];</span>	<span class="comment">// [item.price retain];</span>	orderMenuItem(item);	<span class="comment">// [item.name release]; </span></span><br><span class="line">	<span class="comment">// [item.price release];</span>&#125;</span><br></pre></td></tr></table></figure>
 <p>如上述代码所示，编译器会在 C struct <code>MenuItem</code> 创建后 <code>retain</code> 其中的 ARC Objective-C 对象，并在 <code>orderMenuItem(item);</code> 语句之后，即其他使用 <code>MenuItem item</code> 的函数调用结束之后 <code>release</code> 掉相关 ARC Objective-C 对象。</p>
@@ -148,7 +148,7 @@
 <p>那么 C struct 中 ARC Objective-C 的动态内存管理是否应该这么写呢？</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Structs with ARC Fields Need Care for Dynamic Memory Management</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> &#123;</span><br><span class="line">	<span class="built_in">NSString</span> *name;</span><br><span class="line">	<span class="built_in">NSNumber</span> *price;</span><br><span class="line">&#125; MenuItem;</span><br><span class="line"><span class="keyword">void</span> testMenuItems() &#123;	<span class="comment">// Allocate an array of 10 menu items</span>	MenuItem *items = malloc(<span class="number">10</span> * <span class="keyword">sizeof</span>(MenuItem));	orderMenuItems(items, <span class="number">10</span>);	free(items);&#125;</span><br></pre></td></tr></table></figure>
 <p>答案是<strong>否定</strong>的！</p>
-<img src="/wwdc18-llvm/arc_02.png">
+<img src="/wwdc18_llvm/arc_02.png">
 <p>可以看到通过 <code>malloc</code> 开辟内存初始化带有 ARC Objective-C 的 C struct 中 ARC Objective-C 指针不会 <code>zero-initialized</code>。</p>
 <p>嘛~ 这个时候自然而然的会想起使用 <code>calloc</code> ^_^ </p>
 <blockquote>
@@ -173,7 +173,7 @@
 <p>Note: 在 Swift 中闭包默认都是非逃逸闭包（non-escaping closures），即闭包不应该在函数返回之后执行。</p>
 </blockquote>
 <p>Objective-C 中与 Swift 闭包对应的就是 Block 了，但是 Objective-C 中的 Block 并没有诸如 Swift 中逃逸与否的限制，那么我们这样将 Swift 的非逃逸闭包转为 Objective-C 中无限制的 Block 岂不是会有问题？</p>
-<img src="/wwdc18-llvm/interoperability.png">
+<img src="/wwdc18_llvm/interoperability.png">
 <p>别担心，转换过来的闭包（非逃逸）会有 Warnning 提示，而且我们说过一般这种情况下 Apple 的工程师都会在 LLVM 为 Objective-C 加一个宏来迎合 Swift…</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Warning for Missing Noescape Annotations for Method Overrides</span><span class="meta">#import “Executor-Swift.h”</span><span class="class"><span class="keyword">@interface</span> <span class="title">DispatchExecutor</span> : <span class="title">NSObject</span>&lt;<span class="title">Executor</span>&gt;</span>- (<span class="keyword">void</span>)performOperation:(<span class="built_in">NS_NOESCAPE</span> <span class="keyword">void</span> (^)(<span class="keyword">void</span>))handler;<span class="keyword">@end</span><span class="class"><span class="keyword">@implementation</span> <span class="title">DispatchExecutor</span></span>- (<span class="keyword">void</span>)performOperation:(<span class="built_in">NS_NOESCAPE</span> <span class="keyword">void</span> (^)(<span class="keyword">void</span>))handler &#123;&#125;</span><br><span class="line"><span class="comment">// Programmer must ensure that handler is not called after performOperation returns</span><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
 <h4 id="个人观点-1"><a href="#个人观点-1" class="headerlink" title="个人观点"></a>个人观点</h4><p>如果 Swift 5 真的可以做到 ABI 稳定，那么 Swift 与 Objective-C 混编的 App 包大小也应该回归正常，相信很多公司的项目都会慢慢从 Objective-C 转向 Swift。在 Swift 中闭包（Closures）作为一等公民的存在奠定了 Swift 作为函数式语言的根基，本次 LLVM 提供了将 Swift 中的 Closures 与 Objective-C 中的 Block 互通转换的支持无疑是很有必要的。</p>
@@ -197,12 +197,12 @@
 <p>其实 <code>#pragma pack (push, 1)</code> 中的 <code>1</code> 就是对齐字节数，如果设置为 <code>4</code> 那么对齐方式又会变回到最初的状态：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">|   1   |   2   |   3   |   4   |</span><br><span class="line">|   a   |   b   | pad.......... |</span><br><span class="line">|  c(1) |  c(2) |  c(3) |  c(4) |</span><br></pre></td></tr></table></figure>
 <p>值得一提的是，如果你使用了 <code>#pragma pack (push, n)</code> 之后忘记写 <code>#pragma pack (pop)</code> 的话，Xcode 10 会抛出 warning：</p>
-<img src="/wwdc18-llvm/pack.png">
+<img src="/wwdc18_llvm/pack.png">
 <h4 id="个人观点-2"><a href="#个人观点-2" class="headerlink" title="个人观点"></a>个人观点</h4><p>嘛~ 当在网络层面传输 struct 时，通过 <code>#pragma pack</code> 自定义内存布局的对齐方式可以为用户节约更多流量。</p>
 <h2 id="Clang-静态分析"><a href="#Clang-静态分析" class="headerlink" title="Clang 静态分析"></a>Clang 静态分析</h2><p>Xcode 一直都提供静态分析器（Static Analyzer），使用 Clang Static Analyzer 可以帮助我们找出边界情况以及难以发觉的 Bug。</p>
-<img src="/wwdc18-llvm/static_analyzer_00.jpg">
+<img src="/wwdc18_llvm/static_analyzer_00.jpg">
 <p>点击 Product -&gt; Analyze 或者使用快捷键 Shift+Command+B 就可以静态分析当前构建的项目了，当然也可以在项目的 Build Settings 中设置构建项目时自动执行静态分析（个人不推荐）：</p>
-<img src="/wwdc18-llvm/static_analyzer_01.jpg">
+<img src="/wwdc18_llvm/static_analyzer_01.jpg">
 <p>本地静态分析器有以下提升：</p>
 <ul>
 <li>GCD 性能反模式</li>
@@ -218,7 +218,7 @@
 <p>如果可能的话，尽量使用 <code>synchronous</code> 版本的 API。或者，使用 <code>asynchronous</code> 方式的 API：</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[<span class="keyword">self</span>.connection.remoteObjectProxy requestCurrentTaskName:^(<span class="built_in">NSString</span> *task) &#123; </span><br><span class="line">	completionHandler(task);</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
 <p>可以在 build settings 下启用 GCD 性能反模式的静态分析检查：</p>
-<img src="/wwdc18-llvm/static_analyzer_gcd_00.png">
+<img src="/wwdc18_llvm/static_analyzer_gcd_00.png">
 <h3 id="自动释放变量超出自动释放池"><a href="#自动释放变量超出自动释放池" class="headerlink" title="自动释放变量超出自动释放池"></a>自动释放变量超出自动释放池</h3><p>众所周知，使用 <code>__autoreleasing</code> 修饰符修饰的变量会在自动释放池离开时被释放（release）：</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">@autoreleasepool</span> &#123;</span><br><span class="line">	__autoreleasing <span class="built_in">NSError</span> *err = [<span class="built_in">NSError</span> errorWithDomain:<span class="string">@"domain"</span> code:<span class="number">1</span> userInfo:<span class="literal">nil</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这种看似不需要我们注意的点往往就是引起程序 Crash 的隐患：</p>
@@ -227,7 +227,7 @@
 <p>Objective-C 在 ARC（Automatic Reference Counting）下会隐式使用 <code>__autoreleasing</code> 修饰 <code>error</code>，即 <code>NSError *__autoreleasing*</code>。而 <code>-enumerateObjectsUsingBlock:</code> 内部会在迭代 <code>block</code> 时使用 <code>@autoreleasepool</code>，在迭代逻辑中这样做有助于减少内存峰值。</p>
 <p>于是 <code>*error</code> 在 <code>-enumerateObjectsUsingBlock:</code> 中被提前 release 掉了，这样在随后读取 <code>*error</code> 时会出现 crash。</p>
 <p>Xcode 10 中会给出具有针对性的静态分析警告：</p>
-<img src="/wwdc18-llvm/static_analyzer_autoreleasing_00.png">
+<img src="/wwdc18_llvm/static_analyzer_autoreleasing_00.png">
 <p>正确的书写方式应该是这样的：</p>
 <figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)findProblems:(<span class="built_in">NSArray</span> *)arr error:(<span class="built_in">NSError</span> *__autoreleasing*)error &#123; </span><br><span class="line">	__block <span class="built_in">NSError</span> *localError;</span><br><span class="line">	[arr enumerateObjectsUsingBlock:^(<span class="keyword">id</span> value, <span class="built_in">NSUInteger</span> idx, <span class="built_in">BOOL</span> *stop) &#123;</span><br><span class="line">		<span class="keyword">if</span> ([value isEqualToString:<span class="string">@"problem"</span>]) &#123;</span><br><span class="line">			localError = [<span class="built_in">NSError</span> errorWithDomain:<span class="string">@"domain"</span> code:<span class="number">1</span> userInfo:<span class="literal">nil</span>];</span><br><span class="line">		&#125; </span><br><span class="line">	&#125;];</span><br><span class="line">	<span class="keyword">if</span> (error) &#123;</span><br><span class="line">		*error = localError;</span><br><span class="line">	&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <blockquote>
@@ -235,24 +235,24 @@
 </blockquote>
 <h3 id="性能和可视化报告的提升"><a href="#性能和可视化报告的提升" class="headerlink" title="性能和可视化报告的提升"></a>性能和可视化报告的提升</h3><p>Xcode 10 中静态分析器可以以更高效的方式工作，在相同的分析时间内平均可以发现比之前增加 15% 的 Bug 数量。</p>
 <p>不仅仅是性能的提升，Xcode 10 在报告的可视化方面也有所进步。在 Xcode 9 的静态分析器报告页面有着非必要且冗长的 Error Path：</p>
-<img src="/wwdc18-llvm/static_analyzer_xcode_9.jpg">
+<img src="/wwdc18_llvm/static_analyzer_xcode_9.jpg">
 <p>Xcode 10 中则对其进行了优化：</p>
-<img src="/wwdc18-llvm/static_analyzer_xcode_10.jpg">
+<img src="/wwdc18_llvm/static_analyzer_xcode_10.jpg">
 <h3 id="个人观点-3"><a href="#个人观点-3" class="headerlink" title="个人观点"></a>个人观点</h3><p>嘛~ 对于 Xcode 的静态分析，个人认为还是聊胜于无的。不过不建议每次构建项目时都去做静态分析，这样大大增加了构建项目的成本。</p>
 <p>个人建议在开发流程中自测完毕提交代码给组内小伙伴们 Code Review 之前做静态分析，可以避免一些 issue 的出现，也可以发现一些代码隐患。有些问题是可以使用静态分析器在提交代码之前就暴露出来的，没必要消耗组内 Code Review 的宝贵人力资源。</p>
 <p>还可以在 CI 设置每隔固定是时间间隔去跑一次静态分析，生成报表发到组内小群，根据问题指派责任人去检查是否需要修复（静态分析在比较复杂的代码结构下并不一定准确），这样定期维护从某种角度讲可以保持项目代码的健康状况。</p>
 <h2 id="增加安全性"><a href="#增加安全性" class="headerlink" title="增加安全性"></a>增加安全性</h2><h3 id="Stack-Protector"><a href="#Stack-Protector" class="headerlink" title="Stack Protector"></a>Stack Protector</h3><p>Apple 工程师在介绍 Stack Protector 之前很贴心的带领着在场的开发者们复习了一遍栈 Stack 相关的基础知识：</p>
-<img src="/wwdc18-llvm/stack_protector_00.png">
+<img src="/wwdc18_llvm/stack_protector_00.png">
 <p>如上图，其实就是简单的讲了一下 Stack 的工作方式，如栈帧结构以及函数调用时栈的展开等。每一级的方法调用，都对应了一张相关的活动记录，也被称为<strong>活动帧</strong>。函数的调用栈是由一张张帧结构组成的，所以也称之为<strong>栈帧</strong>。</p>
 <p>我们可以看到，栈帧中包含着 <strong>Return Address</strong>，也就是当前活动记录执行结束后要返回的地址。</p>
 <p>那么会有什么安全性问题呢？Apple 工程师接着介绍了通过不正当手段修改栈帧 Return Address 从而实现的一些权限提升。嘛~ 也就是历史悠久的 <a href="http://www.cis.syr.edu/~wedu/Teaching/CompSec/LectureNotes_New/Buffer_Overflow.pdf" target="_blank" rel="noopener">缓冲区溢出攻击</a>。</p>
-<img src="/wwdc18-llvm/stack_protector_01.png">
+<img src="/wwdc18_llvm/stack_protector_01.png">
 <p>当使用 C 语言中一些不太安全的函数时（比如上图的 <code>strcpy()</code>），就有可能造成缓冲区溢出。</p>
 <blockquote>
 <p>Note: <code>strcpy()</code> 函数将源字符串复制到指定缓冲区中。但是丫没有指定要复制字符的具体数目！如果源字符串碰巧来自用户输入，且没有专门限制其大小，则有可能会造成<strong>缓冲区溢出</strong>！</p>
 </blockquote>
 <p>针对缓冲区溢出攻击，LLVM 引入了一块额外的区域（下图绿色区域）来作为栈帧 Return Address 的<strong>护城河</strong>，叫做 Stack Canary，已默认启用：</p>
-<img src="/wwdc18-llvm/stack_protector_02.png">
+<img src="/wwdc18_llvm/stack_protector_02.png">
 <blockquote>
 <p>Note: Canary 译为 “金丝雀”，Stack Canary 的命名源于早期煤矿工人下矿坑时会携带金丝雀来检测矿坑内一氧化碳是否达到危险值，从而判断是否需要逃生。</p>
 </blockquote>
@@ -264,13 +264,13 @@
 <li>再粗暴一点的话，可以通过双重 <code>strcpy()</code> 覆写任意不受内存保护的数据，通过构建合适的溢出字符串，可以达到修改 ELF（Executable and Linking Format）映射的 GOT（Global Offset Table），只要修改了 GOT 中的 <code>_exit()</code> 入口，即便 Canary 检测到了篡改，函数返回前调用 <code>abort()</code> 退出还是会走已经被篡改了的 <code>_exit()</code>。</li>
 </ul>
 <h3 id="Stack-Checking"><a href="#Stack-Checking" class="headerlink" title="Stack Checking"></a>Stack Checking</h3><p>Stack Protector 是 Xcode 既有的、且默认开启的特性，而 Stack Checking 是 Xcode 10 引入的新特性，主要针对的是 <a href="https://www.qualys.com/2017/06/19/stack-clash/stack-clash.txt" target="_blank" rel="noopener">Stack Clash</a> 问题。</p>
-<img src="/wwdc18-llvm/stack_checking_00.png">
+<img src="/wwdc18_llvm/stack_checking_00.png">
 <p>Stack Clash 问题的产生源于 Stack 和 Heap，Stack 是<strong>从上向下</strong>增长的，Heap 则是<strong>自下而上</strong>增长的，两者相向扩展而内存又是有限的。</p>
 <p>Stack Checking 的工作原理是在 Stack 区域规定合理的分界线（上图红线），在可变长度缓冲区的函数内部对将要分配的缓冲区大小做校验，如果缓冲区超出分界线则调用 <code>abort()</code> 强制退出。</p>
 <blockquote>
 <p>Note: LLVM 团队在本次 WWDC18 加入 Stack Checking，大概率是因为去年年中 <a href="https://www.qualys.com/" target="_blank" rel="noopener">Qualys</a> 公布的一份 <a href="https://www.qualys.com/2017/06/19/stack-clash/stack-clash.txt" target="_blank" rel="noopener">关于 Stack Clash 的报告</a>。</p>
 </blockquote>
-<h2 id="新指令集扩展"><a href="#新指令集扩展" class="headerlink" title="新指令集扩展"></a>新指令集扩展</h2><img src="/wwdc18-llvm/new_instruction_set_extensions.png">
+<h2 id="新指令集扩展"><a href="#新指令集扩展" class="headerlink" title="新指令集扩展"></a>新指令集扩展</h2><img src="/wwdc18_llvm/new_instruction_set_extensions.png">
 <p>Emmmmm… 这一节的内容是针对于 iMac Pro 以及 iPhone X 使用的 <a href="https://en.wikipedia.org/wiki/Instruction_set_architecture" target="_blank" rel="noopener">指令集架构（ISA - Instruction set architecture）</a> 所做的扩展。坦白说，我对这块并不是很感兴趣，也没有深入的研究，所以就不献丑了…</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文梳理了 WWDC18 Session 409 What’s New in LLVM 中的内容，并分享了我个人对这些内容的拙见，希望能够对各位因为种种原因还没有来得及看 WWDC18 Session 409 的同学有所帮助。</p>
 <p>文章写得比较用心（是我个人的原创文章，转载请注明 <a href="https://lision.me/">https://lision.me/</a>），如果发现错误会优先在我的个人博客中更新。如果有任何问题欢迎在我的微博 <a href="http://weibo.com/lisioncode" target="_blank" rel="noopener">@Lision</a> 联系我~</p>
@@ -292,7 +292,7 @@
 
   
   <h2 class="title">
-    <a href="/ios-rendering-process/">
+    <a href="/ios_rendering_process/">
       深入理解 iOS Rendering Process
     </a>
   </h2>
@@ -301,7 +301,7 @@
     4月 15, 2018
   </time>
   <section class="content">
-	  <img src="/ios-rendering-process/rendering.jpg">
+	  <img src="/ios_rendering_process/rendering.jpg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>iOS 最早名为 iPhone OS，是 <a href="https://www.apple.com/" target="_blank" rel="noopener">Apple</a> 公司专门为其硬件设备开发的操作系统，最初于 2007 年随第一代 iPhone 推出，后扩展为支持 Apple 公司旗下的其他硬件设备，如 iPod、iPad 等。</p>
 <p>作为一名 iOS Developer，相信大多数人都有写出过造成 iOS 设备卡顿的代码经历，相应的也有过想方设法优化卡顿代码的经验。</p>
 <p>本文将从 OpenGL 的角度结合 Apple 官方给出的部分资料，介绍 iOS Rendering Process 的概念及其整个底层渲染管道的各个流程。</p>
@@ -320,13 +320,13 @@
 <h2 id="iOS-Rendering-Process-概念"><a href="#iOS-Rendering-Process-概念" class="headerlink" title="iOS Rendering Process 概念"></a>iOS Rendering Process 概念</h2><p>iOS Rendering Process 译为 iOS 渲染流程，本文特指 iOS 设备从设置将要显示的图元数据到最终在设备屏幕成像的整个过程。</p>
 <p>在开始剖析 iOS Rendering Process 之前，我们需要对 iOS 的渲染概念有一个基本的认知：</p>
 <h3 id="基于平铺的渲染"><a href="#基于平铺的渲染" class="headerlink" title="基于平铺的渲染"></a>基于平铺的渲染</h3><p>iOS 设备的屏幕分为 N * N 像素的图块，每个图块都适合于 <a href="https://en.wikipedia.org/wiki/System_on_a_chip" target="_blank" rel="noopener">SoC</a> 缓存，几何体在图块内被大量拆分，只有在所有几何体全部提交之后才可以进行光栅化（Rasterization）。</p>
-<img src="/ios-rendering-process/tile_based_rendering.jpg">
+<img src="/ios_rendering_process/tile_based_rendering.jpg">
 <blockquote>
 <p>Note: 这里的光栅化指将屏幕上面被大量拆分出来的几何体渲染为像素点的过程。</p>
 </blockquote>
-<img src="/ios-rendering-process/rasterization.jpg">
+<img src="/ios_rendering_process/rasterization.jpg">
 <h2 id="iOS-Rendering-技术框架"><a href="#iOS-Rendering-技术框架" class="headerlink" title="iOS Rendering 技术框架"></a>iOS Rendering 技术框架</h2><p>事实上 iOS 渲染相关的层级划分大概如下：</p>
-<img src="/ios-rendering-process/ios_rendering_framework.png">
+<img src="/ios_rendering_process/ios_rendering_framework.png">
 <h3 id="UIKit"><a href="#UIKit" class="headerlink" title="UIKit"></a>UIKit</h3><p>嘛~ 作为一名 iOS Developer 来说，应该对 UIKit 都不陌生，我们日常开发中使用的用户交互组件都来自于 UIKit Framework，我们通过设置 UIKit 组件的 Layout 以及 BackgroundColor 等属性来完成日常的界面绘画工作。</p>
 <p>其实 UIKit Framework 自身并不具备在屏幕成像的能力，它主要负责对用户操作事件的响应，事件响应的传递大体是经过逐层的<strong>视图树</strong>遍历实现的。</p>
 <blockquote>
@@ -369,7 +369,7 @@
 <p>其实 Render Pipeline 指的是<strong>从应用程序数据转换到最终渲染的图像之间的一系列数据处理过程</strong>。</p>
 <p>好比我们上文中提到的 OpenGL 主要渲染步骤一样，我们开发应用程序时在<strong>设置图元数据</strong>这步为视图控件的设定布局，背景颜色，透明度以及阴影等等数据。</p>
 <p>下面以 OpenGL 4.5 的 Render Pipeline 为例介绍一下：</p>
-<img src="/ios-rendering-process/opengl_rendering_pipeline.png">
+<img src="/ios_rendering_process/opengl_rendering_pipeline.png">
 <p>这些图元数据流入 OpenGL 中，传入<strong>顶点着色器（vetex shader）</strong>，然后顶点着色器对其进行着色器内部的处理后流出。之后可能进入<strong>细分着色阶段（tessellation shading stage）</strong>，其中又有可能分为细分控制着色器和细分赋值着色器两部分处理，还可能会进入<strong>几何着色阶段（geometry shading stage）</strong>，数据从中传递。最后都会走<strong>片元着色阶段（fragment shading stage）</strong>。</p>
 <blockquote>
 <p>Note: 图元数据是以 copy 的形式流入 shader 的，shader 一般会以特殊的<strong>类似全局变量的形式</strong>接收数据。</p>
@@ -387,7 +387,7 @@
 <li>Render Server 将与 GPU 通信把数据经过处理之后传递给 GPU</li>
 <li>GPU 调用 iOS 当前设备渲染相关的图形设备 Display</li>
 </ul>
-<img src="/ios-rendering-process/core_animation_pipeline.png">
+<img src="/ios_rendering_process/core_animation_pipeline.png">
 <blockquote>
 <p>Note: 由于 iOS 设备目前的显示屏最大支持 <strong>60 FPS</strong> 的刷新率，所以每个处理间隔为 16.67 ms。</p>
 </blockquote>
@@ -432,7 +432,7 @@
 <li>在 Animation Block 中进行 Layout，Display，Prepare，Commit</li>
 <li>Render Server 根据 Animation 逐帧渲染</li>
 </ul>
-<img src="/ios-rendering-process/animation.png">
+<img src="/ios_rendering_process/animation.png">
 <blockquote>
 <p>Note: 原理是 <code>animateWithDuration:animations:</code> 内部使用了 CATransaction 来将整个 Animation Block 中的代码作为原子操作 commit 给了 RunLoop。</p>
 </blockquote>
@@ -443,7 +443,7 @@
 <p>Note: 我的一个开源库 <a href="https://github.com/Lision/LSAnimator" target="_blank" rel="noopener"><strong>LSAnimator - 可多链式动画库</strong></a> 在<strong>动画顺序链接时也用到了 CATransaction</strong>。</p>
 </blockquote>
 <h2 id="全文总结"><a href="#全文总结" class="headerlink" title="全文总结"></a>全文总结</h2><p>结合上下文不难梳理出一个 iOS <strong>最基本的完整渲染经过（Rendering pass）</strong>。</p>
-<img src="/ios-rendering-process/rendering_pass.png">
+<img src="/ios_rendering_process/rendering_pass.png">
 <h3 id="性能检测思路"><a href="#性能检测思路" class="headerlink" title="性能检测思路"></a>性能检测思路</h3><p>基于整篇文章的内容归纳一下我们在日常的开发工作中遇到性能问题时检测问题代码的思路：</p>
 <table>
 <thead>
@@ -519,7 +519,7 @@
 
   
   <h2 class="title">
-    <a href="/oc-class-properties/">
+    <a href="/oc_class_properties/">
       巧用 Objective-C Class Properties 解耦
     </a>
   </h2>
@@ -528,7 +528,7 @@
     3月 25, 2018
   </time>
   <section class="content">
-	  <img src="/oc-class-properties/oc_class_properties.jpg">
+	  <img src="/oc_class_properties/oc_class_properties.jpg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Emmmmm… Objective-C Class Properties 早在 WWDC 2016 中就已经公示，给 Objective-C 加入这个特性主要是为了与 Swift 类型属性相互操作。</p>
 <p>官方是这么说明的：</p>
 <blockquote>
@@ -544,7 +544,7 @@
 <li>解耦</li>
 <li>总结</li>
 </ul>
-<h2 id="LLVM"><a href="#LLVM" class="headerlink" title="LLVM"></a>LLVM</h2><img src="/oc-class-properties/llvm.jpg">
+<h2 id="LLVM"><a href="#LLVM" class="headerlink" title="LLVM"></a>LLVM</h2><img src="/oc_class_properties/llvm.jpg">
 <p><a href="https://llvm.org/" target="_blank" rel="noopener">LLVM 官网</a> 对于 LLVM 的定义：</p>
 <blockquote>
 <p>Note: The LLVM Project is a collection of modular and reusable compiler and toolchain technologies. </p>
@@ -565,7 +565,7 @@
 <h3 id="LLVM-Compiler"><a href="#LLVM-Compiler" class="headerlink" title="LLVM Compiler"></a>LLVM Compiler</h3><p>前面介绍过 GCC 支持很多语言，系统架构庞大而笨重，而 Apple 大量使用的 Objective-C 在 GCC 中顺位（优先级）较低。此外，GCC 作为一个纯粹的编译系统，在与 IDE 配合方面的表现也很差。</p>
 <p>So，Apple 决定从零开始写 C，C++，Objective-C 的编译器 Clang。</p>
 <p>至此，Apple 彻底与 GCC 了断。</p>
-<h2 id="Objective-C-Class-Properties"><a href="#Objective-C-Class-Properties" class="headerlink" title="Objective-C Class Properties"></a>Objective-C Class Properties</h2><img src="/oc-class-properties/oc_feature.jpg">
+<h2 id="Objective-C-Class-Properties"><a href="#Objective-C-Class-Properties" class="headerlink" title="Objective-C Class Properties"></a>Objective-C Class Properties</h2><img src="/oc_class_properties/oc_feature.jpg">
 <p>Objective-C Class Properties 作为 Objective-C 新语法特性在 <a href="https://developer.apple.com/videos/play/wwdc2016/405/" target="_blank" rel="noopener">WWDC2016 What’s New in LLVM</a> 中公示，表示 Xcode 8 之后可以使用这一新语法特性。</p>
 <p>使用方式很简单：</p>
 <ul>
@@ -579,14 +579,14 @@
 <h3 id="Never-synthesized"><a href="#Never-synthesized" class="headerlink" title="Never synthesized"></a>Never synthesized</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyType</span></span></span><br><span class="line"><span class="keyword">static</span> <span class="built_in">NSString</span> *_someString = <span class="literal">nil</span>;</span><br><span class="line">+ (<span class="built_in">NSString</span> *)someString &#123; <span class="keyword">return</span> _someString; &#125;</span><br><span class="line">+ (<span class="keyword">void</span>)setSomeString:(<span class="built_in">NSString</span> *)newString &#123; _someString = newString; &#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
 <h3 id="Use-dynamic-to-defer-to-runtime"><a href="#Use-dynamic-to-defer-to-runtime" class="headerlink" title="Use @dynamic to defer to runtime"></a>Use <code>@dynamic</code> to defer to runtime</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyType</span></span></span><br><span class="line"><span class="keyword">@dynamic</span> (<span class="keyword">class</span>) someString;</span><br><span class="line">+ (<span class="built_in">BOOL</span>)resolveClassMethod:(SEL) name &#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
 <h2 id="解耦"><a href="#解耦" class="headerlink" title="解耦"></a>解耦</h2><p>笔者在做项目组件下沉时，遇到一个问题，正好适用于 Objective-C Class Properties 发挥：将要下沉的组件库中某系统类 Categroy 引用了业务层某方法。</p>
-<img src="/oc-class-properties/before_decoupling.png">
+<img src="/oc_class_properties/before_decoupling.png">
 <p>业务层应该依赖于将要下沉的组件，而组件既然要下沉就不应该再反过来依赖上层业务实现！</p>
 <p>按照常规思路，想要把上层业务中被依赖的部分一起随组件下沉，但是发现被依赖的部分虽然也属于一个较为基础的模块，不过此模块现阶段不做下沉…</p>
 <p>后来经过组内大佬指点，使用 Objective-C Class Properties 解决了这个问题，即将上层业务被依赖的部分化作将要下沉组件依赖方系统类 Categroy 的 Class Properties。</p>
 <blockquote>
 <p>Note: 在 Categroy 中写 Objective-C Class Properties 需要使用 Runtime 关联方法。</p>
 </blockquote>
-<img src="/oc-class-properties/after_decoupling.png">
+<img src="/oc_class_properties/after_decoupling.png">
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
 <li>介绍了 LLVM 顺便提到了 Apple 的编译系统发展简史。</li>
 <li>使用官方 Demo 简单介绍了 Objective-C Class Properties 语法特性的书写方式。</li>
@@ -852,7 +852,7 @@
 
   
   <h2 class="title">
-    <a href="/webview-javascript-bridge/">
+    <a href="/webview_javascript_bridge/">
       深入剖析 WebViewJavascriptBridge
     </a>
   </h2>
@@ -861,7 +861,7 @@
     12月 23, 2017
   </time>
   <section class="content">
-	  <img src="/webview-javascript-bridge/merry_ch.jpg">
+	  <img src="/webview_javascript_bridge/merry_ch.jpg">
 <p>Emmmmm…这篇文章发布出来可能正逢圣诞节🎄，Merry Christmas!</p>
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Web 页面中的 JS 与 iOS Native 如何交互是每个 iOS 猿必须掌握的技能。而 JS 和 iOS Native 就好比两块没有交集的大陆，如果想要使它们相互通信就必须要建立一座“桥梁”。</p>
 <p><strong>思考一下，如果项目组让你去造这座“桥”，如何才能做到既优雅又实用？</strong></p>
@@ -879,7 +879,7 @@
 <li>WebViewJavascriptBridge 的“桥梁美学”</li>
 <li>文章总结</li>
 </ul>
-<h2 id="WebViewJavascriptBridge-简介"><a href="#WebViewJavascriptBridge-简介" class="headerlink" title="WebViewJavascriptBridge 简介"></a>WebViewJavascriptBridge 简介</h2><img src="/webview-javascript-bridge/bridge.png">
+<h2 id="WebViewJavascriptBridge-简介"><a href="#WebViewJavascriptBridge-简介" class="headerlink" title="WebViewJavascriptBridge 简介"></a>WebViewJavascriptBridge 简介</h2><img src="/webview_javascript_bridge/bridge.png">
 <p>WebViewJavascriptBridge 是用于在 WKWebView，UIWebView 和 WebView 中的 Obj-C 和 JavaScript 之间发送消息的 iOS / OSX 桥接器。</p>
 <p>有许多不错的项目都有使用 WebViewJavascriptBridge，这里简单列一部分（笑）：</p>
 <ul>
@@ -913,7 +913,7 @@
 </tbody>
 </table>
 <p>其中 WebViewJavascriptBridge &amp;&amp; WKWebViewJavascriptBridge 作为接口层主要负责提供方便的接口，隐藏实现细节，其实现细节都是通过实现层 WebViewJavascriptBridgeBase 去做的，而 WebViewJavascriptBridge_JS 作为 JS 层其实存储了一段 JS 代码，在需要的时候注入到当前 WebView 组件中，最终实现 Native 与 JS 的交互。</p>
-<h2 id="WebViewJavascriptBridge-amp-amp-WKWebViewJavascriptBridge-探究"><a href="#WebViewJavascriptBridge-amp-amp-WKWebViewJavascriptBridge-探究" class="headerlink" title="WebViewJavascriptBridge &amp;&amp; WKWebViewJavascriptBridge 探究"></a>WebViewJavascriptBridge &amp;&amp; WKWebViewJavascriptBridge 探究</h2><img src="/webview-javascript-bridge/golden_bridge.jpeg">
+<h2 id="WebViewJavascriptBridge-amp-amp-WKWebViewJavascriptBridge-探究"><a href="#WebViewJavascriptBridge-amp-amp-WKWebViewJavascriptBridge-探究" class="headerlink" title="WebViewJavascriptBridge &amp;&amp; WKWebViewJavascriptBridge 探究"></a>WebViewJavascriptBridge &amp;&amp; WKWebViewJavascriptBridge 探究</h2><img src="/webview_javascript_bridge/golden_bridge.jpeg">
 <p>WebViewJavascriptBridge 和 WKWebViewJavascriptBridge 作为接口层分别对应于 UIWebView 和 WKWebView 组件，我们来简单看一下这两个文件暴露出的信息：</p>
 <p>WebViewJavascriptBridge 暴露信息：</p>
 <figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">WebViewJavascriptBridge</span> : <span class="title">WVJB_WEBVIEW_DELEGATE_INTERFACE</span></span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">instancetype</span>)bridgeForWebView:(<span class="keyword">id</span>)webView; <span class="comment">// 初始化</span></span><br><span class="line">+ (<span class="keyword">instancetype</span>)bridge:(<span class="keyword">id</span>)webView; <span class="comment">// 初始化</span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">void</span>)enableLogging; <span class="comment">// 开启日志</span></span><br><span class="line">+ (<span class="keyword">void</span>)setLogMaxLength:(<span class="keyword">int</span>)length; <span class="comment">// 设置日志最大长度</span></span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)registerHandler:(<span class="built_in">NSString</span>*)handlerName handler:(WVJBHandler)handler; <span class="comment">// 注册 handler (Native)</span></span><br><span class="line">- (<span class="keyword">void</span>)removeHandler:(<span class="built_in">NSString</span>*)handlerName; <span class="comment">// 删除 handler (Native)</span></span><br><span class="line">- (<span class="keyword">void</span>)callHandler:(<span class="built_in">NSString</span>*)handlerName data:(<span class="keyword">id</span>)data responseCallback:(WVJBResponseCallback)responseCallback; <span class="comment">// 调用 handler (JS)</span></span><br><span class="line">- (<span class="keyword">void</span>)setWebViewDelegate:(<span class="keyword">id</span>)webViewDelegate; <span class="comment">// 设置 webViewDelegate</span></span><br><span class="line">- (<span class="keyword">void</span>)disableJavscriptAlertBoxSafetyTimeout; <span class="comment">// 禁用 JS AlertBox 的安全时长来加速消息传递，不推荐使用</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
@@ -942,7 +942,7 @@
 <p>Note: 替换组件的代理将其代理绑定为 bridge 自己是因为 WebViewJavascriptBridge 的实现原理上是利用我之前的文章<a href="https://lision.me/ios-native-js/">《iOS 与 JS 交互开发知识总结》</a>中讲过的假 Request 方法实现的，所以需要监听 WebView 组件的代理方法获取加载之前的 Request.URL 并做处理。这也是为什么 WebViewJavascriptBridge 提供了一个接口 <code>setWebViewDelegate:</code> 存储了一个逻辑上的 <code>_webViewDelegate</code>，这个 <code>_webViewDelegate</code> 也需要遵循 WebView 组件的代理协议，这样在 WebViewJavascriptBridge 内部不同的代理方法中做完 bridge 要做的事情只有就会再去调用 <code>_webViewDelegate</code> 对应的代理方法，其实可以理解为 WebViewJavascriptBridge 对当前 WebView 组件的代理做了 hook。</p>
 </blockquote>
 <p>对于 WebViewJavascriptBridge 中暴露的初始化以外的所有接口，其内部实现都是通过 WebViewJavascriptBridgeBase 来实现的。这样做的好处就是<strong>即使 WebViewJavascriptBridge 因为绑定了 WKWebView 返回了 WKWebViewJavascriptBridge 实例，只要接口一致，对 JSBridge 发送相同的消息，就会有相同的实现（都是由 WebViewJavascriptBridgeBase 类实现的）</strong>。</p>
-<h2 id="WebViewJavascriptBridgeBase-JS-调用-Native-实现原理剖析"><a href="#WebViewJavascriptBridgeBase-JS-调用-Native-实现原理剖析" class="headerlink" title="WebViewJavascriptBridgeBase - JS 调用 Native 实现原理剖析"></a>WebViewJavascriptBridgeBase - JS 调用 Native 实现原理剖析</h2><img src="/webview-javascript-bridge/pier.jpg">
+<h2 id="WebViewJavascriptBridgeBase-JS-调用-Native-实现原理剖析"><a href="#WebViewJavascriptBridgeBase-JS-调用-Native-实现原理剖析" class="headerlink" title="WebViewJavascriptBridgeBase - JS 调用 Native 实现原理剖析"></a>WebViewJavascriptBridgeBase - JS 调用 Native 实现原理剖析</h2><img src="/webview_javascript_bridge/pier.jpg">
 <p>作为 WebViewJavascriptBridge 的实现层，WebViewJavascriptBridgeBase 的命名也可以体现出其是作为整座“桥梁”桥墩一般的存在，我们还是按照老规矩先看一下 WebViewJavascriptBridgeBase.h 暴露的信息，好对其有一个整体的印象：</p>
 <figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">void</span> (^WVJBResponseCallback)(<span class="keyword">id</span> responseData); <span class="comment">// 回调 block</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">void</span> (^WVJBHandler)(<span class="keyword">id</span> data, WVJBResponseCallback responseCallback); <span class="comment">// 注册的 Handler block</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="built_in">NSDictionary</span> WVJBMessage; <span class="comment">// 消息类型 - 字典</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">WebViewJavascriptBridgeBaseDelegate</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line">- (<span class="built_in">NSString</span>*) _evaluateJavascript:(<span class="built_in">NSString</span>*)javascriptCommand;</span><br><span class="line"><span class="keyword">@end</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">WebViewJavascriptBridgeBase</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">weak</span>, <span class="keyword">nonatomic</span>) <span class="keyword">id</span> &lt;WebViewJavascriptBridgeBaseDelegate&gt; delegate; <span class="comment">// 代理，指向接口层类，用以给对应接口绑定的 WebView 组件发送执行 JS 消息</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">strong</span>, <span class="keyword">nonatomic</span>) <span class="built_in">NSMutableArray</span>* startupMessageQueue; <span class="comment">// 启动消息队列，可以理解为存放 WVJBMessage</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">strong</span>, <span class="keyword">nonatomic</span>) <span class="built_in">NSMutableDictionary</span>* responseCallbacks; <span class="comment">// 回调 blocks 字典，存放 WVJBResponseCallback 类型的 block</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">strong</span>, <span class="keyword">nonatomic</span>) <span class="built_in">NSMutableDictionary</span>* messageHandlers; <span class="comment">// 已注册的 handlers 字典，存放 WVJBHandler 类型的 block</span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">strong</span>, <span class="keyword">nonatomic</span>) WVJBHandler messageHandler; <span class="comment">// 没卵用</span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">void</span>)enableLogging; <span class="comment">// 开启日志</span></span><br><span class="line">+ (<span class="keyword">void</span>)setLogMaxLength:(<span class="keyword">int</span>)length; <span class="comment">// 设置日志最大长度</span></span><br><span class="line">- (<span class="keyword">void</span>)reset; <span class="comment">// 对应 WKJSBridge 的 reset 接口</span></span><br><span class="line">- (<span class="keyword">void</span>)sendData:(<span class="keyword">id</span>)data responseCallback:(WVJBResponseCallback)responseCallback handlerName:(<span class="built_in">NSString</span>*)handlerName; <span class="comment">// 发送消息，入参依次是参数，回调 block，对应 JS 端注册的 HandlerName</span></span><br><span class="line">- (<span class="keyword">void</span>)flushMessageQueue:(<span class="built_in">NSString</span> *)messageQueueString; <span class="comment">// 刷新消息队列，核心代码</span></span><br><span class="line">- (<span class="keyword">void</span>)injectJavascriptFile; <span class="comment">// 注入 JS</span></span><br><span class="line">- (<span class="built_in">BOOL</span>)isWebViewJavascriptBridgeURL:(<span class="built_in">NSURL</span>*)url; <span class="comment">// 判定是否为 WebViewJavascriptBridgeURL</span></span><br><span class="line">- (<span class="built_in">BOOL</span>)isQueueMessageURL:(<span class="built_in">NSURL</span>*)urll; <span class="comment">// 判定是否为队列消息 URL</span></span><br><span class="line">- (<span class="built_in">BOOL</span>)isBridgeLoadedURL:(<span class="built_in">NSURL</span>*)urll; <span class="comment">// 判定是否为 bridge 载入 URL</span></span><br><span class="line">- (<span class="keyword">void</span>)logUnkownMessage:(<span class="built_in">NSURL</span>*)url; <span class="comment">// 打印收到未知消息信息</span></span><br><span class="line">- (<span class="built_in">NSString</span> *)webViewJavascriptCheckCommand; <span class="comment">// JS bridge 检测命令</span></span><br><span class="line">- (<span class="built_in">NSString</span> *)webViewJavascriptFetchQueyCommand; <span class="comment">// JS bridge 获取查询命令</span></span><br><span class="line">- (<span class="keyword">void</span>)disableJavscriptAlertBoxSafetyTimeout; <span class="comment">// 禁用 JS AlertBox 安全时长以获取发送消息速度提升，不建议使用，理由见上文</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
 <p>嘛~ 从 .h 文件中我们可以看到整个 WebViewJavascriptBridgeBase 所暴露出来的信息，属性层面上需要对以下 4 个属性加深印象，之后分析实现的过程中会带入这些属性：</p>
@@ -1000,7 +1000,7 @@
 <blockquote>
 <p>Note: 这个消息处理的方法虽然长，但是逻辑清晰，而且有效的解决了 JS 与 Native 相互调用的过程中参数传递的问题（包括回调），此外 JS 端的消息处理逻辑与 Native 端保持一致，实现了逻辑对称，非常值得我们学习。</p>
 </blockquote>
-<h2 id="WebViewJavascriptBridge-JS-Native-调用-JS-实现解读"><a href="#WebViewJavascriptBridge-JS-Native-调用-JS-实现解读" class="headerlink" title="WebViewJavascriptBridge_JS - Native 调用 JS 实现解读"></a>WebViewJavascriptBridge_JS - Native 调用 JS 实现解读</h2><img src="/webview-javascript-bridge/javascript.jpg">
+<h2 id="WebViewJavascriptBridge-JS-Native-调用-JS-实现解读"><a href="#WebViewJavascriptBridge-JS-Native-调用-JS-实现解读" class="headerlink" title="WebViewJavascriptBridge_JS - Native 调用 JS 实现解读"></a>WebViewJavascriptBridge_JS - Native 调用 JS 实现解读</h2><img src="/webview_javascript_bridge/javascript.jpg">
 <p>Emmmmm…这一章节主要讲 JS 端注入的代码，即 WebViewJavascriptBridge_JS 中的 JS 源码。由于我没做过前段，能力不足，水平有限，可能有谬误希望各位读者发现的话及时指正，感激不尽。预警，由于 JS 端和上文分析过的 Native 端逻辑对称且上文已经分析过部分 JS 端的函数，所以下面的 JS 源码没有另做拆分，为避免被大段 JS 代码糊脸不感兴趣的同学可以直接看代码后面的总结。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br></pre></td><td class="code"><pre><span class="line">;(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// window.WebViewJavascriptBridge 校验，避免重复</span></span><br><span class="line">	<span class="keyword">if</span> (<span class="built_in">window</span>.WebViewJavascriptBridge) &#123;</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 懒加载 window.onerror，用于打印 error 日志</span></span><br><span class="line">	<span class="keyword">if</span> (!<span class="built_in">window</span>.onerror) &#123;</span><br><span class="line">		<span class="built_in">window</span>.onerror = <span class="function"><span class="keyword">function</span>(<span class="params">msg, url, line</span>) </span>&#123;</span><br><span class="line">			<span class="built_in">console</span>.log(<span class="string">"WebViewJavascriptBridge: ERROR:"</span> + msg + <span class="string">"@"</span> + url + <span class="string">":"</span> + line);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// window.WebViewJavascriptBridge 声明</span></span><br><span class="line">	<span class="built_in">window</span>.WebViewJavascriptBridge = &#123;</span><br><span class="line">		registerHandler: registerHandler,</span><br><span class="line">		callHandler: callHandler,</span><br><span class="line">		disableJavscriptAlertBoxSafetyTimeout: disableJavscriptAlertBoxSafetyTimeout,</span><br><span class="line">		_fetchQueue: _fetchQueue,</span><br><span class="line">		_handleMessageFromObjC: _handleMessageFromObjC</span><br><span class="line">	&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 变量声明</span></span><br><span class="line">	<span class="keyword">var</span> messagingIframe; <span class="comment">// 消息 iframe</span></span><br><span class="line">	<span class="keyword">var</span> sendMessageQueue = []; <span class="comment">// 发送消息队列</span></span><br><span class="line">	<span class="keyword">var</span> messageHandlers = &#123;&#125;; <span class="comment">// JS 端注册的消息处理 handlers 字典（囧，JS 其实叫对象）</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// scheme 使用 https 之后通过 host 做匹配</span></span><br><span class="line">	<span class="keyword">var</span> CUSTOM_PROTOCOL_SCHEME = <span class="string">'https'</span>;</span><br><span class="line">	<span class="keyword">var</span> QUEUE_HAS_MESSAGE = <span class="string">'__wvjb_queue_message__'</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">var</span> responseCallbacks = &#123;&#125;; <span class="comment">// JS 端存放回调的字典</span></span><br><span class="line">	<span class="keyword">var</span> uniqueId = <span class="number">1</span>; <span class="comment">// 唯一标示，用于回调时生成 callbackId</span></span><br><span class="line">	<span class="keyword">var</span> dispatchMessagesWithTimeoutSafety = <span class="literal">true</span>; <span class="comment">// 默认启用安全时长</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 通过禁用 AlertBoxSafetyTimeout 来提速网桥消息传递</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">disableJavscriptAlertBoxSafetyTimeout</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">		dispatchMessagesWithTimeoutSafety = <span class="literal">false</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 同 iOS 逻辑，注册 handler 其实是往 messageHandlers 字典中插入对应 name 的 block</span></span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">registerHandler</span>(<span class="params">handlerName, handler</span>) </span>&#123;</span><br><span class="line">		messageHandlers[handlerName] = handler;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 调用 iOS handler，参数校验之后调用 _doSend 函数</span></span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">callHandler</span>(<span class="params">handlerName, data, responseCallback</span>) </span>&#123;</span><br><span class="line">	    <span class="comment">// 如果参数只有两个且第二个参数类型为 function，则表示没有参数传递，即 data 为空</span></span><br><span class="line">		<span class="keyword">if</span> (<span class="built_in">arguments</span>.length == <span class="number">2</span> &amp;&amp; <span class="keyword">typeof</span> data == <span class="string">'function'</span>) &#123;</span><br><span class="line">			responseCallback = data;</span><br><span class="line">			data = <span class="literal">null</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 将 handlerName 和 data 作为 msg 对象参数调用 _doSend 函数</span></span><br><span class="line">		_doSend(&#123; <span class="attr">handlerName</span>:handlerName, <span class="attr">data</span>:data &#125;, responseCallback);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// _doSend 向 Native 端发送消息</span></span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">_doSend</span>(<span class="params">message, responseCallback</span>) </span>&#123;</span><br><span class="line">	    <span class="comment">// 如有回调，则设置 message['callbackId'] 与 responseCallbacks[callbackId]</span></span><br><span class="line">		<span class="keyword">if</span> (responseCallback) &#123;</span><br><span class="line">			<span class="keyword">var</span> callbackId = <span class="string">'cb_'</span>+(uniqueId++)+<span class="string">'_'</span>+<span class="keyword">new</span> <span class="built_in">Date</span>().getTime();</span><br><span class="line">			responseCallbacks[callbackId] = responseCallback;</span><br><span class="line">			message[<span class="string">'callbackId'</span>] = callbackId;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 将 msg 加入 sendMessageQueue 数组，设置 messagingIframe.src</span></span><br><span class="line">		sendMessageQueue.push(message);</span><br><span class="line">		messagingIframe.src = CUSTOM_PROTOCOL_SCHEME + <span class="string">'://'</span> + QUEUE_HAS_MESSAGE;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取队列，在 iOS 端刷新消息队列时会调用此函数</span></span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">_fetchQueue</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	    <span class="comment">// 内部将发送消息队列 sendMessageQueue 转为 JSON 格式并返回</span></span><br><span class="line">		<span class="keyword">var</span> messageQueueString = <span class="built_in">JSON</span>.stringify(sendMessageQueue);</span><br><span class="line">		sendMessageQueue = [];</span><br><span class="line">		<span class="keyword">return</span> messageQueueString;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// iOS 端 _dispatchMessage 函数会调用此函数</span></span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">_handleMessageFromObjC</span>(<span class="params">messageJSON</span>) </span>&#123;</span><br><span class="line">	    <span class="comment">// 调度从 Native 端获取到的消息</span></span><br><span class="line">        _dispatchMessageFromObjC(messageJSON);</span><br><span class="line">	&#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 核心代码，调度从 Native 端获取到的消息，逻辑与 Native 端一致</span></span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">_dispatchMessageFromObjC</span>(<span class="params">messageJSON</span>) </span>&#123;</span><br><span class="line">		<span class="comment">// 判断有没有禁用 AlertBoxSafetyTimeout，最终会调用 _doDispatchMessageFromObjC 函数</span></span><br><span class="line">		<span class="keyword">if</span> (dispatchMessagesWithTimeoutSafety) &#123;</span><br><span class="line">			setTimeout(_doDispatchMessageFromObjC);</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			 _doDispatchMessageFromObjC();</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// 解析 msgJSON 得到 msg</span></span><br><span class="line">		<span class="function"><span class="keyword">function</span> <span class="title">_doDispatchMessageFromObjC</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">			<span class="keyword">var</span> message = <span class="built_in">JSON</span>.parse(messageJSON);</span><br><span class="line">			<span class="keyword">var</span> messageHandler;</span><br><span class="line">			<span class="keyword">var</span> responseCallback;</span><br><span class="line"></span><br><span class="line">			<span class="comment">// 如果有 responseId，则说明是回调，取对应的 responseCallback 执行，之后释放</span></span><br><span class="line">			<span class="keyword">if</span> (message.responseId) &#123;</span><br><span class="line">				responseCallback = responseCallbacks[message.responseId];</span><br><span class="line">				<span class="keyword">if</span> (!responseCallback) &#123;</span><br><span class="line">					<span class="keyword">return</span>;</span><br><span class="line">				&#125;</span><br><span class="line">				responseCallback(message.responseData);</span><br><span class="line">				<span class="keyword">delete</span> responseCallbacks[message.responseId];</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123; <span class="comment">// 没有 responseId，则表示正常的 iOS call handler 调用 js</span></span><br><span class="line">				<span class="comment">// 如 msg 包含 callbackId，说明 iOS 端需要回调，初始化对应的 responseCallback</span></span><br><span class="line">				<span class="keyword">if</span> (message.callbackId) &#123;</span><br><span class="line">					<span class="keyword">var</span> callbackResponseId = message.callbackId;</span><br><span class="line">					responseCallback = <span class="function"><span class="keyword">function</span>(<span class="params">responseData</span>) </span>&#123;</span><br><span class="line">						_doSend(&#123; <span class="attr">handlerName</span>:message.handlerName, <span class="attr">responseId</span>:callbackResponseId, <span class="attr">responseData</span>:responseData &#125;);</span><br><span class="line">					&#125;;</span><br><span class="line">				&#125;</span><br><span class="line">				</span><br><span class="line">				<span class="comment">// 从 messageHandlers 拿到对应的 handler 执行</span></span><br><span class="line">				<span class="keyword">var</span> handler = messageHandlers[message.handlerName];</span><br><span class="line">				<span class="keyword">if</span> (!handler) &#123;</span><br><span class="line">				    <span class="comment">// 如未取到对应的 handler 则打印错误日志</span></span><br><span class="line">					<span class="built_in">console</span>.log(<span class="string">"WebViewJavascriptBridge: WARNING: no handler for message from ObjC:"</span>, message);</span><br><span class="line">				&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">					handler(message.data, responseCallback);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// messagingIframe 的声明，类型 iframe，样式不可见，src 设置</span></span><br><span class="line">	messagingIframe = <span class="built_in">document</span>.createElement(<span class="string">'iframe'</span>);</span><br><span class="line">	messagingIframe.style.display = <span class="string">'none'</span>;</span><br><span class="line">	messagingIframe.src = CUSTOM_PROTOCOL_SCHEME + <span class="string">'://'</span> + QUEUE_HAS_MESSAGE;</span><br><span class="line">	<span class="comment">// messagingIframe 加入 document.documentElement 中</span></span><br><span class="line">	<span class="built_in">document</span>.documentElement.appendChild(messagingIframe);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注册 disableJavscriptAlertBoxSafetyTimeout handler，Native 可以通过禁用 AlertBox 的安全时长来加速桥接消息</span></span><br><span class="line">	registerHandler(<span class="string">"_disableJavascriptAlertBoxSafetyTimeout"</span>, disableJavscriptAlertBoxSafetyTimeout);</span><br><span class="line">	</span><br><span class="line">	setTimeout(_callWVJBCallbacks, <span class="number">0</span>);</span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">_callWVJBCallbacks</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">		<span class="keyword">var</span> callbacks = <span class="built_in">window</span>.WVJBCallbacks;</span><br><span class="line">		<span class="keyword">delete</span> <span class="built_in">window</span>.WVJBCallbacks;</span><br><span class="line">		<span class="keyword">for</span> (<span class="keyword">var</span> i=<span class="number">0</span>; i&lt;callbacks.length; i++) &#123;</span><br><span class="line">			callbacks[i](WebViewJavascriptBridge);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>JS 端和 Native 端逻辑一致，上面的代码已经加入了详细的中文注释，上文在对于“WebViewJavascriptBridgeBase - JS 调用 Native 实现原理剖析”章节的分析过程中为了走通整个调用的逻辑已经对部分 JS 端代码进行了分析，这里我们简单的梳理一下 JS 端核心代码 <code>_doDispatchMessageFromObjC</code> 函数的逻辑：</p>
@@ -1012,7 +1012,7 @@
 <li>最后按照解析到的消息中 handlerName 从 messageHandlers，即 JS 端注册过的 handlers 中找到与名称对应的处理函数执行，如果没找到则打印附带相关信息的错误日志</li>
 </ul>
 <p>嘛~ 对比一下 Native 端的核心代码 <code>flushMessageQueue:</code> 看一下，很容易发现两端的处理实现是逻辑对称的。</p>
-<h2 id="WebViewJavascriptBridge-的“桥梁美学”"><a href="#WebViewJavascriptBridge-的“桥梁美学”" class="headerlink" title="WebViewJavascriptBridge 的“桥梁美学”"></a>WebViewJavascriptBridge 的“桥梁美学”</h2><img src="/webview-javascript-bridge/bridge_beautiful.jpg">
+<h2 id="WebViewJavascriptBridge-的“桥梁美学”"><a href="#WebViewJavascriptBridge-的“桥梁美学”" class="headerlink" title="WebViewJavascriptBridge 的“桥梁美学”"></a>WebViewJavascriptBridge 的“桥梁美学”</h2><img src="/webview_javascript_bridge/bridge_beautiful.jpg">
 <p>在总结 WebViewJavascriptBridge 的“桥梁美学”之前请再回顾一下 WebViewJavascriptBridge 的工作流：</p>
 <ul>
 <li>JS 端加入 src 为 <code>https://__bridge_loaded__</code> 的 iframe</li>
@@ -1954,7 +1954,7 @@
 
   
   <h2 class="title">
-    <a href="/ios-native-js/">
+    <a href="/ios_native_js/">
       iOS 与 JS 交互开发知识总结
     </a>
   </h2>
@@ -1963,11 +1963,11 @@
     10月 23, 2017
   </time>
   <section class="content">
-	  <img src="/ios-native-js/hybrid.jpg">
+	  <img src="/ios_native_js/hybrid.jpg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Web 页面中的 JS 与 iOS Native 如何交互是每个 iOS 猿必须掌握的技能。而说到 Native 与 JS 交互，就不得不提一嘴 Hybrid。</p>
 <p>Hybrid 的翻译结果并不是很文明（擦汗，不知道为啥很多翻译软件会译为“杂种”，但我更喜欢将它翻译为“混合、混血”），Hybrid Mobile App 我对它的理解为通过 Web 网络技术（如 HTML，CSS 和 JavaScript）与 Native 相结合的混合移动应用程序。</p>
 <p>那么我们来看一下 Hybrid 对比 Native 有哪些优劣：</p>
-<img src="/ios-native-js/hybrid_vs_native.jpg">
+<img src="/ios_native_js/hybrid_vs_native.jpg">
 <p>因为 Hybrid 的灵活性（更改 Web 页面不必重新发版）以及通用性（一份 H5 玩遍所有平台）再加上门槛低（前端猿可以无痛上手开撸）的优势，所以在非核心功能模块使用 Web 通过 Hybrid 的方式来实现可能从各方面都会优于 Native。而 Native 则可以在核心功能和设备硬件的调用上为 JS 提供强有力的支持。</p>
 <h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
 <li>Hybrid 的发展简史</li>
@@ -1978,14 +1978,14 @@
 <li>总结</li>
 </ul>
 <h2 id="Hybrid-的发展简史"><a href="#Hybrid-的发展简史" class="headerlink" title="Hybrid 的发展简史"></a>Hybrid 的发展简史</h2><p>下面简述一下 Hybrid 的发展史：</p>
-<h3 id="1-H5-发布"><a href="#1-H5-发布" class="headerlink" title="1.H5 发布"></a>1.H5 发布</h3><img src="/ios-native-js/html5.png">
+<h3 id="1-H5-发布"><a href="#1-H5-发布" class="headerlink" title="1.H5 发布"></a>1.H5 发布</h3><img src="/ios_native_js/html5.png">
 <p>Html5 是在 2014 年 9 月份正式发布的，这一次的发布做了一个最大的改变就是“从以前的 XML 子集升级成为一个独立集合”。</p>
 <h3 id="2-H5-渗入-Mobile-App-开发"><a href="#2-H5-渗入-Mobile-App-开发" class="headerlink" title="2.H5 渗入 Mobile App 开发"></a>2.H5 渗入 Mobile App 开发</h3><p>Native APP 开发中有一个 webview 的组件（Android 中是 webview，iOS 有 UIWebview和 WKWebview），这个组件可以加载 Html 文件。</p>
 <p>在 H5 大行其道之前，webview 加载的 web 页面很单调（因为只能加载一些静态资源），自从 H5 火了之后，前端猿们开发的 H5 页面在 webview 中的表现不俗使得 H5 开发慢慢渗透到了 Mobile App 开发中来。</p>
 <h3 id="3-Hybrid-现状"><a href="#3-Hybrid-现状" class="headerlink" title="3.Hybrid 现状"></a>3.Hybrid 现状</h3><p>虽然目前已经出现了 RN 和 Weex 这些使用 JS 写 Native App 的技术，但是 Hybrid 仍然没有被淘汰，市面上大多数应用都不同程度的引入了 Web 页面。</p>
 <h2 id="JavaScriptCore"><a href="#JavaScriptCore" class="headerlink" title="JavaScriptCore"></a>JavaScriptCore</h2><p>JavaScriptCore 这个库是 Apple 在 iOS 7 之后加入到标准库的，它对 iOS Native 与 JS 做交互调用产生了划时代的影响。</p>
 <p>JavaScriptCore 大体是由 4 个类以及 1 个协议组成的：</p>
-<img src="/ios-native-js/javascriptcore_framework.jpg">
+<img src="/ios_native_js/javascriptcore_framework.jpg">
 <ul>
 <li>JSContext 是 JS 执行上下文，你可以把它理解为 JS 运行的环境。</li>
 <li>JSValue 是对 JavaScript 值的引用，任何 JS 中的值都可以被包装为一个 JSValue。</li>
@@ -1997,7 +1997,7 @@
 <p>实现将 Objective-C 类及其实例方法，类方法和属性导出为 JavaScript 代码的协议。</p>
 </blockquote>
 <p>这里的 JSContext，JSValue，JSManagedValue 相对比较好理解，下面我们把 JSVirtualMachine 单拎出来说明一下：</p>
-<h3 id="JSVirtualMachine-的用法和其与-JSContext-的关系"><a href="#JSVirtualMachine-的用法和其与-JSContext-的关系" class="headerlink" title="JSVirtualMachine 的用法和其与 JSContext 的关系"></a>JSVirtualMachine 的用法和其与 JSContext 的关系</h3><img src="/ios-native-js/jsvirtualmachine.jpg">
+<h3 id="JSVirtualMachine-的用法和其与-JSContext-的关系"><a href="#JSVirtualMachine-的用法和其与-JSContext-的关系" class="headerlink" title="JSVirtualMachine 的用法和其与 JSContext 的关系"></a>JSVirtualMachine 的用法和其与 JSContext 的关系</h3><img src="/ios_native_js/jsvirtualmachine.jpg">
 <p>官方文档的介绍：</p>
 <blockquote>
 <p>JSVirtualMachine 实例表示用于 JavaScript 执行的独立环境。 您使用此类有两个主要目的：支持并发 JavaScript 执行，并管理 JavaScript 和 Objective-C 或 Swift 之间桥接的对象的内存。</p>
@@ -2081,7 +2081,7 @@
 <li>JS 调用 Native</li>
 <li>Native 调用 JS</li>
 </ul>
-<img src="/ios-native-js/call_eachother.jpg">
+<img src="/ios_native_js/call_eachother.jpg">
 <h3 id="JS-调用-Native"><a href="#JS-调用-Native" class="headerlink" title="JS 调用 Native"></a>JS 调用 Native</h3><p>其实 JS 调用 iOS Native 也分为两种实现方式：</p>
 <ul>
 <li>假 Request 方法</li>
@@ -2129,7 +2129,7 @@
 <figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 首先引入 JavaScriptCore 库</span></span><br><span class="line"><span class="meta">#import <span class="meta-string">&lt;JavaScriptCore/JavaScriptCore.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 先获取 JS 上下文</span></span><br><span class="line"><span class="keyword">self</span>.jsContext = [webView valueForKeyPath:<span class="string">@"documentView.webView.mainFrame.javaScriptContext"</span>];</span><br><span class="line"><span class="comment">// 如果涉及 UI 操作，切回主线程调用 JS 代码中的 YourFuncName，通过数组@[parameter] 入参</span></span><br><span class="line"><span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">    JSValue *jsValue = <span class="keyword">self</span>.jsContext[<span class="string">@"YourFuncName"</span>];</span><br><span class="line">    [jsValue callWithArguments:@[parameter]];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
 <p>上面的代码调用了 JS 代码中 YourFuncName 函数，并且给函数加了 @[parameter] 作为入参。为了方便阅读理解，这里再贴一下 JS 代码：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">YourFuncName</span>(<span class="params">arguments</span>)</span>&#123;</span><br><span class="line">    <span class="keyword">var</span> result = <span class="built_in">arguments</span>;</span><br><span class="line">    <span class="comment">// do what u want to do</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="WKWebView-与-JS-交互的特有方法"><a href="#WKWebView-与-JS-交互的特有方法" class="headerlink" title="WKWebView 与 JS 交互的特有方法"></a>WKWebView 与 JS 交互的特有方法</h2><img src="/ios-native-js/wkwebview.jpg">
+<h2 id="WKWebView-与-JS-交互的特有方法"><a href="#WKWebView-与-JS-交互的特有方法" class="headerlink" title="WKWebView 与 JS 交互的特有方法"></a>WKWebView 与 JS 交互的特有方法</h2><img src="/ios_native_js/wkwebview.jpg">
 <p>关于 WKWebView 与 UIWebView 的区别就不在本文加以详细说明了，更多信息还请自行查阅。这里要讲的是 WKWebView 在与 JS 的交互时特有的方法：</p>
 <ul>
 <li>WKUIDelegate 方法</li>
@@ -2151,9 +2151,9 @@
 <p>该方法用来添加一个脚本处理器，可以在处理器内对 JS 脚本调用的方法做出处理，从而达到 JS 调用 Native 的目的。</p>
 <p>那么 WKUserContentController 类和 WKWebView 有毛关系呢？</p>
 <p>在 WKWebView 的初始化函数中有一个入参 configuration，它的类型是 WKWebViewConfiguration。WKWebViewConfiguration 中包含一个属性 userContentController，这个 userContentController 就是 WKUserContentController 类型的实例，我们可以用这个 userContentController 来添加不同名称的脚本处理器。</p>
-<img src="/ios-native-js/wkusercontentcontroller.jpg">
+<img src="/ios_native_js/wkusercontentcontroller.jpg">
 <h5 id="MessageHandler-的坑"><a href="#MessageHandler-的坑" class="headerlink" title="MessageHandler 的坑"></a>MessageHandler 的坑</h5><p>那么回到 <code>- (void)addScriptMessageHandler:name:</code> 方法上面，该方法添加一个脚本消息处理器（第一个入参 scriptMessageHandler），并且给这个处理器起一个名字（第二个入参 name）。不过这个函数在使用的时候有个坑：scriptMessageHandler 入参会被强引用，那么如果你把当前 WKWebView 所在的 UIViewController 作为第一个入参，这个 viewController 被他自己所持有的 <code>webview.configuration. userContentController</code> 所持有，就会造成循环引用。</p>
-<img src="/ios-native-js/retaincycle.jpg">
+<img src="/ios_native_js/retaincycle.jpg">
 <p>我们可以通过 <code>- (void)removeScriptMessageHandlerForName:</code> 方法删掉 userContentController 对 viewController 的强引用。所以一般情况下我们的代码会在 <code>viewWillAppear</code> 和 <code>viewWillDisappear</code> 成对儿的添加和删除 MessageHandler：</p>
 <figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="keyword">void</span>)viewWillAppear:(<span class="built_in">BOOL</span>)animated &#123;</span><br><span class="line">    [<span class="keyword">super</span> viewWillAppear:animated];</span><br><span class="line">    [<span class="keyword">self</span>.webview.configuration.userContentController addScriptMessageHandler:<span class="keyword">self</span> name:<span class="string">@"YourFuncName"</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="keyword">void</span>)viewWillDisappear:(<span class="built_in">BOOL</span>)animated &#123;</span><br><span class="line">    [<span class="keyword">super</span> viewWillDisappear:animated];</span><br><span class="line">    [<span class="keyword">self</span>.webview.configuration.userContentController removeScriptMessageHandlerForName:<span class="string">@"YourFuncName"</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h5 id="WKScriptMessageHandler-协议"><a href="#WKScriptMessageHandler-协议" class="headerlink" title="WKScriptMessageHandler 协议"></a>WKScriptMessageHandler 协议</h5><p>WKScriptMessageHandler 是脚本信息处理器协议，如果想让一个对象具有脚本信息处理能力（比如上文中 webview 的所属 viewController 也就是上面代码的 self）就必须使其遵循该协议。</p>
