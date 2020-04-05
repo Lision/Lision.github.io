@@ -4,23 +4,30 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   
-  <title>聊宅</title>
+  <title>Flutter 状态管理 0x01 | 聊宅</title>
   <meta name="description" content="美麗的太陽照常升起 苦痛的人們依舊歇斯底裏">
   <meta name="keywords" content="ios,objective-c,swift,python,javascript,otaku,lision">
   <meta name="HandheldFriendly" content="True">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="美麗的太陽照常升起 苦痛的人們依舊歇斯底裏">
-<meta name="keywords" content="ios,objective-c,swift,python,javascript,otaku,lision">
-<meta property="og:type" content="website">
-<meta property="og:title" content="聊宅">
-<meta property="og:url" content="https://lision.me/index.html">
+  <meta name="description" content="前言 Emmmmm…正式开始文章前先交代个事儿，2019 开年计划那篇文章被我删了。原因没啥特别的，就真的只是脸疼…  嘛～ 好久没更 Blog 了，最近笔者正在学习 Flutter 相关的知识（貌似现在学也不算特别晚），所以后续可能会有一波连续的 Flutter 相关的更新（关键字已加粗 😂）。 因为之前我的文章大多是源码剖析相关的，所以这次决定换种方式先从 Flutter 开发的状态管理聊起">
+<meta name="keywords" content="flutter,dart">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flutter 状态管理 0x01">
+<meta property="og:url" content="https://lision.me/flutter-state-management_0x01/index.html">
 <meta property="og:site_name" content="聊宅">
-<meta property="og:description" content="美麗的太陽照常升起 苦痛的人們依舊歇斯底裏">
+<meta property="og:description" content="前言 Emmmmm…正式开始文章前先交代个事儿，2019 开年计划那篇文章被我删了。原因没啥特别的，就真的只是脸疼…  嘛～ 好久没更 Blog 了，最近笔者正在学习 Flutter 相关的知识（貌似现在学也不算特别晚），所以后续可能会有一波连续的 Flutter 相关的更新（关键字已加粗 😂）。 因为之前我的文章大多是源码剖析相关的，所以这次决定换种方式先从 Flutter 开发的状态管理聊起">
 <meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="https://lision.me/flutter-state-management_0x01/flutter_system_overview.png">
+<meta property="og:image" content="https://lision.me/flutter-state-management_0x01/ui-equals-function-of-state.png">
+<meta property="og:image" content="https://lision.me/flutter-state-management_0x01/flutter_default_demo.png">
+<meta property="og:image" content="https://lision.me/flutter-state-management_0x01/how_flutter_render_widget.png">
+<meta property="og:image" content="https://lision.me/flutter-state-management_0x01/demo.gif">
+<meta property="og:updated_time" content="2020-03-21T15:28:00.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="聊宅">
-<meta name="twitter:description" content="美麗的太陽照常升起 苦痛的人們依舊歇斯底裏">
+<meta name="twitter:title" content="Flutter 状态管理 0x01">
+<meta name="twitter:description" content="前言 Emmmmm…正式开始文章前先交代个事儿，2019 开年计划那篇文章被我删了。原因没啥特别的，就真的只是脸疼…  嘛～ 好久没更 Blog 了，最近笔者正在学习 Flutter 相关的知识（貌似现在学也不算特别晚），所以后续可能会有一波连续的 Flutter 相关的更新（关键字已加粗 😂）。 因为之前我的文章大多是源码剖析相关的，所以这次决定换种方式先从 Flutter 开发的状态管理聊起">
+<meta name="twitter:image" content="https://lision.me/flutter-state-management_0x01/flutter_system_overview.png">
   
   
     <link rel="icon" href="/favicon.png">
@@ -92,28 +99,20 @@
     <script>setLoadingBarProgress(40);</script>
     
     <main id="main" role="main">
-      
-
-
-
-
-
-<section class="post-list">
-	
-    <article class="post ">
-
-  
-  <h2 class="title">
-    <a href="/flutter-state-management_0x01/">
-      Flutter 状态管理 0x01
+      <article id="post-flutter-state-management_0x01"
+  class="post article white-box article-type-post"
+  itemscope itemprop="blogPost">
+	<h2 class="title">
+  	<a href="/flutter-state-management_0x01/">
+    	Flutter 状态管理 0x01
     </a>
   </h2>
-  
-  <time>
-    3月 21, 2020
-  </time>
-  <section class="content">
-	  <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+	<time>
+	  3月 21, 2020
+	</time>
+	<section class="content">
+  	<div class="article-entry" itemprop="articleBody">
+    	<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
 <p>Emmmmm…正式开始文章前先交代个事儿，2019 开年计划那篇文章被我删了。原因没啥特别的，就真的只是脸疼…</p>
 </blockquote>
 <p>嘛～ 好久没更 Blog 了，最近笔者正在学习 Flutter 相关的知识（貌似现在学也不算特别晚），所以后续<strong>可能</strong>会有一波连续的 Flutter 相关的更新（关键字已加粗 😂）。</p>
@@ -256,31 +255,22 @@
 </ul>
 <p>由于状态管理这个话题非常大且复杂，文章因为篇幅原因就到这里，后续的文章（如果有的话）应该不会再花大篇幅做 Flutter 基础知识的铺垫和过渡了（但是该有的前置知识点肯定还会有）。时间紧张，文章难免出现谬误，估计自己也没有时间做校对了，有问题还望在评论区提醒。</p>
 
+  	</div>
 
-    
-    
-    
-	  <div class="tags">
-      <a class="tag-link" href="/tags/dart/">dart</a><a class="tag-link" href="/tags/flutter/">flutter</a>
+	  <div class="article-tags tags">
+		  
+        <a class="tag-link" href="/tags/dart/">dart</a><a class="tag-link" href="/tags/flutter/">flutter</a>
+      
 	  </div>
-    
-
-  </section>
+	</section>
 </article>
-  
+
+
+<section id="comments">
+	<div id="disqus_thread"></div>
 </section>
 
 
-  <nav id="page-nav">
-    
-    
-    <a class="next" rel="next" href="/page/2/">
-      <span class="text">Next</span>
-      <span class="icon icon-chevron-right"></span>
-    </a>
-    
-  </nav>
-  
 
       <script>setLoadingBarProgress(60);</script>
     </main>
@@ -344,11 +334,13 @@
 <script>
   var disqus_shortname = 'lision-me';
   
+  var disqus_url = 'https://lision.me/flutter-state-management_0x01/';
+  
   (function(){
     var dsq = document.createElement('script');
     dsq.type = 'text/javascript';
     dsq.async = true;
-    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
     (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
   })();
 </script>
