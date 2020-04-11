@@ -104,8 +104,8 @@
 
   
   <h2 class="title">
-    <a href="/flutter-state-management_0x01/">
-      Flutter 状态管理 0x01 - 基础知识及 State.setState 背后逻辑
+    <a href="/flutter-state-management_0x00/">
+      Flutter 状态管理 0x00 - 基础知识及 State.setState 背后逻辑
     </a>
   </h2>
   
@@ -113,7 +113,7 @@
     3月 21, 2020
   </time>
   <section class="content">
-	  <img src="/flutter-state-management_0x01/flutter_state_management_0x01.png">
+	  <img src="/flutter-state-management_0x00/flutter_state_management_0x00.png">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
 <p>Emmmmm…正式开始文章前先交代个事儿，2019 开年计划那篇文章被我删了。原因没啥特别的，就真的只是脸疼…</p>
 </blockquote>
@@ -131,7 +131,7 @@
 <p><a href="https://flutter.dev/" target="_blank" rel="noopener">Flutter</a> 是 Google 开源的 UI 工具包，帮助开发者通过一套代码库高效构建多平台精美应用，支持移动、Web、桌面和嵌入式平台。</p>
 </blockquote>
 <p>「<a href="https://en.wikipedia.org/wiki/Write_once,_run_anywhere" target="_blank" rel="noopener">Write once, run anywhere.</a>」始终是大前端开发乃至整个程序界的一个永恒的话题。诚然 Flutter 的目标也是如此，不过它与之前业界已经存在的 React Native、Xamarin、Hybrid 等框架有何不同？</p>
-<img src="/flutter-state-management_0x01/flutter_system_overview.png">
+<img src="/flutter-state-management_0x00/flutter_system_overview.png">
 <p>从上图可以看到 Flutter 的设计整体上有三层抽象：</p>
 <ul>
 <li>最上层 Framework 封装好了 Material 和 Cupertino 这两种分别对应 Android 和 iOS 官方设计风格的 UI 库，除此之外还包含了渲染、动画、绘制、手势等等，这一层主要是提供给开发者便捷构建 App 使用的，其在开发时为 <a href="https://en.wikipedia.org/wiki/Just-in-time_compilation" target="_blank" rel="noopener">JIT</a>、发布时为 <a href="https://en.wikipedia.org/wiki/Ahead-of-time_compilation" target="_blank" rel="noopener">AOT</a> 的特性兼顾了开发调试的便捷与线上运行的高性能；</li>
@@ -139,10 +139,10 @@
 <li>Embedder 由平台指定语言实现，提供了 Flutter 所需的事件循环、线程、渲染等基础 API。</li>
 </ul>
 <p>Flutter 通过这套机制接管了最底层的系统接口，提供了一整套<strong>从底层渲染逻辑到上层开发语言的完整解决方案</strong>，使得它有着超越 React Native 的高保真、多端一致的体验，和超越 Web 容器的高性能渲染能力。</p>
-<h2 id="声明式-UI-amp-响应式编程"><a href="#声明式-UI-amp-响应式编程" class="headerlink" title="声明式 UI &amp; 响应式编程"></a>声明式 UI &amp; 响应式编程</h2><h3 id="声明式-UI"><a href="#声明式-UI" class="headerlink" title="声明式 UI"></a>声明式 UI</h3><img src="/flutter-state-management_0x01/ui-equals-function-of-state.png">
+<h2 id="声明式-UI-amp-响应式编程"><a href="#声明式-UI-amp-响应式编程" class="headerlink" title="声明式 UI &amp; 响应式编程"></a>声明式 UI &amp; 响应式编程</h2><h3 id="声明式-UI"><a href="#声明式-UI" class="headerlink" title="声明式 UI"></a>声明式 UI</h3><img src="/flutter-state-management_0x00/ui-equals-function-of-state.png">
 <p>这张图很好的描述了声明式 UI 的核心思想，简单来说就是通过 state 作为入参根据已经写好的构建 func 就能得到我们想要的 UI 效果。举个 🌰 更直观：</p>
 <p>默认的 Flutter Demo 界面：</p>
-<img src="/flutter-state-management_0x01/flutter_default_demo.png">
+<img src="/flutter-state-management_0x00/flutter_default_demo.png">
 <p>对应的代码：</p>
 <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> Scaffold(</span><br><span class="line">  appBar: AppBar(</span><br><span class="line">    title: Text(widget.title),</span><br><span class="line">  ),</span><br><span class="line">  body: Center(</span><br><span class="line">    child: Column(</span><br><span class="line">      mainAxisAlignment: MainAxisAlignment.center,</span><br><span class="line">      children: &lt;Widget&gt;[</span><br><span class="line">        Text(</span><br><span class="line">          <span class="string">'You have pushed the button this many times:'</span>,</span><br><span class="line">        ),</span><br><span class="line">        Text(</span><br><span class="line">          <span class="string">'$_counter'</span>,</span><br><span class="line">          style: Theme.of(context).textTheme.display1,</span><br><span class="line">        ),</span><br><span class="line">      ],</span><br><span class="line">    ),</span><br><span class="line">  ),</span><br><span class="line">  floatingActionButton: FloatingActionButton(</span><br><span class="line">    <span class="comment">// _incrementCounter 内部逻辑可忽略</span></span><br><span class="line">    onPressed: _incrementCounter,</span><br><span class="line">    tooltip: <span class="string">'Increment'</span>,</span><br><span class="line">    child: Icon(Icons.add),</span><br><span class="line">  ),</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 <blockquote>
@@ -158,7 +158,7 @@
 </blockquote>
 <p>响应式编程对于大家来说应该早已不是什么新鲜事物了，单在移动客户端领域就有诸如 <a href="https://github.com/ReactiveCocoa/ReactiveCocoa" target="_blank" rel="noopener">ReactiveCocoa</a>、<a href="https://github.com/ReactiveX/RxSwift" target="_blank" rel="noopener">RxSwift</a>、<a href="https://github.com/ReactiveX/RxJava" target="_blank" rel="noopener">RxJava</a>、RxXxx…简单来说这种编程思想或者说范式下开发者只需关注可能存在的数据状态以及与之对应的逻辑从而大大减轻了维护这些对应关系与状态细节的工作负担。因为用过的人都说好，所以目前渐渐被推为移动客户端乃至整个大前端的主流编程思想。</p>
 <p>不难看出其实声明式 UI 和响应式编程从思想上是完全契合的，我们只需要将数据流对应到 <code>UI=f(state)</code> 公式中的 state 就可以了。</p>
-<h2 id="Flutter-如何渲染-Widget"><a href="#Flutter-如何渲染-Widget" class="headerlink" title="Flutter 如何渲染 Widget"></a>Flutter 如何渲染 Widget</h2><img src="/flutter-state-management_0x01/how_flutter_render_widget.png">
+<h2 id="Flutter-如何渲染-Widget"><a href="#Flutter-如何渲染-Widget" class="headerlink" title="Flutter 如何渲染 Widget"></a>Flutter 如何渲染 Widget</h2><img src="/flutter-state-management_0x00/how_flutter_render_widget.png">
 <p>在介绍 <code>StatelessWidget</code> 与 <code>StatefulWidget</code> 之前先要了解一下 Flutter 的渲染模型，简单来讲 Flutter 在渲染 Widget 时用到三棵树：</p>
 <ul>
 <li>Widget，负责描述 Element 的配置。</li>
@@ -199,11 +199,11 @@
 <p>NOTE: 下面分析的 <code>State.setState</code> 源码版本为 Flutter SDK v1.9.1+hotfix.6。</p>
 </blockquote>
 <p>我们还以 Flutter 默认 Demo 来分析，在 Demo 中我们点击界面右下角的 <code>FloatingActionButton</code> (就是蓝色带有 + 号的圆形按钮)之后会刷新界面，屏幕中间的 Text Widget 会显示按钮被按下的次数。</p>
-<img src="/flutter-state-management_0x01/demo.gif">
+<img src="/flutter-state-management_0x00/demo.gif">
 <p><code>FloatingActionButton</code> 点击之后调用了 <code>_incrementCounter</code> 方法：</p>
 <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">_MyHomePageState</span> <span class="keyword">extends</span> <span class="title">State</span>&lt;<span class="title">MyHomePage</span>&gt; </span>&#123;</span><br><span class="line">  <span class="built_in">int</span> _counter = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">void</span> _incrementCounter() &#123;</span><br><span class="line">    setState(() &#123;</span><br><span class="line">      _counter++;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><code>_MyHomePageState._incrementCounter</code> 内部逻辑也仅仅是调用了 <code>State.setState</code> 而已。正如 Flutter 所宣传的公式 <code>UI = f(state)</code> 一样，开发者只需要调用 <code>State.setState</code> 传入 <code>VoidCallback</code> 内部写好相关数据更新逻辑即可更新 UI，那么 Flutter 是如何做到这一点的呢？</p>
-<h3 id="State-setState-背后逻辑"><a href="#State-setState-背后逻辑" class="headerlink" title="State.setState 背后逻辑"></a><code>State.setState</code> 背后逻辑</h3><img src="/flutter-state-management_0x01/state_dot_set_state.png">
+<h3 id="State-setState-背后逻辑"><a href="#State-setState-背后逻辑" class="headerlink" title="State.setState 背后逻辑"></a><code>State.setState</code> 背后逻辑</h3><img src="/flutter-state-management_0x00/state_dot_set_state.png">
 <blockquote>
 <p><code>State.setState</code> 背后调用嵌套较多，实际所做的事情理解起来却很简单。如不喜在文内阅读源码可直接跳转至「总结 <code>State.setState</code> 背后逻辑」小节看相关逻辑总结。</p>
 </blockquote>
