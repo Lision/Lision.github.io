@@ -1,5 +1,5 @@
 ---
-title: Flutter 状态管理 0x01
+title: Flutter 状态管理 0x00 - 基础知识及 State.setState 背后逻辑
 comments: true
 date: 2020-03-21 15:28
 updated: 2020-03-21 15:28
@@ -9,6 +9,8 @@ tags:
 categories:
 - design_patterns
 ---
+
+{% asset_img flutter_state_management_0x00.png %}
 
 ## 前言
 
@@ -179,6 +181,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
 ### `State.setState` 背后逻辑
 
+{% asset_img state_dot_set_state.png %}
+
+> `State.setState` 背后调用嵌套较多，实际所做的事情理解起来却很简单。如不喜在文内阅读源码可直接跳转至「总结 `State.setState` 背后逻辑」小节看相关逻辑总结。
+
 #### `State.setState`
 
 ``` dart
@@ -331,7 +337,7 @@ void scheduleFrame() native 'Window_scheduleFrame';
 
 这里的 `Window.scheduleFrame` 是 Native 方法，可以理解为通过 `Window` 与 Flutter engine 打交道，注册了 VSync 回调。
 
-### 总结 `State.setState`
+### 总结 `State.setState` 背后逻辑
 
 简单来说 `State.setState` 就干了这么几件事：
 
@@ -339,13 +345,16 @@ void scheduleFrame() native 'Window_scheduleFrame';
 - 尝试将当前 `StatefulWidget` 对应的 `StatefulElement` 标记为 `dirty`
 - 通过 `BuildOwner.onBuildScheduled` 到 `SchedulerPhase.scheduleFrame` 再到 `Window.scheduleFrame` 一步步完成了 VSync 的回调注册
 
-在 VSync 回调后会通过 Native 到 Flutter engine 调用 Flutter `_drawFrame` 方法，将之前标记为 `dirty` 的 Element 重新构建，别忘了我们调用 `State.setState` 就把 State 关联的 Element 标记为了 `dirty`。
+注意上面 `State.setState` 第二条主要逻辑就是把 State 关联的 Element 标记为 `dirty`。在 VSync 回调后会通过 Native 到 Flutter engine 调用 Flutter `_drawFrame` 方法，将之前标记为 `dirty` 的 Element 重新构建，最终会执行到开发者熟悉的 `State.build` 方法。
 
-这里因为篇幅原因简单说下后面的逻辑，毕竟本文重点不在于 Flutter 如何渲染 Widget：
+#### `State.build` 是如何被执行的
+
+这里因为篇幅原因简单描述下后续逻辑，毕竟本文重点不在于 Flutter 如何渲染 Widget：
 
 - State 是开发者重写 `StatefulWidget.createState` 返回的
 - State 对应的 Element 是 `StatefulWidget.createElement` 返回的，类型为 `StatefulElement`
-- `StatefulElement` 被标记为 `dirty` 后重新构建会调用 `StatefulElement.build`，源码为 `Widget build() => state.build(this);` 这样最终就走到了 `State.build` 方法
+- `StatefulElement` 被标记为 `dirty` 后在 Flutter `_drawFrame` 时重新构建会调用 `StatefulElement.build`，其源码为 `Widget build() => state.build(this);`
+- `state.build(this)` 中的 `state` 就是我们的 State，开发者写的 `State.build` 方法就这样被执行了
 
 ## 总结
 
@@ -353,6 +362,6 @@ void scheduleFrame() native 'Window_scheduleFrame';
 
 - Flutter 渲染 Widget 的三颗树概念
 - `StatelessWidget` & `StatefulWidget`
-- `State.setState`
+- `State.setState` 背后逻辑
 
 由于状态管理这个话题非常大且复杂，文章因为篇幅原因就到这里，后续的文章（如果有的话）应该不会再花大篇幅做 Flutter 基础知识的铺垫和过渡了（但是该有的前置知识点肯定还会有）。时间紧张，文章难免出现谬误，估计自己也没有时间做校对了，有问题还望在评论区提醒。
