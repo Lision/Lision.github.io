@@ -108,7 +108,7 @@
 
   
   <h2 class="title">
-    <a href="/ios_rendering_process/">
+    <a href="/ios-rendering-process/">
       深入理解 iOS Rendering Process
     </a>
   </h2>
@@ -117,7 +117,7 @@
     4月 15, 2018
   </time>
   <section class="content">
-	  <img src="/ios_rendering_process/rendering.jpg">
+	  <img src="/ios-rendering-process/rendering.jpg">
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>iOS 最早名为 iPhone OS，是 <a href="https://www.apple.com/" target="_blank" rel="noopener">Apple</a> 公司专门为其硬件设备开发的操作系统，最初于 2007 年随第一代 iPhone 推出，后扩展为支持 Apple 公司旗下的其他硬件设备，如 iPod、iPad 等。</p>
 <p>作为一名 iOS Developer，相信大多数人都有写出过造成 iOS 设备卡顿的代码经历，相应的也有过想方设法优化卡顿代码的经验。</p>
 <p>本文将从 OpenGL 的角度结合 Apple 官方给出的部分资料，介绍 iOS Rendering Process 的概念及其整个底层渲染管道的各个流程。</p>
@@ -136,13 +136,13 @@
 <h2 id="iOS-Rendering-Process-概念"><a href="#iOS-Rendering-Process-概念" class="headerlink" title="iOS Rendering Process 概念"></a>iOS Rendering Process 概念</h2><p>iOS Rendering Process 译为 iOS 渲染流程，本文特指 iOS 设备从设置将要显示的图元数据到最终在设备屏幕成像的整个过程。</p>
 <p>在开始剖析 iOS Rendering Process 之前，我们需要对 iOS 的渲染概念有一个基本的认知：</p>
 <h3 id="基于平铺的渲染"><a href="#基于平铺的渲染" class="headerlink" title="基于平铺的渲染"></a>基于平铺的渲染</h3><p>iOS 设备的屏幕分为 N * N 像素的图块，每个图块都适合于 <a href="https://en.wikipedia.org/wiki/System_on_a_chip" target="_blank" rel="noopener">SoC</a> 缓存，几何体在图块内被大量拆分，只有在所有几何体全部提交之后才可以进行光栅化（Rasterization）。</p>
-<img src="/ios_rendering_process/tile_based_rendering.jpg">
+<img src="/ios-rendering-process/tile_based_rendering.jpg">
 <blockquote>
 <p>Note: 这里的光栅化指将屏幕上面被大量拆分出来的几何体渲染为像素点的过程。</p>
 </blockquote>
-<img src="/ios_rendering_process/rasterization.jpg">
+<img src="/ios-rendering-process/rasterization.jpg">
 <h2 id="iOS-Rendering-技术框架"><a href="#iOS-Rendering-技术框架" class="headerlink" title="iOS Rendering 技术框架"></a>iOS Rendering 技术框架</h2><p>事实上 iOS 渲染相关的层级划分大概如下：</p>
-<img src="/ios_rendering_process/ios_rendering_framework.png">
+<img src="/ios-rendering-process/ios_rendering_framework.png">
 <h3 id="UIKit"><a href="#UIKit" class="headerlink" title="UIKit"></a>UIKit</h3><p>嘛~ 作为一名 iOS Developer 来说，应该对 UIKit 都不陌生，我们日常开发中使用的用户交互组件都来自于 UIKit Framework，我们通过设置 UIKit 组件的 Layout 以及 BackgroundColor 等属性来完成日常的界面绘画工作。</p>
 <p>其实 UIKit Framework 自身并不具备在屏幕成像的能力，它主要负责对用户操作事件的响应，事件响应的传递大体是经过逐层的<strong>视图树</strong>遍历实现的。</p>
 <blockquote>
@@ -185,7 +185,7 @@
 <p>其实 Render Pipeline 指的是<strong>从应用程序数据转换到最终渲染的图像之间的一系列数据处理过程</strong>。</p>
 <p>好比我们上文中提到的 OpenGL 主要渲染步骤一样，我们开发应用程序时在<strong>设置图元数据</strong>这步为视图控件的设定布局，背景颜色，透明度以及阴影等等数据。</p>
 <p>下面以 OpenGL 4.5 的 Render Pipeline 为例介绍一下：</p>
-<img src="/ios_rendering_process/opengl_rendering_pipeline.png">
+<img src="/ios-rendering-process/opengl_rendering_pipeline.png">
 <p>这些图元数据流入 OpenGL 中，传入<strong>顶点着色器（vetex shader）</strong>，然后顶点着色器对其进行着色器内部的处理后流出。之后可能进入<strong>细分着色阶段（tessellation shading stage）</strong>，其中又有可能分为细分控制着色器和细分赋值着色器两部分处理，还可能会进入<strong>几何着色阶段（geometry shading stage）</strong>，数据从中传递。最后都会走<strong>片元着色阶段（fragment shading stage）</strong>。</p>
 <blockquote>
 <p>Note: 图元数据是以 copy 的形式流入 shader 的，shader 一般会以特殊的<strong>类似全局变量的形式</strong>接收数据。</p>
@@ -203,7 +203,7 @@
 <li>Render Server 将与 GPU 通信把数据经过处理之后传递给 GPU</li>
 <li>GPU 调用 iOS 当前设备渲染相关的图形设备 Display</li>
 </ul>
-<img src="/ios_rendering_process/core_animation_pipeline.png">
+<img src="/ios-rendering-process/core_animation_pipeline.png">
 <blockquote>
 <p>Note: 由于 iOS 设备目前的显示屏最大支持 <strong>60 FPS</strong> 的刷新率，所以每个处理间隔为 16.67 ms。</p>
 </blockquote>
@@ -248,7 +248,7 @@
 <li>在 Animation Block 中进行 Layout，Display，Prepare，Commit</li>
 <li>Render Server 根据 Animation 逐帧渲染</li>
 </ul>
-<img src="/ios_rendering_process/animation.png">
+<img src="/ios-rendering-process/animation.png">
 <blockquote>
 <p>Note: 原理是 <code>animateWithDuration:animations:</code> 内部使用了 CATransaction 来将整个 Animation Block 中的代码作为原子操作 commit 给了 RunLoop。</p>
 </blockquote>
@@ -259,7 +259,7 @@
 <p>Note: 我的一个开源库 <a href="https://github.com/Lision/LSAnimator" target="_blank" rel="noopener"><strong>LSAnimator - 可多链式动画库</strong></a> 在<strong>动画顺序链接时也用到了 CATransaction</strong>。</p>
 </blockquote>
 <h2 id="全文总结"><a href="#全文总结" class="headerlink" title="全文总结"></a>全文总结</h2><p>结合上下文不难梳理出一个 iOS <strong>最基本的完整渲染经过（Rendering pass）</strong>。</p>
-<img src="/ios_rendering_process/rendering_pass.png">
+<img src="/ios-rendering-process/rendering_pass.png">
 <h3 id="性能检测思路"><a href="#性能检测思路" class="headerlink" title="性能检测思路"></a>性能检测思路</h3><p>基于整篇文章的内容归纳一下我们在日常的开发工作中遇到性能问题时检测问题代码的思路：</p>
 <table>
 <thead>
