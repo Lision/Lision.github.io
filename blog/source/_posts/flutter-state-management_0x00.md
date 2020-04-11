@@ -4,10 +4,10 @@ comments: true
 date: 2020-03-21 15:28
 updated: 2020-03-21 15:28
 tags:
-- flutter
-- dart
-categories:
+- state_management
 - design_patterns
+categories:
+- flutter
 ---
 
 {% asset_img flutter_state_management_0x00.png %}
