@@ -4,30 +4,32 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   
-  <title>Flutter 状态管理 0x01 | 聊宅</title>
+  <title>Flutter 状态管理 0x01 - 基础知识及 State.setState 背后逻辑 | 聊宅</title>
   <meta name="description" content="美麗的太陽照常升起 苦痛的人們依舊歇斯底裏">
   <meta name="keywords" content="ios,objective-c,swift,python,javascript,otaku,lision">
   <meta name="HandheldFriendly" content="True">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="前言 Emmmmm…正式开始文章前先交代个事儿，2019 开年计划那篇文章被我删了。原因没啥特别的，就真的只是脸疼…  嘛～ 好久没更 Blog 了，最近笔者正在学习 Flutter 相关的知识（貌似现在学也不算特别晚），所以后续可能会有一波连续的 Flutter 相关的更新（关键字已加粗 😂）。 因为之前我的文章大多是源码剖析相关的，所以这次决定换种方式先从 Flutter 开发的状态管理聊起">
+  <meta name="description" content="前言 Emmmmm…正式开始文章前先交代个事儿，2019 开年计划那篇文章被我删了。原因没啥特别的，就真的只是脸疼…  嘛～ 好久没更 Blog 了，最近笔者正在学习 Flutter 相关的知识（貌似现在学也不算特别晚），所以后续可能会有一波连续的 Flutter 相关的更新（关键字已加粗 😂）。 因为之前我的文章大多是源码剖析相关的，所以这次决定换种方式先从 Flutter 开发的状态管理聊">
 <meta name="keywords" content="flutter,dart">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Flutter 状态管理 0x01">
+<meta property="og:title" content="Flutter 状态管理 0x01 - 基础知识及 State.setState 背后逻辑">
 <meta property="og:url" content="https://lision.me/flutter-state-management_0x01/index.html">
 <meta property="og:site_name" content="聊宅">
-<meta property="og:description" content="前言 Emmmmm…正式开始文章前先交代个事儿，2019 开年计划那篇文章被我删了。原因没啥特别的，就真的只是脸疼…  嘛～ 好久没更 Blog 了，最近笔者正在学习 Flutter 相关的知识（貌似现在学也不算特别晚），所以后续可能会有一波连续的 Flutter 相关的更新（关键字已加粗 😂）。 因为之前我的文章大多是源码剖析相关的，所以这次决定换种方式先从 Flutter 开发的状态管理聊起">
+<meta property="og:description" content="前言 Emmmmm…正式开始文章前先交代个事儿，2019 开年计划那篇文章被我删了。原因没啥特别的，就真的只是脸疼…  嘛～ 好久没更 Blog 了，最近笔者正在学习 Flutter 相关的知识（貌似现在学也不算特别晚），所以后续可能会有一波连续的 Flutter 相关的更新（关键字已加粗 😂）。 因为之前我的文章大多是源码剖析相关的，所以这次决定换种方式先从 Flutter 开发的状态管理聊">
 <meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="https://lision.me/flutter-state-management_0x01/flutter_state_management_0x01.png">
 <meta property="og:image" content="https://lision.me/flutter-state-management_0x01/flutter_system_overview.png">
 <meta property="og:image" content="https://lision.me/flutter-state-management_0x01/ui-equals-function-of-state.png">
 <meta property="og:image" content="https://lision.me/flutter-state-management_0x01/flutter_default_demo.png">
 <meta property="og:image" content="https://lision.me/flutter-state-management_0x01/how_flutter_render_widget.png">
 <meta property="og:image" content="https://lision.me/flutter-state-management_0x01/demo.gif">
+<meta property="og:image" content="https://lision.me/flutter-state-management_0x01/state_dot_set_state.png">
 <meta property="og:updated_time" content="2020-03-21T15:28:00.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Flutter 状态管理 0x01">
-<meta name="twitter:description" content="前言 Emmmmm…正式开始文章前先交代个事儿，2019 开年计划那篇文章被我删了。原因没啥特别的，就真的只是脸疼…  嘛～ 好久没更 Blog 了，最近笔者正在学习 Flutter 相关的知识（貌似现在学也不算特别晚），所以后续可能会有一波连续的 Flutter 相关的更新（关键字已加粗 😂）。 因为之前我的文章大多是源码剖析相关的，所以这次决定换种方式先从 Flutter 开发的状态管理聊起">
-<meta name="twitter:image" content="https://lision.me/flutter-state-management_0x01/flutter_system_overview.png">
+<meta name="twitter:title" content="Flutter 状态管理 0x01 - 基础知识及 State.setState 背后逻辑">
+<meta name="twitter:description" content="前言 Emmmmm…正式开始文章前先交代个事儿，2019 开年计划那篇文章被我删了。原因没啥特别的，就真的只是脸疼…  嘛～ 好久没更 Blog 了，最近笔者正在学习 Flutter 相关的知识（貌似现在学也不算特别晚），所以后续可能会有一波连续的 Flutter 相关的更新（关键字已加粗 😂）。 因为之前我的文章大多是源码剖析相关的，所以这次决定换种方式先从 Flutter 开发的状态管理聊">
+<meta name="twitter:image" content="https://lision.me/flutter-state-management_0x01/flutter_state_management_0x01.png">
   
   
     <link rel="icon" href="/favicon.png">
@@ -104,7 +106,7 @@
   itemscope itemprop="blogPost">
 	<h2 class="title">
   	<a href="/flutter-state-management_0x01/">
-    	Flutter 状态管理 0x01
+    	Flutter 状态管理 0x01 - 基础知识及 State.setState 背后逻辑
     </a>
   </h2>
 	<time>
@@ -112,7 +114,8 @@
 	</time>
 	<section class="content">
   	<div class="article-entry" itemprop="articleBody">
-    	<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+    	<img src="/flutter-state-management_0x01/flutter_state_management_0x01.png">
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
 <p>Emmmmm…正式开始文章前先交代个事儿，2019 开年计划那篇文章被我删了。原因没啥特别的，就真的只是脸疼…</p>
 </blockquote>
 <p>嘛～ 好久没更 Blog 了，最近笔者正在学习 Flutter 相关的知识（貌似现在学也不算特别晚），所以后续<strong>可能</strong>会有一波连续的 Flutter 相关的更新（关键字已加粗 😂）。</p>
@@ -201,7 +204,11 @@
 <p><code>FloatingActionButton</code> 点击之后调用了 <code>_incrementCounter</code> 方法：</p>
 <figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">_MyHomePageState</span> <span class="keyword">extends</span> <span class="title">State</span>&lt;<span class="title">MyHomePage</span>&gt; </span>&#123;</span><br><span class="line">  <span class="built_in">int</span> _counter = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">void</span> _incrementCounter() &#123;</span><br><span class="line">    setState(() &#123;</span><br><span class="line">      _counter++;</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><code>_MyHomePageState._incrementCounter</code> 内部逻辑也仅仅是调用了 <code>State.setState</code> 而已。正如 Flutter 所宣传的公式 <code>UI = f(state)</code> 一样，开发者只需要调用 <code>State.setState</code> 传入 <code>VoidCallback</code> 内部写好相关数据更新逻辑即可更新 UI，那么 Flutter 是如何做到这一点的呢？</p>
-<h3 id="State-setState-背后逻辑"><a href="#State-setState-背后逻辑" class="headerlink" title="State.setState 背后逻辑"></a><code>State.setState</code> 背后逻辑</h3><h4 id="State-setState"><a href="#State-setState" class="headerlink" title="State.setState"></a><code>State.setState</code></h4><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@optionalTypeArgs</span></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">State</span>&lt;<span class="title">T</span> <span class="keyword">extends</span> <span class="title">StatefulWidget</span>&gt; <span class="keyword">extends</span> <span class="title">Diagnosticable</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="meta">@protected</span></span><br><span class="line">  <span class="keyword">void</span> setState(VoidCallback fn) &#123;</span><br><span class="line">    <span class="comment">// assert ...</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">dynamic</span> result = fn() <span class="keyword">as</span> <span class="keyword">dynamic</span>;</span><br><span class="line">    <span class="comment">// assert ...</span></span><br><span class="line">    _element.markNeedsBuild();</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="State-setState-背后逻辑"><a href="#State-setState-背后逻辑" class="headerlink" title="State.setState 背后逻辑"></a><code>State.setState</code> 背后逻辑</h3><img src="/flutter-state-management_0x01/state_dot_set_state.png">
+<blockquote>
+<p><code>State.setState</code> 背后调用嵌套较多，实际所做的事情理解起来却很简单。如不喜在文内阅读源码可直接跳转至「总结 <code>State.setState</code> 背后逻辑」小节看相关逻辑总结。</p>
+</blockquote>
+<h4 id="State-setState"><a href="#State-setState" class="headerlink" title="State.setState"></a><code>State.setState</code></h4><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@optionalTypeArgs</span></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">State</span>&lt;<span class="title">T</span> <span class="keyword">extends</span> <span class="title">StatefulWidget</span>&gt; <span class="keyword">extends</span> <span class="title">Diagnosticable</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">  <span class="meta">@protected</span></span><br><span class="line">  <span class="keyword">void</span> setState(VoidCallback fn) &#123;</span><br><span class="line">    <span class="comment">// assert ...</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">dynamic</span> result = fn() <span class="keyword">as</span> <span class="keyword">dynamic</span>;</span><br><span class="line">    <span class="comment">// assert ...</span></span><br><span class="line">    _element.markNeedsBuild();</span><br><span class="line">  &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>可见 <code>State.setState</code> 内除去断言的逻辑只有两行代码：</p>
 <ul>
 <li>执行入参 <code>VoidCallback</code> 逻辑，Demo 中对应 <code>_counter++;</code></li>
@@ -234,24 +241,25 @@
 </ul>
 <h4 id="Window-scheduleFrame"><a href="#Window-scheduleFrame" class="headerlink" title="Window.scheduleFrame"></a><code>Window.scheduleFrame</code></h4><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> scheduleFrame() native <span class="string">'Window_scheduleFrame'</span>;</span><br></pre></td></tr></table></figure>
 <p>这里的 <code>Window.scheduleFrame</code> 是 Native 方法，可以理解为通过 <code>Window</code> 与 Flutter engine 打交道，注册了 VSync 回调。</p>
-<h3 id="总结-State-setState"><a href="#总结-State-setState" class="headerlink" title="总结 State.setState"></a>总结 <code>State.setState</code></h3><p>简单来说 <code>State.setState</code> 就干了这么几件事：</p>
+<h3 id="总结-State-setState-背后逻辑"><a href="#总结-State-setState-背后逻辑" class="headerlink" title="总结 State.setState 背后逻辑"></a>总结 <code>State.setState</code> 背后逻辑</h3><p>简单来说 <code>State.setState</code> 就干了这么几件事：</p>
 <ul>
 <li>执行入参 <code>VoidCallback</code> 逻辑，即执行开发者写好的信息变更逻辑</li>
 <li>尝试将当前 <code>StatefulWidget</code> 对应的 <code>StatefulElement</code> 标记为 <code>dirty</code></li>
 <li>通过 <code>BuildOwner.onBuildScheduled</code> 到 <code>SchedulerPhase.scheduleFrame</code> 再到 <code>Window.scheduleFrame</code> 一步步完成了 VSync 的回调注册</li>
 </ul>
-<p>在 VSync 回调后会通过 Native 到 Flutter engine 调用 Flutter <code>_drawFrame</code> 方法，将之前标记为 <code>dirty</code> 的 Element 重新构建，别忘了我们调用 <code>State.setState</code> 就把 State 关联的 Element 标记为了 <code>dirty</code>。</p>
-<p>这里因为篇幅原因简单说下后面的逻辑，毕竟本文重点不在于 Flutter 如何渲染 Widget：</p>
+<p>注意上面 <code>State.setState</code> 第二条主要逻辑就是把 State 关联的 Element 标记为 <code>dirty</code>。在 VSync 回调后会通过 Native 到 Flutter engine 调用 Flutter <code>_drawFrame</code> 方法，将之前标记为 <code>dirty</code> 的 Element 重新构建，最终会执行到开发者熟悉的 <code>State.build</code> 方法。</p>
+<h4 id="State-build-是如何被执行的"><a href="#State-build-是如何被执行的" class="headerlink" title="State.build 是如何被执行的"></a><code>State.build</code> 是如何被执行的</h4><p>这里因为篇幅原因简单描述下后续逻辑，毕竟本文重点不在于 Flutter 如何渲染 Widget：</p>
 <ul>
 <li>State 是开发者重写 <code>StatefulWidget.createState</code> 返回的</li>
 <li>State 对应的 Element 是 <code>StatefulWidget.createElement</code> 返回的，类型为 <code>StatefulElement</code></li>
-<li><code>StatefulElement</code> 被标记为 <code>dirty</code> 后重新构建会调用 <code>StatefulElement.build</code>，源码为 <code>Widget build() =&gt; state.build(this);</code> 这样最终就走到了 <code>State.build</code> 方法</li>
+<li><code>StatefulElement</code> 被标记为 <code>dirty</code> 后在 Flutter <code>_drawFrame</code> 时重新构建会调用 <code>StatefulElement.build</code>，其源码为 <code>Widget build() =&gt; state.build(this);</code></li>
+<li><code>state.build(this)</code> 中的 <code>state</code> 就是我们的 State，开发者写的 <code>State.build</code> 方法就这样被执行了</li>
 </ul>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文是 Flutter 状态管理的开篇，为了照顾一些还没来得及学习 Flutter 或者刚入门 Flutter 的初心者所以文章从前到后做了一些铺垫介绍过渡。文章内容也比较浅显易懂，基本上是围绕 Flutter 创建 App 默认的 Demo 来展开讲解一些基本的 Flutter 知识点：</p>
 <ul>
 <li>Flutter 渲染 Widget 的三颗树概念</li>
 <li><code>StatelessWidget</code> &amp; <code>StatefulWidget</code></li>
-<li><code>State.setState</code></li>
+<li><code>State.setState</code> 背后逻辑</li>
 </ul>
 <p>由于状态管理这个话题非常大且复杂，文章因为篇幅原因就到这里，后续的文章（如果有的话）应该不会再花大篇幅做 Flutter 基础知识的铺垫和过渡了（但是该有的前置知识点肯定还会有）。时间紧张，文章难免出现谬误，估计自己也没有时间做校对了，有问题还望在评论区提醒。</p>
 
