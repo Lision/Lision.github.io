@@ -25,6 +25,7 @@
 <meta property="og:image" content="https://lision.me/flutter-state-management_0x00/how_flutter_render_widget.png">
 <meta property="og:image" content="https://lision.me/flutter-state-management_0x00/demo.gif">
 <meta property="og:image" content="https://lision.me/flutter-state-management_0x00/state_dot_set_state.png">
+<meta property="og:image" content="https://lision.me/flutter-state-management_0x00/state_set_state_logic.png">
 <meta property="og:updated_time" content="2020-03-21T15:28:00.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Flutter 状态管理 0x00 - 基础知识及 State.setState 背后逻辑">
@@ -241,7 +242,8 @@
 </ul>
 <h4 id="Window-scheduleFrame"><a href="#Window-scheduleFrame" class="headerlink" title="Window.scheduleFrame"></a><code>Window.scheduleFrame</code></h4><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> scheduleFrame() native <span class="string">'Window_scheduleFrame'</span>;</span><br></pre></td></tr></table></figure>
 <p>这里的 <code>Window.scheduleFrame</code> 是 Native 方法，可以理解为通过 <code>Window</code> 与 Flutter engine 打交道，注册了 VSync 回调。</p>
-<h3 id="总结-State-setState-背后逻辑"><a href="#总结-State-setState-背后逻辑" class="headerlink" title="总结 State.setState 背后逻辑"></a>总结 <code>State.setState</code> 背后逻辑</h3><p>简单来说 <code>State.setState</code> 就干了这么几件事：</p>
+<h3 id="总结-State-setState-背后逻辑"><a href="#总结-State-setState-背后逻辑" class="headerlink" title="总结 State.setState 背后逻辑"></a>总结 <code>State.setState</code> 背后逻辑</h3><img src="/flutter-state-management_0x00/state_set_state_logic.png">
+<p>简单来说 <code>State.setState</code> 就干了这么几件事：</p>
 <ul>
 <li>执行入参 <code>VoidCallback</code> 逻辑，即执行开发者写好的信息变更逻辑</li>
 <li>尝试将当前 <code>StatefulWidget</code> 对应的 <code>StatefulElement</code> 标记为 <code>dirty</code></li>
@@ -262,6 +264,11 @@
 <li><code>State.setState</code> 背后逻辑</li>
 </ul>
 <p>由于状态管理这个话题非常大且复杂，文章因为篇幅原因就到这里，后续的文章（如果有的话）应该不会再花大篇幅做 Flutter 基础知识的铺垫和过渡了（但是该有的前置知识点肯定还会有）。时间紧张，文章难免出现谬误，估计自己也没有时间做校对了，有问题还望在评论区提醒。</p>
+<h3 id="扩展补充"><a href="#扩展补充" class="headerlink" title="扩展补充"></a>扩展补充</h3><p>写到这里我意识到 Flutter 状态管理这个话题下可以引出很多值得挖掘的内容，而且笔者坚信声明式 UI + 响应式编程会是未来移动客户端乃至整个大前端的主流编程范式。鉴于此，后续的文章计划围绕 Flutter 状态管理逐步深挖，内容也将在 Flutter 技术栈的基础上做适度横向对比。</p>
+<p>Emmmmm…后续的文章将会发布在我的《<a href="https://xiaozhuanlan.com/flutter_state_management" target="_blank" rel="noopener">Flutter 状态管理</a>》小专栏。至于专栏定价嘛，目前随便定了 ¥69（作为小透明的我瑟瑟发抖 ing~）。其实倒也不是很在意能卖出多少份，或者从中收到多少钱，毕竟自己写文章的精力拿去随便接个朋友的私活都应该比这次通过小专栏赚到的多。比起收入更多的是对自己的鞭策吧，毕竟是收费的东西，只要有一个人订阅了这个专栏就意味着对我的肯定，我就有责任把这个方向挖掘的更深入，同时文章质量也应该比博客内容更高。</p>
+<blockquote>
+<p>其实早在去年就有幸被小专栏的开发者<a href="https://weibo.com/apkbus?is_all=1" target="_blank" rel="noopener">@安卓大王子</a>邀请去小专栏写文章，不过当时自己感觉没什么好的内容方向所以只是开通了专栏但没有任何输出。时至今日终于找到了一个值得深挖的方向，自然而然想到了这个平台。个人感觉<a href="https://xiaozhuanlan.com/" target="_blank" rel="noopener">小专栏</a>这个平台没有太重的商业化味道，这点很讨喜，在微信上面的阅读体验也比自己发公众号要好一些，更难能可贵的是省去了发公众号的繁琐操作流程。可能正是商业化氛围弱的原因，上面的文章质量还都挺不错的，推荐各位读者朋友可以上去试读或者写作。</p>
+</blockquote>
 
   	</div>
 
