@@ -105,57 +105,88 @@
 
   
   <h2 class="title">
-    <a href="/2017_2018/">
-      嘛~ 又一年了啊...
+    <a href="/oc_class_properties/">
+      巧用 Objective-C Class Properties 解耦
     </a>
   </h2>
   
   <time>
-    3月 10, 2018
+    3月 25, 2018
   </time>
   <section class="content">
-	  <img src="/2017_2018/sd.jpeg" class="">
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Emmmmm… 不知不觉已经一个多月没有提笔写文章了。</p>
-<p>年前的一段时间确实比较忙，一方面想要尽可能的站好最后一班岗，把公司交给自己的事情做好；另一方面也在寻找新的机会，幸运的是在这一过程中得到了很多牛人的赏识和认可，获得了一些帮助以及内推机会，真的很感恩。</p>
-<p>这次看机会都是在比较知名的项目或大厂中寻找的，前前后后忙碌了一个多月的时间，分别面试了头条，知乎，美团·点评，新浪，阿里巴巴这 5 家公司。</p>
-<p>比较遗憾的是由于面试头条的时间点在 1 月 初，清楚记得元旦时期自己的三天假期基本都投入到了个人开源项目 <a target="_blank" rel="noopener" href="https://github.com/Lision/LSAnimator">LSAnimator</a> 的迭代中，准备不充分加上较长时间没有参加过正式面试导致最后没能通过，辜负了彬哥的内推（囧）。</p>
-<p>值得庆幸的是后面几家公司都如愿拿到了 offer，尤其在拿到阿里巴巴口头 offer 之后的欣喜若狂仿佛就在昨天（笑），不过由于个人原因没能加入阿里巴巴，最后选择了美团·点评核心部门的 offer。</p>
-<p>本来想趁着春招之际把自己年前的面试经历总结一下，写一篇面试攻略。转念一想自己的博客里面还是应该记录一些自己的想法，于是才有这一篇水文出来（笑）。</p>
+	  <img src="/oc_class_properties/oc_class_properties.jpg" class="">
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Emmmmm… Objective-C Class Properties 早在 WWDC 2016 中就已经公示，给 Objective-C 加入这个特性主要是为了与 Swift 类型属性相互操作。</p>
+<p>官方是这么说明的：</p>
 <blockquote>
-<p>嘛~ 既然是水文，就不会有什么干货在后面粗线了。想了解上述公司面试流程以及面试题的同学可以就此打住，不用再往下看了，以免浪费时间哟~</p>
+<p>Interoperate with Swift type properties.</p>
+</blockquote>
+<p>嘛~ 虽然是为了配合 Swift 加入的新特性，不过聊胜于无哈！</p>
+<blockquote>
+<p>Note: 值得一提的是 Objective-C Class Properties 语法特性虽然是 WWDC 2016 加入的，不过由于是 Xcode 8 中 LLVM Compiler 的特性，因此也适用于 iOS 10 之前的部署版本哟~</p>
 </blockquote>
 <h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
-<li>迁徙</li>
-<li>ELSEWHERE</li>
-<li>未来</li>
+<li>LLVM</li>
+<li>Objective-C Class Properties</li>
+<li>解耦</li>
+<li>总结</li>
 </ul>
-<h2 id="迁徙"><a href="#迁徙" class="headerlink" title="迁徙"></a>迁徙</h2><p>回顾 2017 年的大事，应该就是从深圳迁徙到北京了吧… 从 14 年毕业之后就去了深圳，这一待就是 3 年，不知不觉已经对那座年轻的城市有了一些感情，一下子回到北方竟还有些舍不得。</p>
-<p>还记得刚毕业的那段日子，住在公司提供的应届生宿舍里，与其他小伙伴吃在一起，住在一起。随后从公司宿舍搬出来，拿着仅够维持在深圳生活的工资，过着紧张而迷茫的日子。拿出自己一年多攒下的钱买了人生中第一台 Mac 和 iPhone，开始自学 iOS 开发并且第一次跳槽。</p>
-<p>后面又经历了许许多多的第一次，也包括这次迁徙。</p>
-<p>嘛~ 毕竟是北方长大的孩子，初来北京的感觉就是亲切，这里的建筑，植物，小吃… 一切的一切都有着久违的亲切感。</p>
-<h2 id="ELSEWHERE"><a href="#ELSEWHERE" class="headerlink" title="ELSEWHERE"></a>ELSEWHERE</h2><img src="/2017_2018/hutong.jpg" class="">
-<p>来北京的第一份工作是在皇城根儿旁边的胡同里，一如既往的创业公司（笑），貌似除了校招去的公司是比较大的上市公司之外，自从转了 iOS 开发之后的几次选择都选了创业公司… </p>
-<p>当时清楚记得是 CTO 亲自面试，见面的第一印象就是很亲切和善，风度翩翩。聊了聊发现公司虽然是初创团队，但是每个人的素质和背景都很出众，尤其是研发团队的综合素质很高，我一个 211 垫底大学进去的时候不敢大声说话（笑）。</p>
-<p>半年多的工作中，兢兢业业，生怕因为自己的失误拖了整个团队的后腿，好在一直没有出什么纰漏，上级对我的工作也比较满意，在里面与各位同事相处的也很愉快…</p>
-<p>不过好事多磨，团队内部也发生过一些摩擦，带我一起去胡同里面小学打球的两个大哥先后离职，最后我也由于种种原因离开了…</p>
-<p>虽然相处时间算不上长，但是在 ELSEWHERE 的这段时间成长很多，与大家相处的也很愉快，特别是研发部的小伙伴们，现在还一直有来往呢。也许，下次搬家会考虑在一起合租一套大房子呢~</p>
-<p>这里也被我命名为 ELSEWHERE，旨在纪念这段来北京后的第一份工作，也顺便祝福 ELSEWHERE 能杀出重围，越走越远吧…</p>
-<img src="/2017_2018/elsewhere.jpeg" class="">
-<h2 id="未来"><a href="#未来" class="headerlink" title="未来"></a>未来</h2><p>想自己毕业三年有余，却一事无成…</p>
-<p>说出来自己都想笑，一直选择创业公司是因为想要改变世界…</p>
-<p>自己当初在大学里拿到奖牌后吹过的牛逼还历历在目…</p>
-<p>以前一直不懂为什么社会是个大染缸，现在身上已经被沾染上一些社会的颜色之后才明白这个比喻是多么的贴切而又无可奈何。时间也确实是一把利器，这才三年多的光景，就把梦想越磨越小，小到不见…</p>
-<p>对自己说，也许现在我还没有创业的资本，等日后多些积累定要卷土重来…</p>
-<p>对自己说，也许去大厂并非只是做一颗螺丝钉，毕竟用户量大，自己做的事情即使再小再微不足道，都是可以对用户端有些许影响的，从某种意义上讲也实现了改变人们的生活，改变了世界…</p>
-<p>以后的事，谁又能说的准呢？只希望自己可以变得越来越强…</p>
-<img src="/2017_2018/cat.jpg" class="">
+<h2 id="LLVM"><a href="#LLVM" class="headerlink" title="LLVM"></a>LLVM</h2><img src="/oc_class_properties/llvm.jpg" class="">
+<p><a target="_blank" rel="noopener" href="https://llvm.org/">LLVM 官网</a> 对于 LLVM 的定义：</p>
+<blockquote>
+<p>Note: The LLVM Project is a collection of modular and reusable compiler and toolchain technologies. </p>
+</blockquote>
+<p>Emmmmm… 有趣的是，有的文章把 LLVM 强行展开为 “low level virtual machine” 译为 “低级别虚拟机”，不过在 <a target="_blank" rel="noopener" href="https://llvm.org/">LLVM 官网</a> 可以看到官方明示 LLVM 与传统的虚拟机<strong>没有一毛钱关系</strong>，名称 “LLVM” 本身<strong>不是缩写</strong>，它仅仅是项目的名称而已~</p>
+<p>嘛~ 可能有的同学不能理解为何 LLVM 是一个编译器工具链集合？这就要从 Apple 的编译器历史讲起咯~ </p>
+<p>很久很久以前… 算了，我感觉要跑题了（囧），这里简单列一下 Apple 采用过的编译方案吧：</p>
+<ul>
+<li>GCC</li>
+<li>LLVM &amp; GCC</li>
+<li>LLVM Compiler</li>
+</ul>
+<h3 id="GCC"><a href="#GCC" class="headerlink" title="GCC"></a>GCC</h3><p><a target="_blank" rel="noopener" href="https://gcc.gnu.org/">GCC, the GNU Compiler Collection</a> 是一套由 GNU 开发的编程语言编译器，最初作为 <a target="_blank" rel="noopener" href="http://www.gnu.org/gnu/thegnuproject.html">GNU 操作系统</a> 的编译器使用，后面发展成为类 Unix 操作系统以及 Apple Mac OS X 操作系统的标准编译器。</p>
+<p>原本 GCC 仅能处理 C 语言的编译，不过 GCC 很快扩展以支持 C++，之后的 GCC 越发全面，支持 Objective-C，Fortran，Ada，以及 Go 语言。</p>
+<p>值得一提的是 GCC 是一套以 GPL 以及 LGPL 许可证锁发行的 100% 自由软件，这意味着<strong>用户可以自由地运行，拷贝，分发，学习，修改并改进该软件</strong>。</p>
+<h3 id="LLVM-amp-GCC"><a href="#LLVM-amp-GCC" class="headerlink" title="LLVM &amp; GCC"></a>LLVM &amp; GCC</h3><p>LLVM 我们前面介绍过了，是模块化 &amp; 可重用性编译器以及工具链技术集合。</p>
+<p>LLVM 能够进行程序语言的 <strong>编译期优化、链接优化、在线编译优化、代码生成</strong>。</p>
+<h3 id="LLVM-Compiler"><a href="#LLVM-Compiler" class="headerlink" title="LLVM Compiler"></a>LLVM Compiler</h3><p>前面介绍过 GCC 支持很多语言，系统架构庞大而笨重，而 Apple 大量使用的 Objective-C 在 GCC 中顺位（优先级）较低。此外，GCC 作为一个纯粹的编译系统，在与 IDE 配合方面的表现也很差。</p>
+<p>So，Apple 决定从零开始写 C，C++，Objective-C 的编译器 Clang。</p>
+<p>至此，Apple 彻底与 GCC 了断。</p>
+<h2 id="Objective-C-Class-Properties"><a href="#Objective-C-Class-Properties" class="headerlink" title="Objective-C Class Properties"></a>Objective-C Class Properties</h2><img src="/oc_class_properties/oc_feature.jpg" class="">
+<p>Objective-C Class Properties 作为 Objective-C 新语法特性在 <a target="_blank" rel="noopener" href="https://developer.apple.com/videos/play/wwdc2016/405/">WWDC2016 What’s New in LLVM</a> 中公示，表示 Xcode 8 之后可以使用这一新语法特性。</p>
+<p>使用方式很简单：</p>
+<ul>
+<li>Declared with <code>class</code> flag </li>
+<li>Accessed with dot syntax</li>
+<li>Never synthesized</li>
+<li>Use <code>@dynamic</code> to defer to runtime</li>
+</ul>
+<h3 id="Declared-with-class-flag"><a href="#Declared-with-class-flag" class="headerlink" title="Declared with class flag"></a>Declared with <code>class</code> flag</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyType</span> : <span class="title">NSObject</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">class</span>) <span class="built_in">NSString</span> *someString;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="Accessed-with-dot-syntax"><a href="#Accessed-with-dot-syntax" class="headerlink" title="Accessed with dot syntax"></a>Accessed with dot syntax</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSLog</span>(<span class="string">@&quot;format string: %@&quot;</span>, MyType.someString);</span><br></pre></td></tr></table></figure>
+<h3 id="Never-synthesized"><a href="#Never-synthesized" class="headerlink" title="Never synthesized"></a>Never synthesized</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyType</span></span></span><br><span class="line"><span class="keyword">static</span> <span class="built_in">NSString</span> *_someString = <span class="literal">nil</span>;</span><br><span class="line">+ (<span class="built_in">NSString</span> *)someString &#123; <span class="keyword">return</span> _someString; &#125;</span><br><span class="line">+ (<span class="type">void</span>)setSomeString:(<span class="built_in">NSString</span> *)newString &#123; _someString = newString; &#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h3 id="Use-dynamic-to-defer-to-runtime"><a href="#Use-dynamic-to-defer-to-runtime" class="headerlink" title="Use @dynamic to defer to runtime"></a>Use <code>@dynamic</code> to defer to runtime</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyType</span></span></span><br><span class="line"><span class="keyword">@dynamic</span> (<span class="keyword">class</span>) someString;</span><br><span class="line">+ (<span class="type">BOOL</span>)resolveClassMethod:(SEL) name &#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h2 id="解耦"><a href="#解耦" class="headerlink" title="解耦"></a>解耦</h2><p>笔者在做项目组件下沉时，遇到一个问题，正好适用于 Objective-C Class Properties 发挥：将要下沉的组件库中某系统类 Categroy 引用了业务层某方法。</p>
+<img src="/oc_class_properties/before_decoupling.png" class="">
+<p>业务层应该依赖于将要下沉的组件，而组件既然要下沉就不应该再反过来依赖上层业务实现！</p>
+<p>按照常规思路，想要把上层业务中被依赖的部分一起随组件下沉，但是发现被依赖的部分虽然也属于一个较为基础的模块，不过此模块现阶段不做下沉…</p>
+<p>后来经过组内大佬指点，使用 Objective-C Class Properties 解决了这个问题，即将上层业务被依赖的部分化作将要下沉组件依赖方系统类 Categroy 的 Class Properties。</p>
+<blockquote>
+<p>Note: 在 Categroy 中写 Objective-C Class Properties 需要使用 Runtime 关联方法。</p>
+</blockquote>
+<img src="/oc_class_properties/after_decoupling.png" class="">
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>介绍了 LLVM 顺便提到了 Apple 的编译系统发展简史。</li>
+<li>使用官方 Demo 简单介绍了 Objective-C Class Properties 语法特性的书写方式。</li>
+<li>提供了一种巧妙使用 Objective-C Class Properties 解耦的思路。</li>
+</ul>
+<p>文章写得比较用心（是我个人的原创文章，转载请注明 <a href="https://lision.me/">https://lision.me/</a>），如果发现错误会优先在我的 <a href="https://lision.me/">个人博客</a> 中更新。如果有任何问题欢迎在我的微博 <a target="_blank" rel="noopener" href="https://weibo.com/lisioncode">@Lision</a> 联系我~</p>
+<p>希望我的文章可以为你带来价值~</p>
 
 
     
     
     
 	  <div class="tags">
-      <a class="tag-none-link" href="/tags/summary/" rel="tag">summary</a>
+      <a class="tag-none-link" href="/tags/llvm/" rel="tag">llvm</a>
 	  </div>
     
 

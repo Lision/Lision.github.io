@@ -171,6 +171,78 @@
   </section>
 </article>
   
+    <article class="post ">
+
+  
+  <h2 class="title">
+    <a href="/hidden-en/">
+      Hidden
+    </a>
+  </h2>
+  
+  <time>
+    6月 1, 2023
+  </time>
+  <section class="content">
+	  <img src="/hidden-en/dark.jpg" class="">
+<blockquote>
+<p>The article was translated from Chinese by ChatGPT.</p>
+</blockquote>
+<h1 id="Hidden-Official-English-Guide-Understanding-Hidden"><a href="#Hidden-Official-English-Guide-Understanding-Hidden" class="headerlink" title="Hidden Official English Guide: Understanding Hidden"></a>Hidden Official English Guide: Understanding Hidden</h1><p>This article was written when I was about to complete the first version of my app, Hidden, in my spare time. The purpose is to help users of Hidden better understand the product logic through reading this article and use it more scientifically and reasonably. Actually, I also hope that users can provide optimization suggestions after reading and using it. Readers with scientific Internet access capabilities can directly leave a message for discussion through comments at the bottom of the article; inconvenient users can find my contact information (GitHub/Twitter/Weibo) at the bottom of the page.</p>
+<h1 id="Index"><a href="#Index" class="headerlink" title="Index"></a>Index</h1><ul>
+<li><p>What is Hidden?</p>
+</li>
+<li><p>Core Concepts</p>
+</li>
+<li><p>Design Philosophy</p>
+</li>
+<li><p>Helplessness</p>
+</li>
+<li><p>Future Plans</p>
+</li>
+</ul>
+<h1 id="What-is-Hidden"><a href="#What-is-Hidden" class="headerlink" title="What is Hidden?"></a>What is Hidden?</h1><p>Hidden is an app that I made in my spare time that helps users hide apps they want to hide.</p>
+<p>Unlike “Remove from Home Screen” in iOS desktop editing, Hidden can truly put apps into an <strong>uninstalled state</strong>, such as hiding related desktop widgets, shortcuts for App-related instructions, desktop searches or even App resource libraries cannot search for hidden Apps.</p>
+<p>Emmm… This feeling seems like what I described before - it seems to be in an uninstalled state but not really uninstalled. It can be restored at any time so that the App reappears.</p>
+<p>You can think of Hidden as a privacy tool to hide private apps when others borrow your phone; you can think of it as an efficiency tool to hide distracting apps while working or focusing attention; you can think of it as a parental management tool to hide Apps that have been used too much and may affect children’s health if necessary.</p>
+<p>In short, based on the core function of hiding applications, many interesting uses can be derived from them. Therefore, there are many future directions for iteration on Hidden.</p>
+<h1 id="Core-Concepts"><a href="#Core-Concepts" class="headerlink" title="Core Concepts"></a>Core Concepts</h1><ul>
+<li><p><strong>Authorization</strong>: The main ability of Hidden is to hide and lock Apps. This ability comes from the ScreenTime API. Therefore, without authorization, Hidden is almost useless. This is also why Hidden applies for permission to users who have not authorized ScreenTime.</p>
+</li>
+<li><p><strong>Privacy</strong>: The design of the ScreenTime API pays great attention to privacy and security. Hidden does not know which Apps you have installed or what Apps you want to hide. In fact, using Hidden does not require network authorization at present, and requesting network permissions only synchronizes AppStore information.</p>
+</li>
+<li><p><strong>Limitation</strong>: Hidden only works on Apps that do not have ScreenTime API authorization. This means that Hidden cannot hide itself, so it is not very interesting. It also means that if you want to cancel the control of Hidden, just revoke the ScreenTime authorization obtained by Hidden or simply uninstall it, and those Apps controlled by hidden will return to their original state.</p>
+</li>
+</ul>
+<h1 id="Design-Philosophy"><a href="#Design-Philosophy" class="headerlink" title="Design Philosophy"></a>Design Philosophy</h1><ul>
+<li><p><strong>Application grouping</strong>: Managing individual applications can be cumbersome, so Hidden introduces the concept of grouping in card form display. The card information does not show which Apps are inside because Hidden really doesn’t know what’s inside each group of apps. Some similar products on the market can display what apps users choose (guessing matching through AppToken in garbled form through ScreenTime API), which violates Apple’s usage recommendations for screen time authorizations and may result in revocation of authorizations risk; therefore I temporarily don’t plan to follow up this feature.</p>
+</li>
+<li><p><strong>Identity authentication</strong>: People who see content in Hidde should be device owners. I am lazy and only did biometric authentication - Face ID or Touch ID - because iOS16-compatible devices (the lowest system version for local device authorization) seem There are no devices without biometric hardware capabilities anymore; I really don’t have any motivation to make a password verification mechanism built into Hiddne (if someone wants to bypass hidden restrictions If they can pass biometrics, it means they can revoke Hiddne’s ScreenTime permission through system settings, so self-built password verification is meaningless).</p>
+</li>
+<li><p><strong>Uninstall limitation</strong>: If Hidden is no longer so niche, people who get your device may still be able to see the Apps you don’t want them to see by uninstalling Hidden even if they do not authenticate. Therefore, Hidden has this function; corresponding functions also include “Limit installation of applications” and “Limit in-app purchases”, which I think are very useful for guardianship scenarios where parents need to restrict their children from installing new mobile games or buying game props/rewarding anchors.</p>
+</li>
+</ul>
+<h1 id="Helplessness"><a href="#Helplessness" class="headerlink" title="Helplessness"></a>Helplessness</h1><ul>
+<li><p><strong>Icon disorder</strong>: When hidden apps reappear, they will be rearranged on the device desktop according to some rules, as if they were really uninstalled when hidden and then reinstalled from the App Store when they appear again. There is currently no solution for this problem, but you can bypass it by reserving corresponding space on the second screen or referring to the prompt when switching to hide mode for the first time in Hidde. Of course, you can also try disabling apps through Hidden’s lock mode. Locking won’t cause disorder and is suitable for non-essential hiding scenarios such as self-discipline.</p>
+</li>
+<li><p><strong>Simple interface</strong>: Um… because I haven’t found a cooperating designer yet, so I did all of Hidden’s interaction and interface design myself. It does have a bit of bias towards minimalism. If you carefully experience it, you may find that all interaction paths are as short as possible for higher efficiency. The interface elements are mostly simple graphics that directly map to code logic. To say more, actually “H” in AppIcon not only stands for “Hidden”, but also represents a fence image which means constraint and control; The theme color is a mixture of green and blue representing health/distance sense and reliability.</p>
+</li>
+</ul>
+<h1 id="Future-plans"><a href="#Future-plans" class="headerlink" title="Future plans"></a>Future plans</h1><p>As mentioned at the beginning of this article, many interesting uses can be derived from Hidden’s core function of hiding applications; therefore there are many directions for future iterations of Hidden. Honestly speaking, my current plan for Hidden leans more towards efficient tools; therefore subsequent iterations will probably move in this direction.</p>
+<p>If you have good ideas or suggestions or feedback questions about Hidden app development please feel free to contact me (email recommended - recently logged into Weibo account only to discover an unread message from two years ago). Valuable suggestions and ideas will be implemented accordingly with small gifts given back depending on circumstances (haven’t thought about what gift yet).</p>
+
+
+    
+    
+    
+	  <div class="tags">
+      <a class="tag-none-link" href="/tags/app/" rel="tag">App</a><a class="tag-none-link" href="/tags/hidden/" rel="tag">hidden</a><a class="tag-none-link" href="/tags/ios/" rel="tag">iOS</a><a class="tag-none-link" href="/tags/personal-project/" rel="tag">personal project</a>
+	  </div>
+    
+
+  </section>
+</article>
+  
 </section>
 
 

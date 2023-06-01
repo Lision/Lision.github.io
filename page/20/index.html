@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  
+  <title>聊宅</title>
+  <meta name="description" content="美麗的太陽照常升起 苦痛的人們依舊歇斯底裏" />
+  <meta name="keywords" content="ios,objective-c,swift,python,javascript,otaku,lision" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="敲代码的，比较宅的内种">
+<meta property="og:type" content="website">
+<meta property="og:title" content="聊宅">
+<meta property="og:url" content="https://lision.me/page/20/index.html">
+<meta property="og:site_name" content="聊宅">
+<meta property="og:description" content="敲代码的，比较宅的内种">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Lision">
+<meta property="article:tag" content="ios,objective-c,swift,python,javascript,otaku,lision">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+
+	<script src="https://use.typekit.net/eyf3hir.js"></script>
+  <script>try{Typekit.load({ async: false });}catch(e){}</script>
+  
+<link rel="stylesheet" href="/style.css">
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+  
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=" + "UA-118743071-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-118743071-1');
+</script>
+<!-- End Google Analytics -->
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+
+  <script>setLoadingBarProgress(20)</script>
+  
+  <div id="site-wrapper">
+    
+    <header id="header">
+	<div id="header-wrapper" class="clearfix">
+		<a id="logo" href="/">
+			<img src="/images/logo.png" />
+			<span id="site-desc">
+			  otaku's self-cultivation
+      </span>
+		</a>
+		<button id="site-nav-switch">
+	    <span class="icon icon-menu"></span>
+	  </button>
+	</div>
+	<aside id="site-menu">
+  	<nav>
+  		
+        <a href="/" class="nav-home nav">
+          首页
+        </a>
+      
+        <a href="/archives" class="nav-archives nav">
+          归档
+        </a>
+      
+        <a target="_blank" rel="noopener" href="https://github.com/Lision" class="nav-about nav">
+          关于
+        </a>
+      
+    </nav>
+	</aside>
+</header>
+    <script>setLoadingBarProgress(40);</script>
+    
+    <main id="main" role="main">
+      
+
+
+
+
+
+<section class="post-list">
+	
+    <article class="post ">
+
+  
+  <h2 class="title">
+    <a href="/ios_native_js/">
+      iOS 与 JS 交互开发知识总结
+    </a>
+  </h2>
+  
+  <time>
+    10月 23, 2017
+  </time>
+  <section class="content">
+	  <img src="/ios_native_js/hybrid.jpg" class="">
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Web 页面中的 JS 与 iOS Native 如何交互是每个 iOS 猿必须掌握的技能。而说到 Native 与 JS 交互，就不得不提一嘴 Hybrid。</p>
+<p>Hybrid 的翻译结果并不是很文明（擦汗，不知道为啥很多翻译软件会译为“杂种”，但我更喜欢将它翻译为“混合、混血”），Hybrid Mobile App 我对它的理解为通过 Web 网络技术（如 HTML，CSS 和 JavaScript）与 Native 相结合的混合移动应用程序。</p>
+<p>那么我们来看一下 Hybrid 对比 Native 有哪些优劣：</p>
+<img src="/ios_native_js/hybrid_vs_native.jpg" class="">
+<p>因为 Hybrid 的灵活性（更改 Web 页面不必重新发版）以及通用性（一份 H5 玩遍所有平台）再加上门槛低（前端猿可以无痛上手开撸）的优势，所以在非核心功能模块使用 Web 通过 Hybrid 的方式来实现可能从各方面都会优于 Native。而 Native 则可以在核心功能和设备硬件的调用上为 JS 提供强有力的支持。</p>
+<h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
+<li>Hybrid 的发展简史</li>
+<li>JavaScriptCore 简介</li>
+<li>iOS Native 与 JS 交互的方法</li>
+<li>WKWebView 与 JS 交互的特有方法</li>
+<li>JS 通过 Native 调用 iOS 设备摄像头的 Demo</li>
+<li>总结</li>
+</ul>
+<h2 id="Hybrid-的发展简史"><a href="#Hybrid-的发展简史" class="headerlink" title="Hybrid 的发展简史"></a>Hybrid 的发展简史</h2><p>下面简述一下 Hybrid 的发展史：</p>
+<h3 id="1-H5-发布"><a href="#1-H5-发布" class="headerlink" title="1.H5 发布"></a>1.H5 发布</h3><img src="/ios_native_js/html5.png" class="">
+<p>Html5 是在 2014 年 9 月份正式发布的，这一次的发布做了一个最大的改变就是“从以前的 XML 子集升级成为一个独立集合”。</p>
+<h3 id="2-H5-渗入-Mobile-App-开发"><a href="#2-H5-渗入-Mobile-App-开发" class="headerlink" title="2.H5 渗入 Mobile App 开发"></a>2.H5 渗入 Mobile App 开发</h3><p>Native APP 开发中有一个 webview 的组件（Android 中是 webview，iOS 有 UIWebview和 WKWebview），这个组件可以加载 Html 文件。</p>
+<p>在 H5 大行其道之前，webview 加载的 web 页面很单调（因为只能加载一些静态资源），自从 H5 火了之后，前端猿们开发的 H5 页面在 webview 中的表现不俗使得 H5 开发慢慢渗透到了 Mobile App 开发中来。</p>
+<h3 id="3-Hybrid-现状"><a href="#3-Hybrid-现状" class="headerlink" title="3.Hybrid 现状"></a>3.Hybrid 现状</h3><p>虽然目前已经出现了 RN 和 Weex 这些使用 JS 写 Native App 的技术，但是 Hybrid 仍然没有被淘汰，市面上大多数应用都不同程度的引入了 Web 页面。</p>
+<h2 id="JavaScriptCore"><a href="#JavaScriptCore" class="headerlink" title="JavaScriptCore"></a>JavaScriptCore</h2><p>JavaScriptCore 这个库是 Apple 在 iOS 7 之后加入到标准库的，它对 iOS Native 与 JS 做交互调用产生了划时代的影响。</p>
+<p>JavaScriptCore 大体是由 4 个类以及 1 个协议组成的：</p>
+<img src="/ios_native_js/javascriptcore_framework.jpg" class="">
+<ul>
+<li>JSContext 是 JS 执行上下文，你可以把它理解为 JS 运行的环境。</li>
+<li>JSValue 是对 JavaScript 值的引用，任何 JS 中的值都可以被包装为一个 JSValue。</li>
+<li>JSManagedValue 是对 JSValue 的包装，加入了“conditional retain”。</li>
+<li>JSVirtualMachine 表示 JavaScript 执行的独立环境。</li>
+</ul>
+<p>还有 JSExport 协议：</p>
+<blockquote>
+<p>实现将 Objective-C 类及其实例方法，类方法和属性导出为 JavaScript 代码的协议。</p>
+</blockquote>
+<p>这里的 JSContext，JSValue，JSManagedValue 相对比较好理解，下面我们把 JSVirtualMachine 单拎出来说明一下：</p>
+<h3 id="JSVirtualMachine-的用法和其与-JSContext-的关系"><a href="#JSVirtualMachine-的用法和其与-JSContext-的关系" class="headerlink" title="JSVirtualMachine 的用法和其与 JSContext 的关系"></a>JSVirtualMachine 的用法和其与 JSContext 的关系</h3><img src="/ios_native_js/jsvirtualmachine.jpg" class="">
+<p>官方文档的介绍：</p>
+<blockquote>
+<p>JSVirtualMachine 实例表示用于 JavaScript 执行的独立环境。 您使用此类有两个主要目的：支持并发 JavaScript 执行，并管理 JavaScript 和 Objective-C 或 Swift 之间桥接的对象的内存。</p>
+</blockquote>
+<p>关于 JSVirtualMachine 的使用，一般情况下我们不用手动去创建 JSVirtualMachine。因为当我们获取 JSContext 时，获取到的 JSContext 从属于一个 JSVirtualMachine。</p>
+<p>每个 JavaScript 上下文（JSContext 对象）都属于一个 JSVirtualMachine。 每个 JSVirtualMachine 可以包含多个上下文，允许在上下文之间传递值（JSValue 对象）。 但是，每个 JSVirtualMachine 是不同的，即我们不能将一个 JSVirtualMachine 中创建的值传递到另一个 JSVirtualMachine 中的上下文。</p>
+<p>JavaScriptCore API 是线程安全的 —— 例如，我们可以从任何线程创建 JSValue 对象或运行 JS 脚本 - 但是，尝试使用相同 JSVirtualMachine 的所有其他线程将被阻塞。 要在多个线程上同时（并发）运行 JavaScript 脚本，请为每个线程使用单独的 JSVirtualMachine 实例。</p>
+<h3 id="JSValue-与-JavaScript-的转换表"><a href="#JSValue-与-JavaScript-的转换表" class="headerlink" title="JSValue 与 JavaScript 的转换表"></a>JSValue 与 JavaScript 的转换表</h3><table>
+<thead>
+<tr>
+<th>OBJECTIVE-C</th>
+<th>JAVASCRIPT</th>
+<th>JSVALUE CONVERT</th>
+<th>JSVALUE CONSTRUCTOR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>nil</td>
+<td>undefined</td>
+<td></td>
+<td>valueWithUndefinedInContext</td>
+</tr>
+<tr>
+<td>NSNull</td>
+<td>null</td>
+<td></td>
+<td>valueWithNullInContext:</td>
+</tr>
+<tr>
+<td>NSString</td>
+<td>string</td>
+<td>toString</td>
+<td></td>
+</tr>
+<tr>
+<td>NSNumber</td>
+<td>number, boolean</td>
+<td>toNumber<br />toBool<br />toDouble<br />toInt32<br />toUInt32</td>
+<td>valueWithBool:inContext:<br />valueWithDouble:inContext:<br />valueWithInt32:inContext:<br />valueWithUInt32:inContext:</td>
+</tr>
+<tr>
+<td>NSDictionary</td>
+<td>Object object</td>
+<td>toDictionary</td>
+<td>valueWithNewObjectInContext:</td>
+</tr>
+<tr>
+<td>NSArray</td>
+<td>Array object</td>
+<td>toArray</td>
+<td>valueWithNewArrayInContext:</td>
+</tr>
+<tr>
+<td>NSDate</td>
+<td>Date object</td>
+<td>toDate</td>
+<td></td>
+</tr>
+<tr>
+<td>NSBlock</td>
+<td>Function object</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>id</td>
+<td>Wrapper object</td>
+<td>toObject<br />toObjectOfClass:</td>
+<td>valueWithObject:inContext:</td>
+</tr>
+<tr>
+<td>Class</td>
+<td>Constructor object</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="iOS-Native-与-JS-交互"><a href="#iOS-Native-与-JS-交互" class="headerlink" title="iOS Native 与 JS 交互"></a>iOS Native 与 JS 交互</h2><p>对于 iOS Native 与 JS 交互我们先从调用方向上分为两种情况来看：</p>
+<ul>
+<li>JS 调用 Native</li>
+<li>Native 调用 JS</li>
+</ul>
+<img src="/ios_native_js/call_eachother.jpg" class="">
+<h3 id="JS-调用-Native"><a href="#JS-调用-Native" class="headerlink" title="JS 调用 Native"></a>JS 调用 Native</h3><p>其实 JS 调用 iOS Native 也分为两种实现方式：</p>
+<ul>
+<li>假 Request 方法</li>
+<li>JavaScriptCore 方法</li>
+</ul>
+<h4 id="假-Request-方法"><a href="#假-Request-方法" class="headerlink" title="假 Request 方法"></a>假 Request 方法</h4><p>原理：其实这种方式就是利用了 webview 的代理方法，在 webview 开始请求的时候截获请求，判断请求是否为约定好的假请求。如果是假请求则表示是 JS 想要按照约定调用我们的 Native 方法，按照约定去执行我们的 Native 代码就好。</p>
+<h5 id="UIWebView"><a href="#UIWebView" class="headerlink" title="UIWebView"></a>UIWebView</h5><p>UIWebView 代理有用于截获请求的函数，在里面做判断就好：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">BOOL</span>)webView:(<span class="built_in">UIWebView</span> *)webView shouldStartLoadWithRequest:(<span class="built_in">NSURLRequest</span> *)request navigationType:(<span class="built_in">UIWebViewNavigationType</span>)navigationType &#123;</span><br><span class="line">    <span class="built_in">NSURL</span> *url = request.URL;</span><br><span class="line">    <span class="comment">// 与约定好的函数名作比较</span></span><br><span class="line">    <span class="keyword">if</span> ([[url scheme] isEqualToString:<span class="string">@&quot;your_func_name&quot;</span>]) &#123;</span><br><span class="line">        <span class="comment">// just do it</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="WKWebView"><a href="#WKWebView" class="headerlink" title="WKWebView"></a>WKWebView</h5><p>WKWebView 有两个代理，一个是 WKNavigationDelegate，另一个是 WKUIDelegate。WKUIDelegate 我们在下面的章节会讲到，这里我们需要设置并实现它的 WKNavigationDelegate 方法：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">void</span>)webView:(<span class="built_in">WKWebView</span> *)webView decidePolicyForNavigationAction:(<span class="built_in">WKNavigationAction</span> *)navigationAction decisionHandler:(<span class="type">void</span> (^)(<span class="built_in">WKNavigationActionPolicy</span>))decisionHandler &#123;</span><br><span class="line">    <span class="built_in">NSURL</span> *url = navigationAction.request.URL;</span><br><span class="line">    <span class="comment">// 与约定好的函数名作比较</span></span><br><span class="line">    <span class="keyword">if</span> ([[url scheme] isEqualToString:<span class="string">@&quot;your_func_name&quot;</span>]) &#123;</span><br><span class="line">        <span class="comment">// just do it</span></span><br><span class="line">        decisionHandler(<span class="built_in">WKNavigationActionPolicyCancel</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    decisionHandler(<span class="built_in">WKNavigationActionPolicyAllow</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Note: <code>decisionHandler</code> 是当你的应用程序决定是允许还是取消导航时，要调用的代码块。 该代码块使用单个参数，它必须是枚举类型 <code>WKNavigationActionPolicy</code> 的常量之一。如果不调用 <code>decisionHandler</code> 会引起 crash。</p>
+</blockquote>
+<p>这里补充一下 JS 代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">callNative</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="title function_">loadURL</span>(<span class="string">&quot;your_func_name://xxx&quot;</span>);</span><br><span class="line">&#125;   </span><br></pre></td></tr></table></figure>
+<p>然后拿个 button 标签用一下就好了：<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;button type=&quot;button&quot; onclick=&quot;callNative()&quot;&gt;Call Native!&lt;/button&gt;</span><br></pre></td></tr></table></figure></p>
+<h4 id="JavaScriptCore-方法"><a href="#JavaScriptCore-方法" class="headerlink" title="JavaScriptCore 方法"></a>JavaScriptCore 方法</h4><p>iOS 7 有了 JavaScriptCore 专门用来做 Native 与 JS 的交互。我们可以在 webview 完成加载之后获取 JSContext，然后利用 JSContext 将 JS 中的对象引用过来用 Native 代码对其作出解释或响应：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 首先引入 JavaScriptCore 库</span></span><br><span class="line"><span class="meta">#import <span class="string">&lt;JavaScriptCore/JavaScriptCore.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 然后再 UIWebView 的完成加载的代理方法中</span></span><br><span class="line">- (<span class="type">void</span>)webViewDidFinishLoad:(<span class="built_in">UIWebView</span> *)webView &#123;</span><br><span class="line">    <span class="comment">// 获取 JS 上下文</span></span><br><span class="line">    jsContext = [webView valueForKeyPath:<span class="string">@&quot;documentView.webView.mainFrame.javaScriptContext&quot;</span>];</span><br><span class="line">    <span class="comment">// 做引用，将 JS 内的元素引用过来解释，比如方法可以解释成 Block，对象也可以指向 OC 的 Native 对象哦</span></span><br><span class="line">    jsContext[<span class="string">@&quot;iosDelegate&quot;</span>] = <span class="keyword">self</span>;</span><br><span class="line">    jsContext[<span class="string">@&quot;yourFuncName&quot;</span>] = ^(<span class="type">id</span> parameter)&#123;</span><br><span class="line">        <span class="comment">// 注意这里的线程默认是 web 处理的线程，如果涉及主线程操作需要手动转到主线程</span></span><br><span class="line">        <span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">        <span class="comment">// your code</span></span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而 JS 这边代码更简单了，干脆声明一个不解释的函数（约定好名字的），用于给 Native 做引用：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> parameter = xxx;</span><br><span class="line"><span class="title function_">yourFuncName</span>(parameter);</span><br></pre></td></tr></table></figure>
+<h3 id="iOS-Native-调用-JS"><a href="#iOS-Native-调用-JS" class="headerlink" title="iOS Native 调用 JS"></a>iOS Native 调用 JS</h3><p>iOS Native 调用 JS 的实现方法也被 JavaScriptCore 划分开来：</p>
+<ul>
+<li>webview 直接注入 JS 并执行</li>
+<li>JavaScriptCore 方法</li>
+</ul>
+<h4 id="webview-直接注入-JS-并执行"><a href="#webview-直接注入-JS-并执行" class="headerlink" title="webview 直接注入 JS 并执行"></a>webview 直接注入 JS 并执行</h4><p>在 iOS 平台，webview 有注入并执行 JS 的 API。</p>
+<h5 id="UIWebView-1"><a href="#UIWebView-1" class="headerlink" title="UIWebView"></a>UIWebView</h5><p>UIWebView 有直接注入 JS 的方法：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSString</span> *jsStr = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@&quot;showAlert(&#x27;%@&#x27;)&quot;</span>, <span class="string">@&quot;alert msg&quot;</span>];</span><br><span class="line">[_webView stringByEvaluatingJavaScriptFromString:jsStr];</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Note: 这个方法会返回运行 JS 的结果（<code>nullable NSString *</code>），它是一个同步方法，会阻塞当前线程！尽管此方法不被弃用，但最佳做法是使用 <code>WKWebView</code> 类的 <code>evaluateJavaScript：completionHandler：method</code>。</p>
+<p>官方文档：<br>The stringByEvaluatingJavaScriptFromString: method waits synchronously for JavaScript evaluation to complete. If you load web content whose JavaScript code you have not vetted, invoking this method could hang your app. Best practice is to adopt the WKWebView class and use its evaluateJavaScript:completionHandler: method instead.</p>
+</blockquote>
+<h5 id="WKWebView-1"><a href="#WKWebView-1" class="headerlink" title="WKWebView"></a>WKWebView</h5><p>不同于 UIWebView，WKWebView 注入并执行 JS 的方法不会阻塞当前线程。因为考虑到 webview 加载的 web content 内 JS 代码不一定经过验证，如果阻塞线程可能会挂起 App。</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSString</span> *jsStr = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@&quot;setLocation(&#x27;%@&#x27;)&quot;</span>, <span class="string">@&quot;北京市东城区南锣鼓巷纳福胡同xx号&quot;</span>];</span><br><span class="line">[_webview evaluateJavaScript:jsStr completionHandler:^(<span class="type">id</span> _Nullable result, <span class="built_in">NSError</span> * _Nullable error) &#123;</span><br><span class="line">    <span class="built_in">NSLog</span>(<span class="string">@&quot;%@----%@&quot;</span>, result, error);</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Note: 方法不会阻塞线程，而且它的回调代码块总是在主线程中运行。</p>
+<p>官方文档：<br>Evaluates a JavaScript string.<br>The method sends the result of the script evaluation (or an error) to the completion handler. The completion handler always runs on the main thread.</p>
+</blockquote>
+<h4 id="JavaScriptCore-方法-1"><a href="#JavaScriptCore-方法-1" class="headerlink" title="JavaScriptCore 方法"></a>JavaScriptCore 方法</h4><p>上面简单提到过 JavaScriptCore 库提供的 JSValue 类，这里再提供一下官方文档对 JSValue 的介绍翻译：</p>
+<blockquote>
+<p>JSValue 实例是对 JavaScript 值的引用。 您可以使用 JSValue 类来转换 JavaScript 和 Objective-C 或 Swift 之间的基本值（如数字和字符串），以便在本机代码和 JavaScript 代码之间传递数据。</p>
+</blockquote>
+<p>不过你也看到了我贴在上面的 OC 和 JS 数据类型转换表，那里面根本没有限定为官方文档所说的基本值。如果你不熟悉 JS 的话，我这里解释一下为什么 JSValue 也可以指向 JS 中的对象和函数，因为 JS 语言不区分基本值和对象以及函数，在 JS 中“万物皆为对象”。</p>
+<p>好了下面直接 show code：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 首先引入 JavaScriptCore 库</span></span><br><span class="line"><span class="meta">#import <span class="string">&lt;JavaScriptCore/JavaScriptCore.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 先获取 JS 上下文</span></span><br><span class="line"><span class="keyword">self</span>.jsContext = [webView valueForKeyPath:<span class="string">@&quot;documentView.webView.mainFrame.javaScriptContext&quot;</span>];</span><br><span class="line"><span class="comment">// 如果涉及 UI 操作，切回主线程调用 JS 代码中的 YourFuncName，通过数组@[parameter] 入参</span></span><br><span class="line"><span class="built_in">dispatch_async</span>(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">    JSValue *jsValue = <span class="keyword">self</span>.jsContext[<span class="string">@&quot;YourFuncName&quot;</span>];</span><br><span class="line">    [jsValue callWithArguments:@[parameter]];</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>上面的代码调用了 JS 代码中 YourFuncName 函数，并且给函数加了 @[parameter] 作为入参。为了方便阅读理解，这里再贴一下 JS 代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">YourFuncName</span>(<span class="params"><span class="variable language_">arguments</span></span>)&#123;</span><br><span class="line">    <span class="keyword">var</span> result = <span class="variable language_">arguments</span>;</span><br><span class="line">    <span class="comment">// do what u want to do</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="WKWebView-与-JS-交互的特有方法"><a href="#WKWebView-与-JS-交互的特有方法" class="headerlink" title="WKWebView 与 JS 交互的特有方法"></a>WKWebView 与 JS 交互的特有方法</h2><img src="/ios_native_js/wkwebview.jpg" class="">
+<p>关于 WKWebView 与 UIWebView 的区别就不在本文加以详细说明了，更多信息还请自行查阅。这里要讲的是 WKWebView 在与 JS 的交互时特有的方法：</p>
+<ul>
+<li>WKUIDelegate 方法</li>
+<li>MessageHandler 方法</li>
+</ul>
+<h3 id="WKUIDelegate-方法"><a href="#WKUIDelegate-方法" class="headerlink" title="WKUIDelegate 方法"></a>WKUIDelegate 方法</h3><p>对于 WKWebView 上文提到过，除了 WKNavigationDelegate，它还有一个 WKUIDelegate，这个 WKUIDelegate 是做什么用的呢？ </p>
+<p>WKUIDelegate 协议包含一些函数用来监听 web JS 想要显示 alert 或 confirm 时触发。我们如果在 WKWebView 中加载一个 web 并且想要 web JS 的 alert 或 confirm 正常弹出，就需要实现对应的代理方法。</p>
+<blockquote>
+<p>Note: 如果没有实现对应的代理方法，则 webview 将会按照默认操作去做出行为。</p>
+<ul>
+<li>Alert: If you do not implement this method, the web view will behave as if the user selected the OK button.</li>
+<li>Confirm: If you do not implement this method, the web view will behave as if the user selected the Cancel button.</li>
+</ul>
+</blockquote>
+<p>我们这里就拿 alert 举例，相信各位读者可以自己举一反三。下面是在 WKUIDelegate 监听 web 要显示 alert 的代理方法中用 Native UIAlertController 替代 JS 中的 alert 显示的栗子 ：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">void</span>)webView:(<span class="built_in">WKWebView</span> *)webView runJavaScriptAlertPanelWithMessage:(<span class="built_in">NSString</span> *)message initiatedByFrame:(<span class="built_in">WKFrameInfo</span> *)frame completionHandler:(<span class="type">void</span> (^)(<span class="type">void</span>))completionHandler &#123;</span><br><span class="line">    <span class="comment">// 用 Native 的 UIAlertController 弹窗显示 JS 将要提示的信息</span></span><br><span class="line">    <span class="built_in">UIAlertController</span> *alert = [<span class="built_in">UIAlertController</span> alertControllerWithTitle:<span class="string">@&quot;提醒&quot;</span> message:message preferredStyle:<span class="built_in">UIAlertControllerStyleAlert</span>];</span><br><span class="line">    [alert addAction:[<span class="built_in">UIAlertAction</span> actionWithTitle:<span class="string">@&quot;知道了&quot;</span> style:<span class="built_in">UIAlertActionStyleCancel</span> handler:^(<span class="built_in">UIAlertAction</span> * _Nonnull action) &#123;</span><br><span class="line">        <span class="comment">// 函数内必须调用 completionHandler</span></span><br><span class="line">        completionHandler();</span><br><span class="line">    &#125;]];</span><br><span class="line">    </span><br><span class="line">    [<span class="keyword">self</span> presentViewController:alert animated:<span class="literal">YES</span> completion:<span class="literal">nil</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="MessageHandler-方法"><a href="#MessageHandler-方法" class="headerlink" title="MessageHandler 方法"></a>MessageHandler 方法</h3><p>MessageHandler 是继 Native 截获 JS 假请求后另一种 JS 调用 Native 的方法，该方法利用了 WKWebView 的新特性实现。对比截获假 Request 的方法来说，MessageHandler 传参数更加简单方便。</p>
+<h4 id="MessageHandler-指什么？"><a href="#MessageHandler-指什么？" class="headerlink" title="MessageHandler 指什么？"></a>MessageHandler 指什么？</h4><p>WKUserContentController 类有一个方法:<br><figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">void</span>)addScriptMessageHandler:(<span class="type">id</span> &lt;<span class="built_in">WKScriptMessageHandler</span>&gt;)scriptMessageHandler name:(<span class="built_in">NSString</span> *)name;</span><br></pre></td></tr></table></figure><br>该方法用来添加一个脚本处理器，可以在处理器内对 JS 脚本调用的方法做出处理，从而达到 JS 调用 Native 的目的。</p>
+<p>那么 WKUserContentController 类和 WKWebView 有毛关系呢？</p>
+<p>在 WKWebView 的初始化函数中有一个入参 configuration，它的类型是 WKWebViewConfiguration。WKWebViewConfiguration 中包含一个属性 userContentController，这个 userContentController 就是 WKUserContentController 类型的实例，我们可以用这个 userContentController 来添加不同名称的脚本处理器。</p>
+<img src="/ios_native_js/wkusercontentcontroller.jpg" class="">
+<h5 id="MessageHandler-的坑"><a href="#MessageHandler-的坑" class="headerlink" title="MessageHandler 的坑"></a>MessageHandler 的坑</h5><p>那么回到 <code>- (void)addScriptMessageHandler:name:</code> 方法上面，该方法添加一个脚本消息处理器（第一个入参 scriptMessageHandler），并且给这个处理器起一个名字（第二个入参 name）。不过这个函数在使用的时候有个坑：scriptMessageHandler 入参会被强引用，那么如果你把当前 WKWebView 所在的 UIViewController 作为第一个入参，这个 viewController 被他自己所持有的 <code>webview.configuration. userContentController</code> 所持有，就会造成循环引用。</p>
+<img src="/ios_native_js/retaincycle.jpg" class="">
+<p>我们可以通过 <code>- (void)removeScriptMessageHandlerForName:</code> 方法删掉 userContentController 对 viewController 的强引用。所以一般情况下我们的代码会在 <code>viewWillAppear</code> 和 <code>viewWillDisappear</code> 成对儿的添加和删除 MessageHandler：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">void</span>)viewWillAppear:(<span class="type">BOOL</span>)animated &#123;</span><br><span class="line">    [<span class="variable language_">super</span> viewWillAppear:animated];</span><br><span class="line">    [<span class="keyword">self</span>.webview.configuration.userContentController addScriptMessageHandler:<span class="keyword">self</span> name:<span class="string">@&quot;YourFuncName&quot;</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)viewWillDisappear:(<span class="type">BOOL</span>)animated &#123;</span><br><span class="line">    [<span class="variable language_">super</span> viewWillDisappear:animated];</span><br><span class="line">    [<span class="keyword">self</span>.webview.configuration.userContentController removeScriptMessageHandlerForName:<span class="string">@&quot;YourFuncName&quot;</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="WKScriptMessageHandler-协议"><a href="#WKScriptMessageHandler-协议" class="headerlink" title="WKScriptMessageHandler 协议"></a>WKScriptMessageHandler 协议</h5><p>WKScriptMessageHandler 是脚本信息处理器协议，如果想让一个对象具有脚本信息处理能力（比如上文中 webview 的所属 viewController 也就是上面代码的 self）就必须使其遵循该协议。</p>
+<p>WKScriptMessageHandler 协议内部非常简单，只有一个方法，我们必须要实现该方法（@required）：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// WKScriptMessageHandler 协议方法，在接收到脚本信息时触发</span></span><br><span class="line">- (<span class="type">void</span>)userContentController:(<span class="built_in">WKUserContentController</span> *)userContentController didReceiveScriptMessage:(<span class="built_in">WKScriptMessage</span> *)message &#123;</span><br><span class="line">    <span class="comment">// message 有两个属性：name 和 body</span></span><br><span class="line">    <span class="comment">// message.name 可以用于区别要做的处理</span></span><br><span class="line">    <span class="keyword">if</span> ([message.name isEqualToString:<span class="string">@&quot;YourFuncName&quot;</span>]) &#123;</span><br><span class="line">        <span class="comment">// message.body 相当于 JS 传递过来的参数</span></span><br><span class="line">        <span class="built_in">NSLog</span>(<span class="string">@&quot;JS call native success %@&quot;</span>, message.body);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>补充 JS 的代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// &lt;name&gt; 换 YourFuncName，&lt;messageBody&gt; 换你要的入参即可</span></span><br><span class="line"><span class="variable language_">window</span>.<span class="property">webkit</span>.<span class="property">messageHandlers</span>.&lt;name&gt;.<span class="title function_">postMessage</span>(&lt;messageBody&gt;)</span><br></pre></td></tr></table></figure>
+<p>搞定收工！</p>
+<h2 id="JS-通过-Native-调用-iOS-设备摄像头的-Demo"><a href="#JS-通过-Native-调用-iOS-设备摄像头的-Demo" class="headerlink" title="JS 通过 Native 调用 iOS 设备摄像头的 Demo"></a>JS 通过 Native 调用 iOS 设备摄像头的 Demo</h2><p>徒手撸了一个 Demo，实现了 JS 与 Native 代码的交互，达到用 JS 在 webview 内调用 iOS 设备摄像头的功能。Demo 内含权限申请，用户拒绝授权等细节（技术上就是 JS 和 Native 相互传值调用），还请各位大佬指教。</p>
+<p>向各位基佬低头，献上我的膝盖~<a target="_blank" rel="noopener" href="https://github.com/Lision/HybridCameraDemo">（Demo 地址）</a></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>这篇文章简单的介绍了一下 Hybrid Mobile App（其中还包括 Hybrid 的发展简史）。</li>
+<li>介绍了 JavaScriptCore 的组成，并且把 JSVirtualMachine 与 JSContext 和 JSValue 之间的关系用图片的形式表述出来（JSVirtualMachine 包含 JSContext 包含 JSValue，都是 1 对 n 的关系，且由于同一个 JSVirtualMachine 下的代码会相互阻塞，所以如果想异步执行交互需要在不同的线程声明 JSVirtualMachine 并发执行）。</li>
+<li>从调用方向的角度把 JS 与 iOS Native 相互调用的方式方法分别用代码示例讲解了一遍。</li>
+<li>介绍了 WKWebView 与 JS 交互特有的方法：WKUIDelegate 和 MessageHandler。</li>
+<li>提供了一个 JS 通过 Native 调用 iOS 设备摄像头的 Demo。</li>
+</ul>
+<p>文章写得比较用心（是我个人的原创文章，转载请注明 <a href="https://lision.me/">https://lision.me/</a>），如果发现错误会优先在我的 <a href="https://lision.me/">个人博客</a> 中更新。如果有任何问题欢迎在我的微博 <a target="_blank" rel="noopener" href="https://weibo.com/lisioncode">@Lision</a> 联系我~</p>
+<p>希望我的文章可以为你带来价值~</p>
+
+
+    
+    
+    
+	  <div class="tags">
+      <a class="tag-none-link" href="/tags/hybrid/" rel="tag">hybrid</a><a class="tag-none-link" href="/tags/jsbridge/" rel="tag">jsbridge</a>
+	  </div>
+    
+
+  </section>
+</article>
+  
+</section>
+
+
+  <nav id="page-nav">
+    
+    <a class="prev" rel="prev" href="/page/19/">
+      <span class="icon icon-chevron-left"></span>
+      <span class="text">Previous</span>
+    </a>
+    
+    
+  </nav>
+  
+
+      <script>setLoadingBarProgress(60);</script>
+    </main>
+    
+    <footer id="footer" class="clearfix">
+  
+  
+	<div class="search">
+	  <script>
+      (function() {
+        var cx = '001858749347000340533:drswradlp64';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:searchbox-only></gcse:searchbox-only>
+	</div>
+	
+
+	<div class="social-wrapper">
+  	
+      
+        <a href="mailto:lisionmail@gmail.com" class="social email"
+          target="_blank" rel="external">
+          <span class="icon icon-email"></span>
+        </a>
+      
+        <a href="https://github.com/Lision" class="social github"
+          target="_blank" rel="external">
+          <span class="icon icon-github"></span>
+        </a>
+      
+        <a href="https://twitter.com/LisionChat" class="social twitter"
+          target="_blank" rel="external">
+          <span class="icon icon-twitter"></span>
+        </a>
+      
+        <a href="https://weibo.com/lisioncode" class="social sina-weibo"
+          target="_blank" rel="external">
+          <span class="icon icon-sina-weibo"></span>
+        </a>
+      
+    
+  </div>
+  
+  <div>Theme <span class="codename">Typescript</span> designed by <a href="http://rakugaki.me/" target="_blank">Art Chen</a>.</div>
+  <div>&copy; <a href="/">聊宅</a></div>
+  
+</footer>
+
+
+    <script>setLoadingBarProgress(80);</script>
+    
+  </div>
+
+  
+<script>
+  var disqus_shortname = 'lision-me';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')</script>
+
+
+<script src="/js/jquery.fitvids.js"></script>
+
+<script>
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "AIzaSyAMIoydL742ROhE6lLk9n3hT0pZwbrXD_I";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "001858749347000340533:drswradlp64";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "google";
+</script>
+
+<script src="/js/search.js"></script>
+
+
+<script src="/js/app.js"></script>
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+  
+</body>
+</html>
