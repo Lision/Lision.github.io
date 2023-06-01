@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  
+  <title>聊宅</title>
+  <meta name="description" content="美麗的太陽照常升起 苦痛的人們依舊歇斯底裏" />
+  <meta name="keywords" content="ios,objective-c,swift,python,javascript,otaku,lision" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="敲代码的，比较宅的内种">
+<meta property="og:type" content="website">
+<meta property="og:title" content="聊宅">
+<meta property="og:url" content="https://lision.me/page/5/index.html">
+<meta property="og:site_name" content="聊宅">
+<meta property="og:description" content="敲代码的，比较宅的内种">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Lision">
+<meta property="article:tag" content="ios,objective-c,swift,python,javascript,otaku,lision">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+
+	<script src="https://use.typekit.net/eyf3hir.js"></script>
+  <script>try{Typekit.load({ async: false });}catch(e){}</script>
+  
+<link rel="stylesheet" href="/style.css">
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+  
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=" + "UA-118743071-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-118743071-1');
+</script>
+<!-- End Google Analytics -->
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+
+  <script>setLoadingBarProgress(20)</script>
+  
+  <div id="site-wrapper">
+    
+    <header id="header">
+	<div id="header-wrapper" class="clearfix">
+		<a id="logo" href="/">
+			<img src="/images/logo.png" />
+			<span id="site-desc">
+			  otaku's self-cultivation
+      </span>
+		</a>
+		<button id="site-nav-switch">
+	    <span class="icon icon-menu"></span>
+	  </button>
+	</div>
+	<aside id="site-menu">
+  	<nav>
+  		
+        <a href="/" class="nav-home nav">
+          首页
+        </a>
+      
+        <a href="/archives" class="nav-archives nav">
+          归档
+        </a>
+      
+        <a target="_blank" rel="noopener" href="https://github.com/Lision" class="nav-about nav">
+          关于
+        </a>
+      
+    </nav>
+	</aside>
+</header>
+    <script>setLoadingBarProgress(40);</script>
+    
+    <main id="main" role="main">
+      
+
+
+
+
+
+<section class="post-list">
+	
+    <article class="post ">
+
+  
+  <h2 class="title">
+    <a href="/mac_re_bartender/">
+      逆向 Mac 应用 Bartender
+    </a>
+  </h2>
+  
+  <time>
+    10月 1, 2018
+  </time>
+  <section class="content">
+	  <img src="/mac_re_bartender/header_pic.png" class="">
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><blockquote>
+<p>本文内容<strong>仅作为学习交流</strong>，希望大家多多支持正版软件。</p>
+<p>Emmmmm… 其实最初是准备写一篇关于 iOS 应用的逆向笔记的，不过一直没找到合适的目标 App 以及难度适宜的功能点来作为写作素材… </p>
+<p>破解了 Bartender 之后我觉得对于 Bartender 的破解过程难度适中，非常适合当做素材来写，且不论是 Mac App 还是 iOS App，逆向的思路都是相通的，所以就写了这篇文章~</p>
+</blockquote>
+<p>国庆之前，果果放出了最新操作系统 macOS Mojave 的正式版本，相信很多小伙伴都跟我一样在正式版发布后紧跟着就升级了系统（此前由于工作设备参与项目产出需要确保系统稳定性所以没敢尝鲜的同学应该不只我一个人哈）。</p>
+<p>升级到正式版 macOS Mojave 之后，我兴致勃勃的在新系统中各处探索了一番，然后将系统切换到 Dark Mode 后打开 Xcode 心满意足地敲（搬）起了代码（砖）… </p>
+<p>嘛~ 又是一个惬意的午后，有时候人就是这么容易满足（笑）~ </p>
+<p>等等！这是什么鬼！？我的 Bartender 怎么不能正常工作了（其实现在回想起来应该是试用期到期了）…</p>
+<img src="/mac_re_bartender/bartender_invalid.png" class="">
+<p>本文将以 Bartender 为目标 App，讲解如何通过静态分析工具 Hopper 逐步分析 Bartender 的内部实现逻辑并结合动态分析等手段逐步破解 Bartender 的过程与思路~</p>
+<h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
+<li>Bartender</li>
+<li>Hopper</li>
+<li>逆向过程 &amp; 思路</li>
+<li>总结</li>
+</ul>
+<h2 id="Bartender"><a href="#Bartender" class="headerlink" title="Bartender"></a>Bartender</h2><img src="/mac_re_bartender/bartender_show.jpg" class="">
+<img src="/mac_re_bartender/bartender_hide.jpg" class="">
+<p><a target="_blank" rel="noopener" href="https://www.macbartender.com/">Bartender</a> 是一款可以帮助我们整理屏幕顶部菜单栏图标的工具。</p>
+<p>随着我们安装的 App 不断增多，屏幕顶部菜单栏上面的图标也会对应不断增加。这些 App 的图标并非出自一家之手，风格各异，随着数目增多逐渐显得杂乱不堪。</p>
+<p>我们可以通过 Bartender 来<strong>隐藏</strong>或<strong>重新排列</strong>这些恼人的小图标，可以将没什么用但是运行起来却要显示的 App 图标<strong>始终隐藏</strong>，将偶尔会用的 App 图标隐藏到 Bartender 功能按钮后面（用到的时候可以通过点击 Bartender 功能按钮<strong>切换显隐</strong>），只显示常用的或者我们认为好看的应用图标。</p>
+<p>除此之外 Bartender 还具备一些其他更加深入的功能（比如支持全部菜单栏条目范围的搜索等等），毫无疑问它是一款非常棒的菜单栏图标管理工具。</p>
+<img src="/mac_re_bartender/bartender_honor.jpg" class="">
+<blockquote>
+<p>Note: 重申，Bartender 仅售 15 刀，还是推荐各位使用正版，本文仅作为学习交流。</p>
+</blockquote>
+<h2 id="Hopper"><a href="#Hopper" class="headerlink" title="Hopper"></a>Hopper</h2><img src="/mac_re_bartender/hopper_darkmode.jpg" class="">
+<p><a target="_blank" rel="noopener" href="https://www.hopperapp.com/">Hopper</a> 是一款不错的 mac OS 与 Linux 反汇编工具，同时还提供一定的反编译能力，可以利用它来调试我们的程序。此外，Hopper 还支持控制流视图模式，Python 脚本，LLDB &amp; GDB，并且提供了 Hopper SDK 可供扩展，在 Hopper SDK 的基础上你甚至可以扩展自己的文件格式和 CPU 支持。</p>
+<p>值得一提的是 Hopper 的作者是一名独立开发者，他的日常工作环境也是在 mac OS 上，所以在 mac OS 上的 Hopper 是完全使用 Cocoa Framework 实现的，而 Linux 版本的 Hopper 则选择使用 Qt 5 来实现。</p>
+<p>个人认为 Hopper 在 mac OS 上面的运行表现非常好，很多细节（比如类型颜色区分等）都做的不错，功能简洁的同时快捷键也很好记（Hopper 提供的功能已经覆盖了绝大多数使用场景）。</p>
+<p>最关键的一点是收费良心，个人证书只要 99 刀，当之无愧的人人都买得起的逆向工具！当然如果你觉得贵，Hopper 还提供试用，试用形式类似于 Charles，每次开启后可以试用 30 分钟，一般情况下这已经够用了。</p>
+<blockquote>
+<p>Note: Hopper v4.4.0 支持 Mojave Dark Mode。</p>
+</blockquote>
+<h2 id="逆向过程-amp-思路"><a href="#逆向过程-amp-思路" class="headerlink" title="逆向过程 &amp; 思路"></a>逆向过程 &amp; 思路</h2><p>这一章节的内容会详细的讲述我个人在破解 Bartender 过程中的想法以及中间遇到问题时解决问题的思路，之前没有涉足逆向或者逆向经验尚浅的同学可能会觉得比较晦涩，这种情况最好结合自己的实际操作反复阅读没有理解的地方直到真正弄明白为止。</p>
+<p>相信自己，每一份努力终会有所回报！当有朝一日自己也可以通过自己的逆向技术破解 &amp; 定制化自己感兴趣的 App 时，你会发现一切的努力都是值得的。</p>
+<h3 id="获取目标二进制"><a href="#获取目标二进制" class="headerlink" title="获取目标二进制"></a>获取目标二进制</h3><p>从 <a target="_blank" rel="noopener" href="https://www.macbartender.com/">Bartender 官网</a>下载最新的 Bartender，截止本文提笔之前 Bartender 的最新版本为 3.0.47。</p>
+<p>将下载好的压缩包解压之后得到 Bartender 3.app，将 Bartender 3.app 文件复制到自己的 Application 文件夹下。右键点击 Bartender 3.app 选择“显示包内容”，在 Contents 目录下找到 MacOS 目录，里面有我们要的目标二进制文件 Bartender 3。</p>
+<h3 id="从“授权”着手"><a href="#从“授权”着手" class="headerlink" title="从“授权”着手"></a>从“授权”着手</h3><p>打开 Hopper，将目标二进制文件拖入 Hopper，在弹出的弹窗中选择 OK 后等待 Hopper 分析完毕。</p>
+<img src="/mac_re_bartender/hopper_interface.jpg" class="">
+<p>在左侧的分栏中选择 <code>Proc.</code> ，这可以让我们查看 Hopper 分析出来的方法。分栏下面有搜索框，内部可以通过输入关键词来过滤出我们想要的结果。因为一般的 App 都是通过某些方法判断是否授权的，这里我们先输入 <code>is</code> （注意 is 前面加空格），然后观察过滤出来的结果。</p>
+<img src="/mac_re_bartender/hopper_filter.jpg" class="">
+<p>果不其然，发现里面有三个 <code>[xxx isLicensed]</code> 方法，点击方法 Hopper 会跳转至方法处。</p>
+<blockquote>
+<p>Note: 三处 <code>[xxx isLicensed]</code> 的方法内部逻辑几乎一样，这里拿 <code>[Bartender_3.AppDelegate isLicensed]</code> 讲解，其他两处不做赘述。</p>
+</blockquote>
+<img src="/mac_re_bartender/is_licensed.png" class="">
+<p>Emmmmm… 这里的汇编代码还是比较简单的，虽然我不是很了解 x86 的汇编指令，不过 Hopper 已经帮助我们做了一些辅助性工作。其中开始处的 <code>push rbp</code> 以及结束处 <code>pop rbp</code> 可以简单理解为入栈出栈，<code>call sub_100067830</code> 可以理解为调用地址 <code>0x100067830</code> 处的方法，<code>pop</code> 之前的 <code>movsx eax, al</code> 和 ARM64 中的 <code>mov</code> 指令类似，可以理解为将 <code>al</code> 内存储的东西移动到 <code>eax</code> 寄存器中，<strong><code>eax</code> 寄存器用于存储 x86 的方法返回值</strong>。</p>
+<p>我们可以看出这里调用了地址 <code>0x100067830</code> 处的函数，拿到结果之后又调用了 <code>imp___stubs__$S10ObjectiveC22_convertBoolToObjCBoolyAA0eF0VSbF</code> 方法将结果做了转化，最后将结果赋值给 eax 寄存器用于结果返回。其中 <code>imp___stubs__$S10ObjectiveC22_convertBoolToObjCBoolyAA0eF0VSbF</code> 我们可以根据名称推测出该方法的作用应该是将 <code>Bool</code> 转化为 Objective-C 的 BOOL 而已。</p>
+<p>那么关键信息应该在 <code>sub_100067830</code> 处，双击 <code>sub_100067830</code> Hopper 会跳转到 <code>0x100067830</code> 处，这样我们就可以分析其中的具体实现了。不过 <code>0x100067830</code> 内部的实现比较复杂，跳转过去之后发现汇编代码非常多，还有很多跳转… 这时候我们可以通过 Hopper 顶部中间靠右一点的分栏，点击显示为 <code>if(b) f(x);</code> 的按钮查看伪代码。</p>
+<p>Hopper 解析出来的伪代码风格类似 Objective-C 代码，可以看到 <code>0x100067830</code> 内部通过 <code>NSUserDefaults</code> 以及其他的逻辑实现，其中还包括其他的形式为 <code>sub_xxxxxx</code> 的方法调用，这种情况下如果我们继续跳转到这些方法的地址查看其内部实现很有可能陷入递归中… </p>
+<img src="/mac_re_bartender/sub_100067830.jpg" class="">
+<p>那么这种情况该如何处理呢？</p>
+<p>分析问题，我们找到 <code>[xxx isLicensed]</code> 并且觉得这有可能就是 Bartender 中判断授权与否的函数，那么我们只需要将三处 <code>[xxx isLicensed]</code> 的返回值改为 <code>true</code> 即可。所以这里我们没有必要一步步的看其内部实现，先返回 <code>[Bartender_3.AppDelegate isLicensed]</code> 处。前面讲过在 x86 汇编中 <code>eax</code> 寄存器用于存储方法的返回值，我们在 <code>[Bartender_3.AppDelegate isLicensed]</code> 按快捷键 <code>option + A</code> 插入汇编代码 <code>mov eax, 0x1</code> 将 <code>eax</code> 永远赋值为 <code>1</code> 即 <code>true</code> 之后跟 <code>ret</code> 即 return 指令直接让函数返回 <code>true</code> 就可以达到我们的目的了。</p>
+<img src="/mac_re_bartender/hopper_return_0x1.png" class="">
+<p>用快捷键 <code>shift + command + E</code> 导出二进制文件，覆盖到原 Bartender 目录中，尝试运行。你会发现一开始是成功的，屏幕顶部的菜单栏图标也被正常管理了，但是过了大约 10s 之后一切又变回了原样，并且还会弹出一个试用期到期的弹窗…</p>
+<img src="/mac_re_bartender/bartender_trialended.jpg" class="">
+<h3 id="重拾思路"><a href="#重拾思路" class="headerlink" title="重拾思路"></a>重拾思路</h3><p>那么我们刚才修改的三处 <code>[xxx isLicensed]</code> 为什么没有产生作用呢？其实它已经产生作用了，虽然我们不可以正常使用 Bartender，但是打开 Bartender 的 License 界面我们可以发现这里的界面已经显示我们付过款了，<strong>尽管这并没有什么卵用就是了…</strong></p>
+<img src="/mac_re_bartender/bartender_paid.jpg" class="">
+<p>到这里我们似乎没有什么头绪了，因为延时方法有很多，光是凭借这一条线索很难定位到阻止我们破解的目标代码位置。</p>
+<p>逆向过程中的思路很重要，如果<strong>遇到思路断了的情况不要着急也不要气馁</strong>，我们可以重新运行程序，尝试不同的操作并观察操作对应的表现 &amp; 结果。</p>
+<p>经过反复运行程序，我发现每次重新启动 Bartender 都可以有大约 10s 的可用时间，如果启动之后直接主动点击 Bartender 的功能按钮则会直接弹出试用期到期弹窗且顶部菜单栏图标也会直接回到之前杂乱的样子。</p>
+<p>这时候我的思路从延时方法转移到了这个 Trial ended 弹窗以及 Bartender 的功能按钮点击之后的对应方法上。这就是<strong>动态分析</strong>，它可以帮助我们重新找回思路。</p>
+<h3 id="按钮响应方法"><a href="#按钮响应方法" class="headerlink" title="按钮响应方法"></a>按钮响应方法</h3><p>有了思路，对应的方法并不难找。我们可以利用 Hopper 的 Tag Scope 先把可能出现的区域找出来，再到对应的区域下的方法列表中寻找我们的目标方法位置。</p>
+<img src="/mac_re_bartender/hopper_tag_scope.jpg" class="">
+<img src="/mac_re_bartender/status_item_click.png" class="">
+<p>这里我很快就找到了目标函数 <code>-[_TtC11Bartender_311AppDelegate bartenderStatusItemClickWithSender:]</code>, 其内部调用了 <code>sub_100029ac0(arg2);</code> 其中 <code>arg2</code> 就是 <code>sender</code>，也就是这个 Bartender 的功能按钮了。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> sub_100029ac0(<span class="type">int</span> arg0) &#123;</span><br><span class="line">    sub_100022840(arg0);</span><br><span class="line">    rbx = **_NSApp;</span><br><span class="line">    <span class="keyword">if</span> (rbx == <span class="number">0x0</span>) <span class="keyword">goto</span> loc_100029f44;</span><br><span class="line"></span><br><span class="line">loc_100029ae7:</span><br><span class="line">    [rbx <span class="keyword">retain</span>];</span><br><span class="line">    r14 = [[rbx currentEvent] <span class="keyword">retain</span>];</span><br><span class="line">    rdi = rbx;</span><br><span class="line">    <span class="keyword">if</span> (r14 == <span class="number">0x0</span>) <span class="keyword">goto</span> loc_100029bef;</span><br><span class="line"></span><br><span class="line">loc_100029b18:</span><br><span class="line">    [rdi release];</span><br><span class="line">    <span class="keyword">if</span> (([r14 modifierFlags] &amp; <span class="number">0x80000</span>) != <span class="number">0x0</span>) <span class="keyword">goto</span> loc_100029b6e;</span><br><span class="line"></span><br><span class="line">loc_100029b33:</span><br><span class="line">    [r14 <span class="keyword">retain</span>];</span><br><span class="line">    <span class="keyword">if</span> ((([r14 modifierFlags] &amp; <span class="number">0x40000</span>) != <span class="number">0x0</span>) || ([r14 type] == <span class="number">0x4</span>)) <span class="keyword">goto</span> loc_100029b66;</span><br><span class="line"></span><br><span class="line">loc_100029bcc:</span><br><span class="line">    rbx = [r14 type];</span><br><span class="line">    [r14 release];</span><br><span class="line">    <span class="keyword">if</span> (rbx == <span class="number">0x3</span>) <span class="keyword">goto</span> loc_100029b6e;</span><br><span class="line"></span><br><span class="line">loc_100029bec:</span><br><span class="line">    rdi = r14;</span><br><span class="line">    <span class="keyword">goto</span> loc_100029bef;</span><br><span class="line"></span><br><span class="line">loc_100029bef:</span><br><span class="line">    [rdi release];</span><br><span class="line">    r14 = [[swift_getInitializedObjCClass(<span class="class"><span class="keyword">@class</span>(<span class="title">NSUserDefaults</span>)) <span class="title">standardUserDefaults</span>] <span class="title">retain</span>];</span></span><br><span class="line">    <span class="keyword">if</span> (*qword_1000e7e70 != <span class="number">0xffffffffffffffff</span>) &#123;</span><br><span class="line">            swift_once(qword_1000e7e70, sub_100069790);</span><br><span class="line">    &#125;</span><br><span class="line">    rbx = *qword_1000ee1f8;</span><br><span class="line">    r15 = *qword_1000ee200;</span><br><span class="line">    swift_bridgeObjectRetain(rbx);</span><br><span class="line">    r15 = (extension <span class="keyword">in</span> Foundation):Swift.String._bridgeToObjectiveC() -&gt; __ObjC.NSString(rbx, r15);</span><br><span class="line">    swift_bridgeObjectRelease(rbx);</span><br><span class="line">    rbx = [[r14 objectForKey:r15] <span class="keyword">retain</span>];</span><br><span class="line">    [r15 release];</span><br><span class="line">    [r14 release];</span><br><span class="line">    <span class="keyword">if</span> (rbx != <span class="number">0x0</span>) &#123;</span><br><span class="line">            swift_getObjectType(rbx);</span><br><span class="line">            var_50 = rbx;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">            intrinsic_movaps(var_40, <span class="number">0x0</span>);</span><br><span class="line">            var_50 = intrinsic_movaps(var_50, <span class="number">0x0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    rax = sub_10001c9a0(&amp;var_50, &amp;var_78);</span><br><span class="line">    <span class="keyword">if</span> (var_58 != <span class="number">0x1</span>) <span class="keyword">goto</span> loc_100029cd8;</span><br><span class="line"></span><br><span class="line">loc_100029ccd:</span><br><span class="line">    sub_10001c2f0(&amp;var_78);</span><br><span class="line">    <span class="keyword">goto</span> loc_100029d44;</span><br><span class="line"></span><br><span class="line">loc_100029d44:</span><br><span class="line">    <span class="keyword">if</span> (*(int8_t *)(r13 + *objc_ivar_offset__TtC11Bartender_311AppDelegate_trialEnded) == <span class="number">0x1</span>) &#123;</span><br><span class="line">            rax = sub_1000230e0(<span class="number">0x1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">            *(int8_t *)(r13 + *objc_ivar_offset__TtC11Bartender_311AppDelegate_performDelayedClicks) = <span class="number">0x1</span>;</span><br><span class="line">            rax = sub_1000215f0();</span><br><span class="line">            <span class="keyword">if</span> ((rax &amp; <span class="number">0x1</span>) == <span class="number">0x0</span>) &#123;</span><br><span class="line">                    rbx = *objc_ivar_offset__TtC11Bartender_311AppDelegate_performDelayedClicks;</span><br><span class="line">                    rax = *(int8_t *)(r13 + rbx);</span><br><span class="line">                    rax = !rax &amp; <span class="number">0x1</span>;</span><br><span class="line">                    *(int8_t *)(r13 + rbx) = rax;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> rax;</span><br><span class="line"></span><br><span class="line">loc_100029cd8:</span><br><span class="line">    rcx = *qword_1000e8a98;</span><br><span class="line">    <span class="keyword">if</span> (rcx == <span class="number">0x0</span>) &#123;</span><br><span class="line">            rcx = swift_getObjCClassMetadata(swift_getInitializedObjCClass(<span class="class"><span class="keyword">@class</span>(<span class="title">NSDictionary</span>)));</span></span><br><span class="line">            *qword_1000e8a98 = rcx;</span><br><span class="line">    &#125;</span><br><span class="line">    rax = swift_dynamicCast(&amp;var_28, &amp;var_78, *type metadata <span class="keyword">for</span> Any + <span class="number">0x8</span>);</span><br><span class="line">    <span class="keyword">if</span> (rax == <span class="number">0x0</span>) <span class="keyword">goto</span> loc_100029d44;</span><br><span class="line"></span><br><span class="line">loc_100029d24:</span><br><span class="line">    r14 = var_28;</span><br><span class="line">    <span class="keyword">if</span> ([r14 count] == <span class="number">0x0</span>) <span class="keyword">goto</span> loc_100029d8f;</span><br><span class="line"></span><br><span class="line">loc_100029d3c:</span><br><span class="line">    [r14 release];</span><br><span class="line">    <span class="keyword">goto</span> loc_100029d44;</span><br><span class="line"></span><br><span class="line">loc_100029d8f:</span><br><span class="line">    r15 = [objc_allocWithZone(<span class="class"><span class="keyword">@class</span>(<span class="title">NSAlert</span>)) <span class="title">init</span>];</span></span><br><span class="line">    rbx = sub_1000a7f20(<span class="string">&quot;No menu items have been setup&quot;</span>, <span class="number">0x1d</span>, <span class="number">0x1</span>, rcx, <span class="number">0x6</span>);</span><br><span class="line">    r12 = (extension <span class="keyword">in</span> Foundation):Swift.String._bridgeToObjectiveC() -&gt; __ObjC.NSString(rbx, <span class="number">0x1</span>);</span><br><span class="line">    swift_bridgeObjectRelease(rbx);</span><br><span class="line">    [r15 setMessageText:r12];</span><br><span class="line">    [r12 release];</span><br><span class="line">    rbx = sub_1000a7f20(<span class="string">&quot;No menu items have been setup in Bartender Preferences, so Bartender is not doing anything yet. Would you like to open preferences now.&quot;</span>, <span class="number">0x87</span>, <span class="number">0x1</span>, rcx, <span class="number">0x6</span>);</span><br><span class="line">    r12 = (extension <span class="keyword">in</span> Foundation):Swift.String._bridgeToObjectiveC() -&gt; __ObjC.NSString(rbx, <span class="number">0x1</span>);</span><br><span class="line">    swift_bridgeObjectRelease(rbx);</span><br><span class="line">    [r15 setInformativeText:r12];</span><br><span class="line">    [r12 release];</span><br><span class="line">    [r15 setAlertStyle:<span class="number">0x1</span>];</span><br><span class="line">    rbx = sub_1000a7f20(<span class="string">&quot;Open Preferences&quot;</span>, <span class="number">0x10</span>, <span class="number">0x1</span>, rcx, <span class="number">0x6</span>);</span><br><span class="line">    r12 = (extension <span class="keyword">in</span> Foundation):Swift.String._bridgeToObjectiveC() -&gt; __ObjC.NSString(rbx, <span class="number">0x1</span>);</span><br><span class="line">    swift_bridgeObjectRelease(rbx);</span><br><span class="line">    rbx = [[r15 addButtonWithTitle:r12] <span class="keyword">retain</span>];</span><br><span class="line">    [r12 release];</span><br><span class="line">    [rbx release];</span><br><span class="line">    rbx = sub_1000a7f20(<span class="string">&quot;Dismiss&quot;</span>, <span class="number">0x7</span>, <span class="number">0x1</span>, rcx, <span class="number">0x6</span>);</span><br><span class="line">    r12 = (extension <span class="keyword">in</span> Foundation):Swift.String._bridgeToObjectiveC() -&gt; __ObjC.NSString(rbx, <span class="number">0x1</span>);</span><br><span class="line">    swift_bridgeObjectRelease(rbx);</span><br><span class="line">    rbx = [[r15 addButtonWithTitle:r12] <span class="keyword">retain</span>];</span><br><span class="line">    [r12 release];</span><br><span class="line">    [rbx release];</span><br><span class="line">    <span class="keyword">if</span> ([r15 runModal] == <span class="number">0x3e8</span>) &#123;</span><br><span class="line">            sub_100029a10();</span><br><span class="line">    &#125;</span><br><span class="line">    [r15 release];</span><br><span class="line">    rax = [r14 release];</span><br><span class="line">    <span class="keyword">return</span> rax;</span><br><span class="line"></span><br><span class="line">loc_100029b6e:</span><br><span class="line">    *(int8_t *)(r13 + *objc_ivar_offset__TtC11Bartender_311AppDelegate_performDelayedClicks) = <span class="number">0x0</span>;</span><br><span class="line">    rdi = r14;</span><br><span class="line">    <span class="keyword">if</span> (([rdi modifierFlags] &amp; <span class="number">0x40000</span>) == <span class="number">0x0</span>) &#123;</span><br><span class="line">            sub_100020de0();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (*(int8_t *)(r13 + *objc_ivar_offset__TtC11Bartender_311AppDelegate_trialEnded) == <span class="number">0x1</span>) &#123;</span><br><span class="line">                    sub_1000230e0(<span class="number">0x1</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                    sub_100020fe0(rdi);</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    rax = [r14 release];</span><br><span class="line">    <span class="keyword">return</span> rax;</span><br><span class="line"></span><br><span class="line">loc_100029b66:</span><br><span class="line">    [r14 release];</span><br><span class="line">    <span class="keyword">goto</span> loc_100029b6e;</span><br><span class="line"></span><br><span class="line">loc_100029f44:</span><br><span class="line">    <span class="keyword">asm</span> &#123; ud2 &#125;;</span><br><span class="line">    rax = sub_100029f46();</span><br><span class="line">    <span class="keyword">return</span> rax;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>PS: 为了便于读者结合后面分析部分的内容快速定位（Command + F），上面的伪代码没有使用截图形式展示。</p>
+</blockquote>
+<p>其中很醒目的是 <code>objc_ivar_offset__TtC11Bartender_311AppDelegate_trialEnded</code> 我们按照之前的方法，将伪代码先切回汇编模式，找到对应的汇编代码处。</p>
+<img src="/mac_re_bartender/if_trial_ended.png" class="">
+<p>这是一段明显的 <code>if</code> 语句汇编代码，看下面的 <code>mov edi, 0x1</code> 这一小节就是指 <code>objc_ivar_offset__TtC11Bartender_311AppDelegate_trialEnded</code> 为 <code>true</code> 之后执行的代码，表示<strong>要是试用期到期就执行 <code>0x1000230e0</code> 处的方法</strong>。我们记下这个地址之后把这两处的汇编代码通过上文插入汇编代码的方式修改一下，将这个 <code>objc_ivar_offset__TtC11Bartender_311AppDelegate_trialEnded</code> 直接替换为 <code>0x0</code> 即 <code>false</code> 。</p>
+<img src="/mac_re_bartender/if_false.png" class="">
+<p>在逆向工程中，切忌不可以冒进，时值今日几乎所有应用都会采取措施来增加其逆向难度。这时候千万不要想着一步到位，应该在适量修改之后尝试导出二进制，用动态分析的方法验证一下结果。因为我们这时候不是正向开发者，在没有见到上下文的情况下修改代码很可能会把程序改成一个不可用的状态（比如正常功能损坏或者频繁 Crash），所以最好步步为营。</p>
+<p>这里我们导出修改之后的二进制文件，按照 Bartender 的原路径覆盖之前的二进制文件验证一下结果。我在这个阶段运行时发现如果正常开启 Bartender 还是会有一个 10s 左右的可用时长，之后依然会弹出试用期到期弹窗，并且程序变为不可用状态；而如果重启 Bartender 在试用期弹窗弹出之前点击功能按钮则可以正常切换，但是再次点击按钮却切换不回来了，并且程序运行 10s 左右仍会弹出试用期到期弹窗，但是菜单栏上面的图标不会变失效，只是切不回去而已。</p>
+<h3 id="功能破解"><a href="#功能破解" class="headerlink" title="功能破解"></a>功能破解</h3><p>到目前为止如果不在乎功能仅仅想要隐藏菜单栏的图标已经是可以凑合用了，但是这显然不是我们想要的最终结果。</p>
+<p>通过上面运行程序后观察到的情况我推测在 <code>-[_TtC11Bartender_311AppDelegate bartenderStatusItemClickWithSender:]</code> 内部切换回来的逻辑中仍然有地方对是否到期做了判断，我们上面只是成功修改了切换过去的逻辑，那么切换回来的逻辑在哪呢？</p>
+<p>按逻辑推测，正向切换的时候是使用 <code>objc_ivar_offset__TtC11Bartender_311AppDelegate_trialEnded</code> 做判断，反向切换应该同理才对，我们去追踪 <code>objc_ivar_offset__TtC11Bartender_311AppDelegate_trialEnded</code> 的使用，最终发现 <code>sub_10001f870</code> 中使用了 <code>objc_ivar_offset__TtC11Bartender_311AppDelegate_trialEnded</code> 且 <code>sub_10001f870</code> 被 <code>sub_100029a10</code> 调用，<code>sub_100029a10</code> 又被 <code>sub_100029ac0</code> 调用，<code>sub_100029ac0</code> 就是上文在 <code>-[_TtC11Bartender_311AppDelegate bartenderStatusItemClickWithSender:]</code> 中被调用的函数，这不仅满足了被 Bartender 功能按钮所引用的条件，同时还对 <code>objc_ivar_offset__TtC11Bartender_311AppDelegate_trialEnded</code> 有所引用，所以我用插入汇编的方式将 <code>sub_10001f870</code> 中关于 <code>objc_ivar_offset__TtC11Bartender_311AppDelegate_trialEnded</code> 的使用改为了 <code>0x0</code>，即 <code>false</code>。</p>
+<p>嘛~ 导出二进制覆盖，发现这次的 Bartender 已经可以正常使用功能了，不过试用期到期的弹窗问题依然存在，尽管它并不影响使用，但我还是无法接受这样一个半成品的状态。</p>
+<h3 id="完美破解"><a href="#完美破解" class="headerlink" title="完美破解"></a>完美破解</h3><p>还记得上文中得出的 <code>0x1000230e0</code> 吗，如果试用期到期则会执行 <code>0x1000230e0</code> 地址处的方法，我们通过快捷键 <code>G</code> 跳转到 <code>0x1000230e0</code> 地址，看一下里面的实现逻辑。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">void sub_1000230e0(int arg0) &#123;</span><br><span class="line">    r14 = arg0;</span><br><span class="line">    r15 = r13 + *objc_ivar_offset__TtC11Bartender_311AppDelegate_trialOverWindow;</span><br><span class="line">    rbx = swift_unknownWeakLoadStrong(r15);</span><br><span class="line">    if (rbx != 0x0) &#123;</span><br><span class="line">            [rbx center];</span><br><span class="line">            [rbx release];</span><br><span class="line">            rbx = **_NSApp;</span><br><span class="line">            if (rbx != 0x0) &#123;</span><br><span class="line">                    [rbx retain];</span><br><span class="line">                    [rbx activateIgnoringOtherApps:sign_extend_64($S10ObjectiveC22_convertBoolToObjCBoolyAA0eF0VSbF(r14 &amp; 0xff))];</span><br><span class="line">                    [rbx release];</span><br><span class="line">                    rbx = swift_unknownWeakLoadStrong(r15);</span><br><span class="line">                    if (rbx != 0x0) &#123;</span><br><span class="line">                            [rbx makeKeyAndOrderFront:0x0];</span><br><span class="line">                            [rbx release];</span><br><span class="line">                    &#125;</span><br><span class="line">                    else &#123;</span><br><span class="line">                            asm &#123; ud2 &#125;;</span><br><span class="line">                            sub_100023199();</span><br><span class="line">                    &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            else &#123;</span><br><span class="line">                    asm &#123; ud2 &#125;;</span><br><span class="line">                    loc_100023195();</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    else &#123;</span><br><span class="line">            asm &#123; ud2 &#125;;</span><br><span class="line">            loc_100023191();</span><br><span class="line">    &#125;</span><br><span class="line">    return;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过上面的伪代码，我们可以初步判断这个 <code>0x1000230e0</code> 内部就是弹出试用期到期弹窗的方法。接着我们通过快捷键 <code>X</code> 查看关于 <code>0x1000230e0</code> 的引用，可以发现有三处调用，一个一个看下去发现第一个 <code>sub_100022840</code> 中的调用最像是延时调用，因为其中有 Hopper 反编译出来的 Dispatch 相关的伪代码。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$Ss10SetAlgebraPyxqd__cs8SequenceRd__7ElementQyd__ADRtzlufCTj(&amp;var_A0, r13);</span><br><span class="line">   swift_release(*__swiftEmptyArrayStorage);</span><br><span class="line">   (extension in Dispatch):__ObjC.OS_dispatch_queueasyncAfterdeadlineqosflags.execute(Dispatch.DispatchTime, Dispatch.DispatchQoS, Dispatch.DispatchWorkItemFlags, @convention(block) () -&gt; ()) -&gt; ()(var_40, var_68, var_B0, var_30);</span><br><span class="line">   (*(var_D0 + 0x8))(var_B0, var_C8);</span><br><span class="line">   (*(var_C0 + 0x8))(var_68, var_B8);</span><br><span class="line">   _Block_release(var_30);</span><br><span class="line">   swift_release(var_D8);</span><br><span class="line">   (var_38)(var_40, var_70, rdx);</span><br><span class="line">   [var_A8 release];</span><br><span class="line">   sub_1000230e0(0x0);</span><br><span class="line">   rbx = var_48;</span><br><span class="line">   goto loc_100022df5;</span><br></pre></td></tr></table></figure>
+<p>切到汇编模式，找到对应的汇编代码。</p>
+<img src="/mac_re_bartender/call_trial_window.jpg" class="">
+<p>由于 <code>sub_1000230e0(0x0);</code> 是在 Dispatch 中调用的，考虑到修改后程序的稳定性，这里通过 Hopper 的 Modify 菜单中提供的 NOP Region 填平 <code>call sub_1000230e0</code> 汇编代码。</p>
+<img src="/mac_re_bartender/nop.jpg" class="">
+<p>老规矩，导出二进制文件覆盖 Bartender 中的二进制后重启 Bartender 验收成果。</p>
+<img src="/mac_re_bartender/bartender_valid.png" class="">
+<p>清爽~ 这次运行 Bartender 发现不但可以正常使用功能，之前烦人的试用期到期弹窗也被我们成功干掉了。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>文章简单介绍了本次要破解的目标 Mac 应用 Bartender，如果各位同学还没有找到合适的顶部菜单栏图标管理工具不妨试着使用 Bartender。</li>
+<li>文章介绍了 maxOS 与 iOS 逆向工程中主流的静态分析工具 Hopper，从文章后面破解 Bartender 的实战过程中就可以看出 Hopper 对于我们逆向过程的帮助有多么大。</li>
+<li>文章最后详细讲述了我在破解 Bartender 过程中的经历，从<strong>初始常规思路</strong>到不起作用<strong>思路被截断</strong>再到通过动态分析<strong>重拾思路</strong>…一直到最后的<strong>完美破解</strong>中间经历了许多关键节点，希望对大家有所帮助。</li>
+</ul>
+<p>每一次逆向的过程都是未知的，有的时候可能会很顺利（直接 <code>mov eax, 0x1</code> + <code>ret</code> 就搞定），有的时候可能会很曲折，有的时候可能还会以失败收尾。我写这篇文章主要是想与大家交流在逆向过程中的常规方法以及遇到困难时的一些解决思路，其实不论是 Bartender 还是其他应用，不论是 Mac 应用还是 iOS 应用，逆向的思路都是相通的，愿各位同学日后可以举一反三。</p>
+<p>如果有任何问题欢迎在文章下方留言或在我的微博 <a target="_blank" rel="noopener" href="https://weibo.com/lisioncode">@Lision</a> 联系我，真心希望我的文章可以为你带来价值~</p>
+
+
+    
+    
+    
+	  <div class="tags">
+      <a class="tag-none-link" href="/tags/macos/" rel="tag">macOS</a><a class="tag-none-link" href="/tags/re/" rel="tag">re</a>
+	  </div>
+    
+
+  </section>
+</article>
+  
+</section>
+
+
+  <nav id="page-nav">
+    
+    <a class="prev" rel="prev" href="/page/4/">
+      <span class="icon icon-chevron-left"></span>
+      <span class="text">Previous</span>
+    </a>
+    
+    
+    <a class="next" rel="next" href="/page/6/">
+      <span class="text">Next</span>
+      <span class="icon icon-chevron-right"></span>
+    </a>
+    
+  </nav>
+  
+
+      <script>setLoadingBarProgress(60);</script>
+    </main>
+    
+    <footer id="footer" class="clearfix">
+  
+  
+	<div class="search">
+	  <script>
+      (function() {
+        var cx = '001858749347000340533:drswradlp64';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:searchbox-only></gcse:searchbox-only>
+	</div>
+	
+
+	<div class="social-wrapper">
+  	
+      
+        <a href="mailto:lisionmail@gmail.com" class="social email"
+          target="_blank" rel="external">
+          <span class="icon icon-email"></span>
+        </a>
+      
+        <a href="https://github.com/Lision" class="social github"
+          target="_blank" rel="external">
+          <span class="icon icon-github"></span>
+        </a>
+      
+        <a href="https://twitter.com/LisionChat" class="social twitter"
+          target="_blank" rel="external">
+          <span class="icon icon-twitter"></span>
+        </a>
+      
+        <a href="https://weibo.com/lisioncode" class="social sina-weibo"
+          target="_blank" rel="external">
+          <span class="icon icon-sina-weibo"></span>
+        </a>
+      
+    
+  </div>
+  
+  <div>Theme <span class="codename">Typescript</span> designed by <a href="http://rakugaki.me/" target="_blank">Art Chen</a>.</div>
+  <div>&copy; <a href="/">聊宅</a></div>
+  
+</footer>
+
+
+    <script>setLoadingBarProgress(80);</script>
+    
+  </div>
+
+  
+<script>
+  var disqus_shortname = 'lision-me';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')</script>
+
+
+<script src="/js/jquery.fitvids.js"></script>
+
+<script>
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "AIzaSyAMIoydL742ROhE6lLk9n3hT0pZwbrXD_I";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "001858749347000340533:drswradlp64";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "google";
+</script>
+
+<script src="/js/search.js"></script>
+
+
+<script src="/js/app.js"></script>
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+  
+</body>
+</html>

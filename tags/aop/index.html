@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  
+  <title>Tag: aop | 聊宅</title>
+  <meta name="description" content="美麗的太陽照常升起 苦痛的人們依舊歇斯底裏" />
+  <meta name="keywords" content="ios,objective-c,swift,python,javascript,otaku,lision" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="敲代码的，比较宅的内种">
+<meta property="og:type" content="website">
+<meta property="og:title" content="聊宅">
+<meta property="og:url" content="https://lision.me/tags/aop/index.html">
+<meta property="og:site_name" content="聊宅">
+<meta property="og:description" content="敲代码的，比较宅的内种">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Lision">
+<meta property="article:tag" content="ios,objective-c,swift,python,javascript,otaku,lision">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+
+	<script src="https://use.typekit.net/eyf3hir.js"></script>
+  <script>try{Typekit.load({ async: false });}catch(e){}</script>
+  
+<link rel="stylesheet" href="/style.css">
+
+  <script>
+    function setLoadingBarProgress(num) {
+      document.getElementById('loading-bar').style.width=num+"%";
+    }
+  </script>
+  
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=" + "UA-118743071-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-118743071-1');
+</script>
+<!-- End Google Analytics -->
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  
+  <div id="loading-bar-wrapper">
+  <div id="loading-bar"></div>
+</div>
+
+  <script>setLoadingBarProgress(20)</script>
+  
+  <div id="site-wrapper">
+    
+    <header id="header">
+	<div id="header-wrapper" class="clearfix">
+		<a id="logo" href="/">
+			<img src="/images/logo.png" />
+			<span id="site-desc">
+			  otaku's self-cultivation
+      </span>
+		</a>
+		<button id="site-nav-switch">
+	    <span class="icon icon-menu"></span>
+	  </button>
+	</div>
+	<aside id="site-menu">
+  	<nav>
+  		
+        <a href="/" class="nav-home nav">
+          首页
+        </a>
+      
+        <a href="/archives" class="nav-archives nav">
+          归档
+        </a>
+      
+        <a target="_blank" rel="noopener" href="https://github.com/Lision" class="nav-about nav">
+          关于
+        </a>
+      
+    </nav>
+	</aside>
+</header>
+    <script>setLoadingBarProgress(40);</script>
+    
+    <main id="main" role="main">
+      
+	<section class="page-header tag">
+    <h1>- <span>aop</span> -</h1>
+  </section>
+
+
+
+
+
+
+<section class="post-list">
+	
+    <article class="post ">
+
+  
+  <h2 class="title">
+    <a href="/aspects/">
+      从 Aspects 源码中我学到了什么？
+    </a>
+  </h2>
+  
+  <time>
+    1月 17, 2018
+  </time>
+  <section class="content">
+	  <img src="/aspects/aspects.jpg" class="">
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Aspect-oriented_programming">AOP (Aspect-oriented programming)</a> 译为 “面向切面编程”，是通过预编译方式和运行期动态代理实现程序功能统一维护的一种技术。利用 AOP 可以对业务逻辑的各个部分进行隔离，从而使得业务逻辑各部分之间的耦合度降低，提高程序的可重用性，同时提高了开发的效率。</p>
+<p>Emmmmm…AOP 目前是较为热门的一个话题，尽管你也许没有听说过它，但是你的项目中可能已经渗入了它，例如：用户统计（不添加一行代码即实现对所有 ViewController 的跟踪日志）。</p>
+<p>对于 iOS 开发者而言，无外乎 Swift 和 Objective-C 两种主流开发语言：</p>
+<ul>
+<li>Swift 受限于 ABI 尚未稳定，动态性依赖 <code>dynamic</code> 修饰符，在 Runtime 没有留给我们太多的发挥空间（前几日新增了 <code>swift-5.0-branch</code> 分支，写这篇文章时看了一眼 <code>181 commits behind master</code> 😂）。</li>
+<li>Objective-C 在动态性上相对 Swift 具有无限大的优势，这几年 Objective-C Runtime 相关文章多如牛毛，相信现在的 iOSer 都具备一定的 Runtime 相关知识。</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://github.com/steipete/Aspects">Aspects</a> 作为 Objective-C 语言编写的 AOP 库，适用于 iOS 和 Mac OS X，使用体验简单愉快，已经在 GitHub 摘得 5k+ Star。Aspects 内部实现比较健全，考虑到了 Hook 安全方面可能发生的种种问题，非常值得我们学习。</p>
+<blockquote>
+<p>Note: 本文内引用 Aspects 源码版本为 v1.4.2，要求读者具备一定的 Runtime 知识。</p>
+</blockquote>
+<h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
+<li>AOP 简介</li>
+<li>Aspects 简介</li>
+<li>Aspects 结构剖析</li>
+<li>Aspects 核心代码剖析</li>
+<li>优秀 AOP 库应该具备的特质</li>
+<li>总结</li>
+</ul>
+<h2 id="AOP-简介"><a href="#AOP-简介" class="headerlink" title="AOP 简介"></a>AOP 简介</h2><img src="/aspects/aop.jpg" class="">
+<blockquote>
+<p>在<strong>运行时，动态地</strong>将代码切入到类的指定方法、指定位置上的编程思想就是面向切面的编程。</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Aspect-oriented_programming">AOP (Aspect-oriented programming)</a>，即 “面向切面编程” 是一种编程范式，或者说是一种编程思想，它解决了 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Object-oriented_programming">OOP (Object-oriented programming)</a> 的延伸问题。</p>
+<h3 id="什么时候需要使用-AOP"><a href="#什么时候需要使用-AOP" class="headerlink" title="什么时候需要使用 AOP"></a>什么时候需要使用 AOP</h3><p>光是给个概念可能初次接触 AOP 的人还是无法 Get 到其中微秒，拿我们前言中举的例子🌰，假设随着我们所在的公司逐步发展，之前第三方的用户页面统计已经不能满足需求了，公司要求实现一个我们自己的用户页面统计。</p>
+<p>嘛~ 我们来理一下 OOP 思想下该怎么办？</p>
+<ul>
+<li>一个熟悉 OOP 思想的程序猿会理所应当的想到要把用户页面统计这一任务放到 ViewController 中；</li>
+<li>考虑到一个个的手动添加统计代码要死人（而且还会漏，以后新增 ViewController 也要手动加），于是想到了 OOP 思想中的继承；</li>
+<li>不巧由于项目久远，所有的 ViewController 都是直接继承自系统类 UIViewController（笑），此时选择抽一个项目 RootViewController，替换所有 ViewController 继承 RootViewController；</li>
+<li>然后在 RootViewController 的 <code>viewWillAppear:</code> 和 <code>viewWillDisappear:</code> 方法加入时间统计代码，记录 ViewController 以及 Router 传参。</li>
+</ul>
+<p>你会想，明明 OOP 也能解决问题是不是？不要急，再假设你们公司有多个 App，你被抽调至基础技术组专门给这些 App 写<strong>通用</strong>组件，要把之前实现过的用户页面统计重新以<strong>通用</strong>的形式实现，提供给你们公司所有的 App 使用。</p>
+<p>MMP，使用标准 OOP 思想貌似无解啊…这个时候就是 AOP 的用武之地了。</p>
+<p>这里简单给个思路：Hook UIViewController 的 <code>viewWillAppear:</code> 和 <code>viewWillDisappear:</code> 方法，在原方法执行之后记录需要统计的信息上报即可。</p>
+<blockquote>
+<p>Note: 简单通过 Method Swizzling 来 Hook 不是不可以，但是有很多安全隐患！</p>
+</blockquote>
+<h2 id="Aspects-简介"><a href="#Aspects-简介" class="headerlink" title="Aspects 简介"></a>Aspects 简介</h2><img src="/aspects/aspects_logo.jpg" class="">
+<p><a target="_blank" rel="noopener" href="https://github.com/steipete/Aspects">Aspects</a> 是一个使用起来简单愉快的 AOP 库，使用 Objective-C 编写，适用于 iOS 与 Mac OS X。</p>
+<blockquote>
+<p>Aspects 内部实现考虑到了很多 Hook 可能引发的问题，笔者在看源码的过程中抠的比较细，真的是受益匪浅。</p>
+</blockquote>
+<p>Aspects 简单易用，作者通过在 <code>NSObject (Aspects)</code> 分类中暴露出的两个接口分别提供了对实例和 Class 的 Hook 实现：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">NSObject</span> (<span class="title">Aspects</span>)</span></span><br><span class="line"></span><br><span class="line">+ (<span class="type">id</span>&lt;AspectToken&gt;)aspect_hookSelector:(SEL)selector</span><br><span class="line">                      withOptions:(AspectOptions)options</span><br><span class="line">                       usingBlock:(<span class="type">id</span>)block</span><br><span class="line">                            error:(<span class="built_in">NSError</span> **)error;</span><br><span class="line"></span><br><span class="line">- (<span class="type">id</span>&lt;AspectToken&gt;)aspect_hookSelector:(SEL)selector</span><br><span class="line">                      withOptions:(AspectOptions)options</span><br><span class="line">                       usingBlock:(<span class="type">id</span>)block</span><br><span class="line">                            error:(<span class="built_in">NSError</span> **)error;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>Aspects 支持实例 Hook，相较其他 Objective-C AOP 库而言可操作粒度更小，适合的场景更加多样化。作为使用者无需进行更多的操作即可 Hook 指定实例或者 Class 的指定 SEL，AspectOptions 参数可以指定 Hook 的点，以及是否执行一次之后就撤销 Hook。</p>
+<h2 id="Aspects-结构剖析"><a href="#Aspects-结构剖析" class="headerlink" title="Aspects 结构剖析"></a>Aspects 结构剖析</h2><img src="/aspects/aspects_struct.png" class="">
+<p>Emmmmm…尽管 Aspects 只有不到千行的源码，但是其内部实现考虑到了很多 Hook 相关的安全问题和其他细节，对比其他 Objective-C AOP 开源项目来说 Aspects 更为健全，所以我自己在扒 Aspects 源码时也看的比较仔细。</p>
+<h3 id="Aspects-内部结构"><a href="#Aspects-内部结构" class="headerlink" title="Aspects 内部结构"></a>Aspects 内部结构</h3><p>Aspects 内部定义了两个协议：</p>
+<ul>
+<li>AspectToken - 用于注销 Hook</li>
+<li>AspectInfo - 嵌入 Hook 中的 Block 首位参数</li>
+</ul>
+<p>此外 Aspects 内部还定义了 4 个类：</p>
+<ul>
+<li>AspectInfo - 切面信息，遵循 AspectInfo 协议</li>
+<li>AspectIdentifier - 切面 ID，<strong>应该</strong>遵循 AspectToken 协议（作者漏掉了，已提 PR）</li>
+<li>AspectsContainer - 切面容器</li>
+<li>AspectTracker - 切面跟踪器</li>
+</ul>
+<p>以及一个结构体：</p>
+<ul>
+<li>AspectBlockRef - 即 <code>_AspectBlock</code>，充当内部 Block</li>
+</ul>
+<p>如果你扒一遍源码，还会发现两个内部静态全局变量：</p>
+<ul>
+<li><code>static NSMutableDictionary *swizzledClassesDict;</code></li>
+<li><code>static NSMutableSet *swizzledClasses;</code></li>
+</ul>
+<p>现在你也许还不能理解为什么要定义这么多东西，别急~ 我们后面都会分析到。</p>
+<h3 id="Aspects-协议"><a href="#Aspects-协议" class="headerlink" title="Aspects 协议"></a>Aspects 协议</h3><p>按照上面列出的顺序，先来介绍一些 Aspects 声明的协议。</p>
+<h4 id="AspectToken"><a href="#AspectToken" class="headerlink" title="AspectToken"></a>AspectToken</h4><p>AspectToken 协议旨在让使用者可以灵活的注销之前添加过的 Hook，内部规定遵守此协议的对象须实现 <code>remove</code> 方法。</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// 不透明的 Aspect Token，用于注销 Hook</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">AspectToken</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/// 注销一个 aspect.</span></span><br><span class="line"><span class="comment">/// 返回 YES 表示注销成功，否则返回 NO</span></span><br><span class="line">- (<span class="type">BOOL</span>)remove;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<h4 id="AspectInfo"><a href="#AspectInfo" class="headerlink" title="AspectInfo"></a>AspectInfo</h4><p>AspectInfo 协议旨在规范对一个切面，即 aspect 的 Hook 内部信息的纰漏，我们在 Hook 时添加切面的 Block 第一个参数就遵守此协议。</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// AspectInfo 协议是我们块语法的第一个参数。</span></span><br><span class="line"><span class="class"><span class="keyword">@protocol</span> <span class="title">AspectInfo</span> &lt;<span class="title">NSObject</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/// 当前被 Hook 的实例</span></span><br><span class="line">- (<span class="type">id</span>)instance;</span><br><span class="line"></span><br><span class="line"><span class="comment">/// 被 Hook 方法的原始 invocation</span></span><br><span class="line">- (<span class="built_in">NSInvocation</span> *)originalInvocation;</span><br><span class="line"></span><br><span class="line"><span class="comment">/// 所有方法参数（装箱之后的）惰性执行</span></span><br><span class="line">- (<span class="built_in">NSArray</span> *)arguments;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Note: 装箱是一个开销昂贵操作，所以用到再去执行。</p>
+</blockquote>
+<h3 id="Aspects-内部类"><a href="#Aspects-内部类" class="headerlink" title="Aspects 内部类"></a>Aspects 内部类</h3><p>接着协议，我们下面详细介绍一下 Aspects 的内部类。</p>
+<h4 id="AspectInfo-1"><a href="#AspectInfo-1" class="headerlink" title="AspectInfo"></a>AspectInfo</h4><blockquote>
+<p>Note: AspectInfo 在这里是一个 Class，其遵守上文中讲到的 AspectInfo 协议，不要混淆。</p>
+</blockquote>
+<p>AspectInfo 类定义：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">AspectInfo</span> : <span class="title">NSObject</span> &lt;<span class="title">AspectInfo</span>&gt;</span></span><br><span class="line"></span><br><span class="line">- (<span class="type">id</span>)initWithInstance:(__<span class="keyword">unsafe_unretained</span> <span class="type">id</span>)instance invocation:(<span class="built_in">NSInvocation</span> *)invocation;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">unsafe_unretained</span>, <span class="keyword">readonly</span>) <span class="type">id</span> instance;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>, <span class="keyword">readonly</span>) <span class="built_in">NSArray</span> *arguments;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>, <span class="keyword">readonly</span>) <span class="built_in">NSInvocation</span> *originalInvocation;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Note: 关于装箱，对于提供一个 NSInvocation 就可以拿到其 <code>arguments</code> 这一点上，ReactiveCocoa 团队提供了很大贡献（细节见 Aspects 内部 NSInvocation 分类）。</p>
+</blockquote>
+<p>AspectInfo 比较简单，参考 ReactiveCocoa 团队提供的 NSInvocation 参数通用方法可将参数装箱为 NSValue，简单来说 AspectInfo 扮演了一个提供 Hook 信息的角色。</p>
+<h4 id="AspectIdentifier"><a href="#AspectIdentifier" class="headerlink" title="AspectIdentifier"></a>AspectIdentifier</h4><p>AspectIdentifier 类定义：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">AspectIdentifier</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line">+ (<span class="keyword">instancetype</span>)identifierWithSelector:(SEL)selector object:(<span class="type">id</span>)object options:(AspectOptions)options block:(<span class="type">id</span>)block error:(<span class="built_in">NSError</span> **)error;</span><br><span class="line"></span><br><span class="line">- (<span class="type">BOOL</span>)invokeWithInfo:(<span class="type">id</span>&lt;AspectInfo&gt;)info;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) SEL selector;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="type">id</span> block;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="built_in">NSMethodSignature</span> *blockSignature;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">weak</span>) <span class="type">id</span> object;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">assign</span>) AspectOptions options;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Note: AspectIdentifier 实际上是添加切面的 Block 的第一个参数，其应该遵循 AspectToken 协议，事实上也的确如此，其提供了 <code>remove</code> 方法的实现。</p>
+</blockquote>
+<p>AspectIdentifier 内部需要注意的是由于使用 Block 来写 Hook 中我们加的料，这里生成了 <code>blockSignature</code>，在 AspectIdentifier 初始化的过程中会去判断 <code>blockSignature</code> 与入参 <code>object</code> 的 <code>selector</code> 得到的 <code>methodSignature</code> 的兼容性，兼容性判断成功才会顺利初始化。</p>
+<h4 id="AspectsContainer"><a href="#AspectsContainer" class="headerlink" title="AspectsContainer"></a>AspectsContainer</h4><p>AspectsContainer 类定义：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">AspectsContainer</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="type">void</span>)addAspect:(AspectIdentifier *)aspect withOptions:(AspectOptions)injectPosition;</span><br><span class="line">- (<span class="type">BOOL</span>)removeAspect:(<span class="type">id</span>)aspect;</span><br><span class="line">- (<span class="type">BOOL</span>)hasAspects;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (atomic, <span class="keyword">copy</span>) <span class="built_in">NSArray</span> *beforeAspects;</span><br><span class="line"><span class="keyword">@property</span> (atomic, <span class="keyword">copy</span>) <span class="built_in">NSArray</span> *insteadAspects;</span><br><span class="line"><span class="keyword">@property</span> (atomic, <span class="keyword">copy</span>) <span class="built_in">NSArray</span> *afterAspects;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>AspectsContainer 作为切面的容器类，<strong>关联</strong>指定对象的指定方法，内部有三个切面队列，分别容纳关联指定对象的指定方法中相对应 AspectOption 的 Hook：</p>
+<ul>
+<li><code>NSArray *beforeAspects;</code> - AspectPositionBefore</li>
+<li><code>NSArray *insteadAspects;</code> - AspectPositionInstead</li>
+<li><code>NSArray *afterAspects;</code> - AspectPositionAfter</li>
+</ul>
+<p>为什么要说关联呢？因为 AspectsContainer 是在 NSObject 分类中通过 AssociatedObject 方法与当前要 Hook 的目标关联在一起的。</p>
+<blockquote>
+<p>Note: 关联目标是 Hook 之后的 Selector，即 <code>aliasSelector</code>（原始 SEL 名称加 <code>aspects_</code> 前缀对应的 SEL）。</p>
+</blockquote>
+<h4 id="AspectTracker"><a href="#AspectTracker" class="headerlink" title="AspectTracker"></a>AspectTracker</h4><p>AspectTracker 类定义：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">AspectTracker</span> : <span class="title">NSObject</span></span></span><br><span class="line"></span><br><span class="line">- (<span class="type">id</span>)initWithTrackedClass:(Class)trackedClass parent:(AspectTracker *)parent;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) Class trackedClass;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">strong</span>) <span class="built_in">NSMutableSet</span> *selectorNames;</span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">nonatomic</span>, <span class="keyword">weak</span>) AspectTracker *parentEntry;</span><br><span class="line"></span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
+<p>AspectTracker 作为切面追踪器，原理大致如下：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Add the selector as being modified.</span></span><br><span class="line">currentClass = klass;</span><br><span class="line">AspectTracker *parentTracker = <span class="literal">nil</span>;</span><br><span class="line"><span class="keyword">do</span> &#123;</span><br><span class="line">    AspectTracker *tracker = swizzledClassesDict[currentClass];</span><br><span class="line">    <span class="keyword">if</span> (!tracker) &#123;</span><br><span class="line">        tracker = [[AspectTracker alloc] initWithTrackedClass:currentClass parent:parentTracker];</span><br><span class="line">        swizzledClassesDict[(<span class="type">id</span>&lt;<span class="built_in">NSCopying</span>&gt;)currentClass] = tracker;</span><br><span class="line">    &#125;</span><br><span class="line">    [tracker.selectorNames addObject:selectorName];</span><br><span class="line">    <span class="comment">// All superclasses get marked as having a subclass that is modified.</span></span><br><span class="line">    parentTracker = tracker;</span><br><span class="line">&#125;<span class="keyword">while</span> ((currentClass = class_getSuperclass(currentClass)));</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Note: 聪明的你应该已经注意到了全局变量 <code>swizzledClassesDict</code> 中的 <code>value</code> 对应着 AspectTracker 指针。</p>
+</blockquote>
+<p>嘛~ 就是说 AspectTracker 是从下而上追踪，最底层的 <code>parentEntry</code> 为 <code>nil</code>，父类的 <code>parentEntry</code> 为子类的 <code>tracker</code>。</p>
+<h3 id="Aspects-内部结构体"><a href="#Aspects-内部结构体" class="headerlink" title="Aspects 内部结构体"></a>Aspects 内部结构体</h3><h4 id="AspectBlockRef"><a href="#AspectBlockRef" class="headerlink" title="AspectBlockRef"></a>AspectBlockRef</h4><p>AspectBlockRef，即 <code>struct _AspectBlock</code>，其定义如下：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> _AspectBlock &#123;</span><br><span class="line">	__unused Class isa;</span><br><span class="line">	AspectBlockFlags flags;</span><br><span class="line">	__unused <span class="type">int</span> reserved;</span><br><span class="line">	<span class="type">void</span> (__unused *invoke)(<span class="keyword">struct</span> _AspectBlock *block, ...);</span><br><span class="line">	<span class="keyword">struct</span> &#123;</span><br><span class="line">		<span class="type">unsigned</span> <span class="type">long</span> <span class="type">int</span> reserved;</span><br><span class="line">		<span class="type">unsigned</span> <span class="type">long</span> <span class="type">int</span> size;</span><br><span class="line">		<span class="comment">// requires AspectBlockFlagsHasCopyDisposeHelpers</span></span><br><span class="line">		<span class="type">void</span> (*<span class="keyword">copy</span>)(<span class="type">void</span> *dst, <span class="keyword">const</span> <span class="type">void</span> *src);</span><br><span class="line">		<span class="type">void</span> (*dispose)(<span class="keyword">const</span> <span class="type">void</span> *);</span><br><span class="line">		<span class="comment">// requires AspectBlockFlagsHasSignature</span></span><br><span class="line">		<span class="keyword">const</span> <span class="type">char</span> *signature;</span><br><span class="line">		<span class="keyword">const</span> <span class="type">char</span> *layout;</span><br><span class="line">	&#125; *descriptor;</span><br><span class="line">	<span class="comment">// imported variables</span></span><br><span class="line">&#125; *AspectBlockRef;</span><br></pre></td></tr></table></figure>
+<p>Emmmmm…没什么特别的，大家应该比较眼熟吧。</p>
+<blockquote>
+<p>Note: <code>__unused</code> 宏定义实际上是 <code>__attribute__((unused))</code> GCC 定语，旨在告诉编译器“如果我没有在后面使用到这个变量也别警告我”。</p>
+</blockquote>
+<p>嘛~ 想起之前自己挖的坑还没有填，事实上自己也不知道什么时候填（笑）：</p>
+<ul>
+<li>之前挖坑说要写一篇文章记录一些阅读源码时发现的代码书写技巧</li>
+<li>之前挖坑说要封装一个 WKWebView 给群里的兄弟参考</li>
+</ul>
+<p>不要急~ 你瞧伦家不是都记得嘛（至于什么时候填坑嘛就…咳咳）</p>
+<h3 id="Aspects-静态全局变量"><a href="#Aspects-静态全局变量" class="headerlink" title="Aspects 静态全局变量"></a>Aspects 静态全局变量</h3><h4 id="static-NSMutableDictionary-swizzledClassesDict"><a href="#static-NSMutableDictionary-swizzledClassesDict" class="headerlink" title="static NSMutableDictionary *swizzledClassesDict;"></a><code>static NSMutableDictionary *swizzledClassesDict;</code></h4><p><code>static NSMutableDictionary *swizzledClassesDict;</code> 在 Aspects 中扮演着已混写类字典的角色，其内部结构应该是这样的：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;Class : AspectTracker *&gt;</span><br></pre></td></tr></table></figure>
+<p>Aspects 内部提供了专门访问这个全局字典的方法：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="built_in">NSMutableDictionary</span> *aspect_getSwizzledClassesDict() &#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="built_in">NSMutableDictionary</span> *swizzledClassesDict;</span><br><span class="line">    <span class="keyword">static</span> <span class="built_in">dispatch_once_t</span> pred;</span><br><span class="line">    <span class="built_in">dispatch_once</span>(&amp;pred, ^&#123;</span><br><span class="line">        swizzledClassesDict = [<span class="built_in">NSMutableDictionary</span> new];</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">return</span> swizzledClassesDict;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个全局变量可以简单理解为记录整个 Hook 影响的 Class 包含其 SuperClass 的追踪记录的全局字典。</p>
+<h4 id="static-NSMutableSet-swizzledClasses"><a href="#static-NSMutableSet-swizzledClasses" class="headerlink" title="static NSMutableSet *swizzledClasses;"></a><code>static NSMutableSet *swizzledClasses;</code></h4><p><code>static NSMutableSet *swizzledClasses;</code> 在 Aspects 中担当记录已混写类的角色，其内部结构如下：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="built_in">NSStringFromClass</span>(Class)&gt;</span><br></pre></td></tr></table></figure>
+<p>Aspects 内部提供一个用于修改这个全局变量内容的方法：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="type">void</span> _aspect_modifySwizzledClasses(<span class="type">void</span> (^block)(<span class="built_in">NSMutableSet</span> *swizzledClasses)) &#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="built_in">NSMutableSet</span> *swizzledClasses;</span><br><span class="line">    <span class="keyword">static</span> <span class="built_in">dispatch_once_t</span> pred;</span><br><span class="line">    <span class="built_in">dispatch_once</span>(&amp;pred, ^&#123;</span><br><span class="line">        swizzledClasses = [<span class="built_in">NSMutableSet</span> new];</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">@synchronized</span>(swizzledClasses) &#123;</span><br><span class="line">        block(swizzledClasses);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Note: 注意 <code>@synchronized(swizzledClasses)</code>。</p>
+</blockquote>
+<p>这个全局变量记录了 <code>forwardInvocation:</code> 被混写的的类名称。</p>
+<blockquote>
+<p>Note: 注意在用途上与 <code>static NSMutableDictionary *swizzledClassesDict;</code> 区分理解。</p>
+</blockquote>
+<h2 id="Aspects-核心代码剖析"><a href="#Aspects-核心代码剖析" class="headerlink" title="Aspects 核心代码剖析"></a>Aspects 核心代码剖析</h2><img src="/aspects/aspects_core.png" class="">
+<p>嘛~ Aspects 的整体实现代码不超过一千行，而且考虑的情况也比较全面，非常值得大家花时间去读一下，这里我只准备给出自己对其核心代码的理解。</p>
+<h3 id="Hook-Class-amp-amp-Hook-Instance"><a href="#Hook-Class-amp-amp-Hook-Instance" class="headerlink" title="Hook Class &amp;&amp; Hook Instance"></a>Hook Class &amp;&amp; Hook Instance</h3><p>Aspects 不光支持 Hook Class 还支持 Hook Instance，这提供了更小粒度的控制，配合 Hook 的撤销功能可以更加灵活精准的做我们想做的事~</p>
+<p>Aspects 为了能区别 Class 和 Instance 的逻辑，实现了名为 <code>aspect_hookClass</code> 的方法，我认为其中的实现值得我用一部分篇幅来单独讲解，也觉得读者们有必要花点时间理解这里的实现逻辑。</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> Class aspect_hookClass(<span class="built_in">NSObject</span> *<span class="keyword">self</span>, <span class="built_in">NSError</span> **error) &#123;</span><br><span class="line">    <span class="comment">// 断言 self</span></span><br><span class="line">    <span class="built_in">NSCParameterAssert</span>(<span class="keyword">self</span>);</span><br><span class="line">    <span class="comment">// class</span></span><br><span class="line">    Class statedClass = <span class="keyword">self</span>.class;</span><br><span class="line">    <span class="comment">// isa</span></span><br><span class="line">    Class baseClass = object_getClass(<span class="keyword">self</span>);</span><br><span class="line">    <span class="built_in">NSString</span> *className = <span class="built_in">NSStringFromClass</span>(baseClass);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 已经子类化过了</span></span><br><span class="line">    <span class="keyword">if</span> ([className hasSuffix:AspectsSubclassSuffix]) &#123;</span><br><span class="line">        <span class="keyword">return</span> baseClass;</span><br><span class="line">        <span class="comment">// 我们混写了一个 class 对象，而非一个单独的 object</span></span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span> (class_isMetaClass(baseClass)) &#123;</span><br><span class="line">        <span class="comment">// baseClass 是元类，则 self 是 Class 或 MetaClass，混写 self</span></span><br><span class="line">        <span class="keyword">return</span> aspect_swizzleClassInPlace((Class)<span class="keyword">self</span>);</span><br><span class="line">        <span class="comment">// 可能是一个 KVO&#x27;ed class。混写就位。也要混写 meta classes。</span></span><br><span class="line">    &#125;<span class="keyword">else</span> <span class="keyword">if</span> (statedClass != baseClass) &#123;</span><br><span class="line">        <span class="comment">// 当 .class 和 isa 指向不同的情况，混写 baseClass</span></span><br><span class="line">        <span class="keyword">return</span> aspect_swizzleClassInPlace(baseClass);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 默认情况下，动态创建子类</span></span><br><span class="line">    <span class="comment">// 拼接子类后缀 AspectsSubclassSuffix</span></span><br><span class="line">    <span class="keyword">const</span> <span class="type">char</span> *subclassName = [className stringByAppendingString:AspectsSubclassSuffix].UTF8String;</span><br><span class="line">    <span class="comment">// 尝试用拼接后缀的名称获取 isa</span></span><br><span class="line">    Class subclass = objc_getClass(subclassName);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 找不到 isa，代表还没有动态创建过这个子类</span></span><br><span class="line">    <span class="keyword">if</span> (subclass == <span class="literal">nil</span>) &#123;</span><br><span class="line">        <span class="comment">// 创建一个 class pair，baseClass 作为新类的 superClass，类名为 subclassName</span></span><br><span class="line">        subclass = objc_allocateClassPair(baseClass, subclassName, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">if</span> (subclass == <span class="literal">nil</span>) &#123; <span class="comment">// 返回 nil，即创建失败</span></span><br><span class="line">            <span class="built_in">NSString</span> *errrorDesc = [<span class="built_in">NSString</span> stringWithFormat:<span class="string">@&quot;objc_allocateClassPair failed to allocate class %s.&quot;</span>, subclassName];</span><br><span class="line">            AspectError(AspectErrorFailedToAllocateClassPair, errrorDesc);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">nil</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 混写 forwardInvocation:</span></span><br><span class="line">        aspect_swizzleForwardInvocation(subclass);</span><br><span class="line">        <span class="comment">// subClass.class = statedClass</span></span><br><span class="line">        aspect_hookedGetClass(subclass, statedClass);</span><br><span class="line">        <span class="comment">// subClass.isa.class = statedClass</span></span><br><span class="line">        aspect_hookedGetClass(object_getClass(subclass), statedClass);</span><br><span class="line">        <span class="comment">// 注册新类</span></span><br><span class="line">        objc_registerClassPair(subclass);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 覆盖 isa</span></span><br><span class="line">    object_setClass(<span class="keyword">self</span>, subclass);</span><br><span class="line">    <span class="keyword">return</span> subclass;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Note: 其实这里的难点就在于对 <code>.class</code> 和 <code>object_getClass</code> 的区分。</p>
+</blockquote>
+<ul>
+<li><code>.class</code> 当 target 是 Instance 则返回 Class，当 target 是 Class 则返回自身</li>
+<li><code>object_getClass</code> 返回 <code>isa</code> 指针的指向</li>
+</ul>
+<blockquote>
+<p>Note: 动态创建一个 Class 的完整步骤也是我们应该注意的。</p>
+</blockquote>
+<ul>
+<li>objc_allocateClassPair</li>
+<li>class_addMethod</li>
+<li>class_addIvar</li>
+<li>objc_registerClassPair</li>
+</ul>
+<p>嘛~ 难点和重点都讲完了，大家结合注释理解其中的逻辑应该没什么困难了，有什么问题可以找我一起交流~</p>
+<h3 id="Hook-的实现"><a href="#Hook-的实现" class="headerlink" title="Hook 的实现"></a>Hook 的实现</h3><p>在上面 <code>aspect_hookClass</code> 方法中，不仅仅是返回一个要 Hook 的 Class，期间还做了一些细节操作，不论是 Class 还是 Instance，都会调用 <code>aspect_swizzleForwardInvocation</code> 方法，这个方法没什么难点，简单贴一下代码让大家有个印象：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="type">void</span> aspect_swizzleForwardInvocation(Class klass) &#123;</span><br><span class="line">    <span class="comment">// 断言 klass</span></span><br><span class="line">    <span class="built_in">NSCParameterAssert</span>(klass);</span><br><span class="line">    <span class="comment">// 如果没有 method，replace 实际上会像是 class_addMethod 一样</span></span><br><span class="line">    IMP originalImplementation = class_replaceMethod(klass, <span class="keyword">@selector</span>(forwardInvocation:), (IMP)__ASPECTS_ARE_BEING_CALLED__, <span class="string">&quot;v@:@&quot;</span>);</span><br><span class="line">    <span class="comment">// 拿到 originalImplementation 证明是 replace 而不是 add，情况少见</span></span><br><span class="line">    <span class="keyword">if</span> (originalImplementation) &#123;</span><br><span class="line">        <span class="comment">// 添加 AspectsForwardInvocationSelectorName 的方法，IMP 为原生 forwardInvocation:</span></span><br><span class="line">        class_addMethod(klass, <span class="built_in">NSSelectorFromString</span>(AspectsForwardInvocationSelectorName), originalImplementation, <span class="string">&quot;v@:@&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    AspectLog(<span class="string">@&quot;Aspects: %@ is now aspect aware.&quot;</span>, <span class="built_in">NSStringFromClass</span>(klass));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的方法就是把要 Hook 的目标 Class 的 <code>forwardInvocation:</code> 混写了，混写之后 <code>forwardInvocation:</code> 的具体实现在 <code>__ASPECTS_ARE_BEING_CALLED__</code> 中，里面能看到 invoke 标识位的不同是如何实现的，还有一些其他的实现细节：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 宏定义，以便于我们有一个更明晰的 stack trace</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> aspect_invoke(aspects, info) \</span></span><br><span class="line"><span class="meta">for (AspectIdentifier *aspect in aspects) &#123;\</span></span><br><span class="line"><span class="meta">    [aspect invokeWithInfo:info];\</span></span><br><span class="line"><span class="meta">    <span class="keyword">if</span> (aspect.options &amp; AspectOptionAutomaticRemoval) &#123; \</span></span><br><span class="line"><span class="meta">        aspectsToRemove = [aspectsToRemove?:@[] arrayByAddingObject:aspect]; \</span></span><br><span class="line"><span class="meta">    &#125; \</span></span><br><span class="line"><span class="meta">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="type">void</span> __ASPECTS_ARE_BEING_CALLED__(__<span class="keyword">unsafe_unretained</span> <span class="built_in">NSObject</span> *<span class="keyword">self</span>, SEL selector, <span class="built_in">NSInvocation</span> *invocation) &#123;</span><br><span class="line">    <span class="comment">// __unsafe_unretained NSObject *self 不解释了</span></span><br><span class="line">    <span class="comment">// 断言 self, invocation</span></span><br><span class="line">    <span class="built_in">NSCParameterAssert</span>(<span class="keyword">self</span>);</span><br><span class="line">    <span class="built_in">NSCParameterAssert</span>(invocation);</span><br><span class="line">    <span class="comment">// 从 invocation 可以拿到很多东西，比如 originalSelector</span></span><br><span class="line">    SEL originalSelector = invocation.selector;</span><br><span class="line">    <span class="comment">// originalSelector 加前缀得到 aliasSelector</span></span><br><span class="line">    SEL aliasSelector = aspect_aliasForSelector(invocation.selector);</span><br><span class="line">    <span class="comment">// 用 aliasSelector 替换 invocation.selector</span></span><br><span class="line">    invocation.selector = aliasSelector;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// Instance 的容器</span></span><br><span class="line">    AspectsContainer *objectContainer = objc_getAssociatedObject(<span class="keyword">self</span>, aliasSelector);</span><br><span class="line">    <span class="comment">// Class 的容器</span></span><br><span class="line">    AspectsContainer *classContainer = aspect_getContainerForClass(object_getClass(<span class="keyword">self</span>), aliasSelector);</span><br><span class="line">    AspectInfo *info = [[AspectInfo alloc] initWithInstance:<span class="keyword">self</span> invocation:invocation];</span><br><span class="line">    <span class="built_in">NSArray</span> *aspectsToRemove = <span class="literal">nil</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Before hooks.</span></span><br><span class="line">    aspect_invoke(classContainer.beforeAspects, info);</span><br><span class="line">    aspect_invoke(objectContainer.beforeAspects, info);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Instead hooks.</span></span><br><span class="line">    <span class="type">BOOL</span> respondsToAlias = <span class="literal">YES</span>;</span><br><span class="line">    <span class="keyword">if</span> (objectContainer.insteadAspects.count || classContainer.insteadAspects.count) &#123;</span><br><span class="line">        <span class="comment">// 如果有任何 insteadAspects 就直接替换了</span></span><br><span class="line">        aspect_invoke(classContainer.insteadAspects, info);</span><br><span class="line">        aspect_invoke(objectContainer.insteadAspects, info);</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123; <span class="comment">// 否则正常执行</span></span><br><span class="line">        <span class="comment">// 遍历 invocation.target 及其 superClass 找到实例可以响应 aliasSelector 的点 invoke</span></span><br><span class="line">        Class klass = object_getClass(invocation.target);</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> ((respondsToAlias = [klass instancesRespondToSelector:aliasSelector])) &#123;</span><br><span class="line">                [invocation invoke];</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;<span class="keyword">while</span> (!respondsToAlias &amp;&amp; (klass = class_getSuperclass(klass)));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// After hooks.</span></span><br><span class="line">    aspect_invoke(classContainer.afterAspects, info);</span><br><span class="line">    aspect_invoke(objectContainer.afterAspects, info);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果没有 hook，则执行原始实现（通常会抛出异常）</span></span><br><span class="line">    <span class="keyword">if</span> (!respondsToAlias) &#123;</span><br><span class="line">        invocation.selector = originalSelector;</span><br><span class="line">        SEL originalForwardInvocationSEL = <span class="built_in">NSSelectorFromString</span>(AspectsForwardInvocationSelectorName);</span><br><span class="line">        <span class="comment">// 如果可以响应 originalForwardInvocationSEL，表示之前是 replace method 而非 add method</span></span><br><span class="line">        <span class="keyword">if</span> ([<span class="keyword">self</span> respondsToSelector:originalForwardInvocationSEL]) &#123;</span><br><span class="line">            ((<span class="type">void</span>( *)(<span class="type">id</span>, SEL, <span class="built_in">NSInvocation</span> *))objc_msgSend)(<span class="keyword">self</span>, originalForwardInvocationSEL, invocation);</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            [<span class="keyword">self</span> doesNotRecognizeSelector:invocation.selector];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 移除 aspectsToRemove 队列中的 AspectIdentifier，执行 remove</span></span><br><span class="line">    [aspectsToRemove makeObjectsPerformSelector:<span class="keyword">@selector</span>(remove)];</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">undef</span> aspect_invoke</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Note: <code>aspect_invoke</code> 宏定义的作用域。</p>
+</blockquote>
+<ul>
+<li>代码实现对应了 Hook 的 AspectOptions 参数的 Before，Instead 和 After。</li>
+<li><code>aspect_invoke</code> 中 <code>aspectsToRemove</code> 是一个 NSArray，里面容纳着需要被销户的 Hook，即 AspectIdentifier（之后会调用 <code>remove</code> 移除）。</li>
+<li>遍历 invocation.target 及其 superClass 找到实例可以响应 aliasSelector 的点 invoke 实现代码。</li>
+</ul>
+<h3 id="Block-Hook"><a href="#Block-Hook" class="headerlink" title="Block Hook"></a>Block Hook</h3><p>Aspects 让我们在指定 Class 或 Instance 的特定 Selector 执行时，根据 AspectOptions 插入我们自己的 Block 做 Hook，而这个 Block 内部有我们想要的有关于当前 Target 和 Selector 的信息，我们来看一下 Aspects 是怎么办到的：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">- (<span class="type">BOOL</span>)invokeWithInfo:(<span class="type">id</span>&lt;AspectInfo&gt;)info &#123;</span><br><span class="line">    <span class="built_in">NSInvocation</span> *blockInvocation = [<span class="built_in">NSInvocation</span> invocationWithMethodSignature:<span class="keyword">self</span>.blockSignature];</span><br><span class="line">    <span class="built_in">NSInvocation</span> *originalInvocation = info.originalInvocation;</span><br><span class="line">    <span class="built_in">NSUInteger</span> numberOfArguments = <span class="keyword">self</span>.blockSignature.numberOfArguments;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 偏执。我们已经在 hook 注册的时候检查过了，（不过这里我们还要检查）。</span></span><br><span class="line">    <span class="keyword">if</span> (numberOfArguments &gt; originalInvocation.methodSignature.numberOfArguments) &#123;</span><br><span class="line">        AspectLogError(<span class="string">@&quot;Block has too many arguments. Not calling %@&quot;</span>, info);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// block 的 `self` 将会是 AspectInfo。可选的。</span></span><br><span class="line">    <span class="keyword">if</span> (numberOfArguments &gt; <span class="number">1</span>) &#123;</span><br><span class="line">        [blockInvocation setArgument:&amp;info atIndex:<span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 简历参数分配内存 argBuf 然后从 originalInvocation 取 argument 赋值给 blockInvocation</span></span><br><span class="line">    <span class="type">void</span> *argBuf = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="built_in">NSUInteger</span> idx = <span class="number">2</span>; idx &lt; numberOfArguments; idx++) &#123;</span><br><span class="line">        <span class="keyword">const</span> <span class="type">char</span> *type = [originalInvocation.methodSignature getArgumentTypeAtIndex:idx];</span><br><span class="line">		<span class="built_in">NSUInteger</span> argSize;</span><br><span class="line">		<span class="built_in">NSGetSizeAndAlignment</span>(type, &amp;argSize, <span class="literal">NULL</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">// reallocf 优点，如果创建内存失败会自动释放之前的内存，讲究</span></span><br><span class="line">		<span class="keyword">if</span> (!(argBuf = reallocf(argBuf, argSize))) &#123;</span><br><span class="line">            AspectLogError(<span class="string">@&quot;Failed to allocate memory for block invocation.&quot;</span>);</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">NO</span>;</span><br><span class="line">		&#125;</span><br><span class="line">        </span><br><span class="line">		[originalInvocation getArgument:argBuf atIndex:idx];</span><br><span class="line">		[blockInvocation setArgument:argBuf atIndex:idx];</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 执行</span></span><br><span class="line">    [blockInvocation invokeWithTarget:<span class="keyword">self</span>.block];</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 释放 argBuf</span></span><br><span class="line">    <span class="keyword">if</span> (argBuf != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        free(argBuf);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">YES</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>考虑两个问题：</p>
+<ul>
+<li><code>[blockInvocation setArgument:&amp;info atIndex:1];</code> 为什么要在索引 1 处插入呢？</li>
+<li><code>for (NSUInteger idx = 2; idx &lt; numberOfArguments; idx++)</code> 为什么要从索引 2 开始遍历参数呢？</li>
+</ul>
+<p>嘛~ 如果你对 Block 的 Runtime 结构以及执行过程下断点研究一下就全都明白了，感兴趣的同学有疑问可以联系我（与真正勤奋好学的人交流又有谁会不乐意呢？笑~）</p>
+<h2 id="优秀-AOP-库应该具备的特质"><a href="#优秀-AOP-库应该具备的特质" class="headerlink" title="优秀 AOP 库应该具备的特质"></a>优秀 AOP 库应该具备的特质</h2><img src="/aspects/aspects_rank.jpg" class="">
+<ul>
+<li>良好的使用体验</li>
+<li>可控粒度小</li>
+<li>使用 Block 做 Hook</li>
+<li>支持撤销 Hook</li>
+<li>安全性</li>
+</ul>
+<h3 id="良好的使用体验"><a href="#良好的使用体验" class="headerlink" title="良好的使用体验"></a>良好的使用体验</h3><p>Aspects 使用 NSObject + Categroy 的方式提供接口，非常巧妙的涵盖了 Instance 和 Class。</p>
+<p>Aspects 提供的接口保持高度一致（本着<strong>易用，简单，方便</strong>的原则设计接口和整个框架的实现会让你的开源项目更容易被人们接纳和使用）：</p>
+<figure class="highlight obj-c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">+ (<span class="type">id</span>&lt;AspectToken&gt;)aspect_hookSelector:(SEL)selector</span><br><span class="line">                      withOptions:(AspectOptions)options</span><br><span class="line">                       usingBlock:(<span class="type">id</span>)block</span><br><span class="line">                            error:(<span class="built_in">NSError</span> **)error;</span><br><span class="line"></span><br><span class="line">- (<span class="type">id</span>&lt;AspectToken&gt;)aspect_hookSelector:(SEL)selector</span><br><span class="line">                      withOptions:(AspectOptions)options</span><br><span class="line">                       usingBlock:(<span class="type">id</span>)block</span><br><span class="line">                            error:(<span class="built_in">NSError</span> **)error;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Note: 其实接口这里对于 <code>block</code> 的参数自动补全可以更进一步，不过 Aspects 当初是没有办法做到的，单从接口设计这块已经很优秀了。</p>
+</blockquote>
+<h3 id="可控粒度小"><a href="#可控粒度小" class="headerlink" title="可控粒度小"></a>可控粒度小</h3><p>Aspects 不仅支持大部分 AOP 框架应该做到的对于 Class 的 Hook，还支持粒度更小的 Instance Hook，而其在内部实现中为了支持 Instance Hook 所做的代码也非常值得我们参考和学习（已在上文 <strong>Aspects 核心代码剖析</strong> 处单独分析）。</p>
+<p>为使用者提供更为自由的 Hook 方式以达到更加精准的控制是每个使用者乐于见到的事。</p>
+<h3 id="使用-Block-做-Hook"><a href="#使用-Block-做-Hook" class="headerlink" title="使用 Block 做 Hook"></a>使用 Block 做 Hook</h3><p>Aspects 使用 Block 来做 Hook 应该考虑到了很多东西，支持使用者通过在 Block 中获取到相关的信息，书写自己额外的操作就可以实现 Hook 需求。</p>
+<h3 id="支持撤销-Hook"><a href="#支持撤销-Hook" class="headerlink" title="支持撤销 Hook"></a>支持撤销 Hook</h3><p>Aspects 还支持撤销之前做的 Hook 以及已混写的 Method，为了实现这个功能 Aspects 设计了全局容器，把 Hook 和混写用全局容器做记录，让一切都可以复原，这不正是我们想要的吗？</p>
+<h3 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h3><p>嘛~ 我们在学习 Runtime 的时候，就应该看到过不少文章讲解 Method Swizzling 要注意的安全性问题，由于用到了大量 Runtime 方法，加上 AOP 是面向整个切面的，所以一单发现问题就会比较严重，涉及的面会比较广，而且难以调试。</p>
+<blockquote>
+<p>Note: 我们不能因为容易造成问题就可以回避 Method Swizzling，就好比大学老师讲到递归时强调容易引起循环调用，很多人就在内心回避使用递归，甚至于非常适合使用递归来写的算法题（这里指递归来写会易读写、易维护）只会用复杂的方式来思考。</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>文章简单介绍了 AOP 的概念，希望能给各位读者对 AOP 思想的理解提供微薄的帮助。</li>
+<li>文章系统的剖析了 Aspects 开源库的内部结构，希望能让大家在浏览 Aspects 源码时快速定位代码位置，找到核心内容。</li>
+<li>文章重点分析了 Aspects 的核心代码，提炼了一些笔者认为值得注意的点，但愿可以在大家扒源码时提供一些指引。</li>
+<li>文章结尾总结了 Aspects 作为一个比较优秀的 AOP 所具备的一些特质。</li>
+</ul>
+<p>文章写得比较用心（是我个人的原创文章，转载请注明 <a href="https://lision.me/">https://lision.me/</a>），如果发现错误会优先在我的 <a href="https://lision.me/">个人博客</a> 中更新。如果有任何问题欢迎在我的微博 <a target="_blank" rel="noopener" href="https://weibo.com/lisioncode">@Lision</a> 联系我~</p>
+<p>希望我的文章可以为你带来价值~</p>
+
+
+    
+    
+    
+	  <div class="tags">
+      <a class="tag-none-link" href="/tags/aop/" rel="tag">aop</a><a class="tag-none-link" href="/tags/hook/" rel="tag">hook</a>
+	  </div>
+    
+
+  </section>
+</article>
+  
+</section>
+
+
+      <script>setLoadingBarProgress(60);</script>
+    </main>
+    
+    <footer id="footer" class="clearfix">
+  
+  
+	<div class="search">
+	  <script>
+      (function() {
+        var cx = '001858749347000340533:drswradlp64';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = 'https://cse.google.com/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:searchbox-only></gcse:searchbox-only>
+	</div>
+	
+
+	<div class="social-wrapper">
+  	
+      
+        <a href="mailto:lisionmail@gmail.com" class="social email"
+          target="_blank" rel="external">
+          <span class="icon icon-email"></span>
+        </a>
+      
+        <a href="https://github.com/Lision" class="social github"
+          target="_blank" rel="external">
+          <span class="icon icon-github"></span>
+        </a>
+      
+        <a href="https://twitter.com/LisionChat" class="social twitter"
+          target="_blank" rel="external">
+          <span class="icon icon-twitter"></span>
+        </a>
+      
+        <a href="https://weibo.com/lisioncode" class="social sina-weibo"
+          target="_blank" rel="external">
+          <span class="icon icon-sina-weibo"></span>
+        </a>
+      
+    
+  </div>
+  
+  <div>Theme <span class="codename">Typescript</span> designed by <a href="http://rakugaki.me/" target="_blank">Art Chen</a>.</div>
+  <div>&copy; <a href="/">聊宅</a></div>
+  
+</footer>
+
+
+    <script>setLoadingBarProgress(80);</script>
+    
+  </div>
+
+  
+<script>
+  var disqus_shortname = 'lision-me';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  })();
+</script>
+
+
+
+
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>window.jQuery || document.write('<script src="/js/jquery.min.js"><\/script>')</script>
+
+
+<script src="/js/jquery.fitvids.js"></script>
+
+<script>
+	var GOOGLE_CUSTOM_SEARCH_API_KEY = "AIzaSyAMIoydL742ROhE6lLk9n3hT0pZwbrXD_I";
+	var GOOGLE_CUSTOM_SEARCH_ENGINE_ID = "001858749347000340533:drswradlp64";
+	var ALGOLIA_API_KEY = "";
+	var ALGOLIA_APP_ID = "";
+	var ALGOLIA_INDEX_NAME = "";
+  var AZURE_SERVICE_NAME = "";
+  var AZURE_INDEX_NAME = "";
+  var AZURE_QUERY_KEY = "";
+  var BAIDU_API_ID = "";
+  var SEARCH_SERVICE = "google";
+</script>
+
+<script src="/js/search.js"></script>
+
+
+<script src="/js/app.js"></script>
+
+
+
+  <script>setLoadingBarProgress(100);</script>
+  
+</body>
+</html>
