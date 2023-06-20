@@ -105,223 +105,82 @@
 
   
   <h2 class="title">
-    <a href="/ios-rendering-process/">
-      深入理解 iOS Rendering Process
+    <a href="/hackathon5-0/">
+      Hackathon 5.0 小记
     </a>
   </h2>
   
   <time>
-    4月 15, 2018
+    5月 26, 2018
   </time>
   <section class="content">
-	  <img src="/ios-rendering-process/rendering.jpg" class="">
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>iOS 最早名为 iPhone OS，是 <a target="_blank" rel="noopener" href="https://www.apple.com/">Apple</a> 公司专门为其硬件设备开发的操作系统，最初于 2007 年随第一代 iPhone 推出，后扩展为支持 Apple 公司旗下的其他硬件设备，如 iPod、iPad 等。</p>
-<p>作为一名 iOS Developer，相信大多数人都有写出过造成 iOS 设备卡顿的代码经历，相应的也有过想方设法优化卡顿代码的经验。</p>
-<p>本文将从 OpenGL 的角度结合 Apple 官方给出的部分资料，介绍 iOS Rendering Process 的概念及其整个底层渲染管道的各个流程。</p>
-<p>相信在理解了 iOS Rendering Process 的底层各个阶段之后，我们可以在平日的开发工作之中写出性能更高的代码，在解决帧率不足的显示卡顿问题时也可以多一些思路~</p>
+	  <img src="/hackathon5-0/hackathon_5_0.jpg" class="">
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Emmmmm… 还记得上一次参加 Hackathon 是在 2017 年上海举办的，当时还在 ELSEWHERE 工作的我和公司的小伙伴们一起组团从北京到上海参赛，也是我人生中第一次参加 Hackathon，所以到现在都还印象深刻呢！</p>
+<p>这一晃，加入美团·点评也快满三个月了，早就知道美团·点评有公司内部举办 Hackathon 的传统，但没想到这么快就可以参与其中了，想想还有点小激动。其实之前就有看到过同事穿着往届内部 Hackathon 主题 T 恤来公司上班，自己也超想有一件！所以在公司内部发出这次 Hackathon 5.0 的宣传页以及报名表时就毫不犹豫的拉着组里的两位大佬一起报名了哈。</p>
 <h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
-<li>iOS Rendering Process 概念</li>
-<li>iOS Rendering 技术框架</li>
-<li>OpenGL 主要渲染步骤</li>
-<li>OpenGL Render Pipeline</li>
-<li>Core Animation Pipeline</li>
-<li>Commit Transaction</li>
-<li>Animation</li>
-<li>全文总结</li>
-<li>扩展阅读</li>
+<li>Hackathon</li>
+<li>Hackathon 5.0</li>
+<li>不同于往届的赛制</li>
+<li>嗨 Kr 森</li>
+<li>Somewhere</li>
+<li>去年的 Hackathon 回忆</li>
+<li>总结</li>
 </ul>
-<h2 id="iOS-Rendering-Process-概念"><a href="#iOS-Rendering-Process-概念" class="headerlink" title="iOS Rendering Process 概念"></a>iOS Rendering Process 概念</h2><p>iOS Rendering Process 译为 iOS 渲染流程，本文特指 iOS 设备从设置将要显示的图元数据到最终在设备屏幕成像的整个过程。</p>
-<p>在开始剖析 iOS Rendering Process 之前，我们需要对 iOS 的渲染概念有一个基本的认知：</p>
-<h3 id="基于平铺的渲染"><a href="#基于平铺的渲染" class="headerlink" title="基于平铺的渲染"></a>基于平铺的渲染</h3><p>iOS 设备的屏幕分为 N * N 像素的图块，每个图块都适合于 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/System_on_a_chip">SoC</a> 缓存，几何体在图块内被大量拆分，只有在所有几何体全部提交之后才可以进行光栅化（Rasterization）。</p>
-<img src="/ios-rendering-process/tile_based_rendering.jpg" class="">
-<blockquote>
-<p>Note: 这里的光栅化指将屏幕上面被大量拆分出来的几何体渲染为像素点的过程。</p>
-</blockquote>
-<img src="/ios-rendering-process/rasterization.jpg" class="">
-<h2 id="iOS-Rendering-技术框架"><a href="#iOS-Rendering-技术框架" class="headerlink" title="iOS Rendering 技术框架"></a>iOS Rendering 技术框架</h2><p>事实上 iOS 渲染相关的层级划分大概如下：</p>
-<img src="/ios-rendering-process/ios_rendering_framework.png" class="">
-<h3 id="UIKit"><a href="#UIKit" class="headerlink" title="UIKit"></a>UIKit</h3><p>嘛~ 作为一名 iOS Developer 来说，应该对 UIKit 都不陌生，我们日常开发中使用的用户交互组件都来自于 UIKit Framework，我们通过设置 UIKit 组件的 Layout 以及 BackgroundColor 等属性来完成日常的界面绘画工作。</p>
-<p>其实 UIKit Framework 自身并不具备在屏幕成像的能力，它主要负责对用户操作事件的响应，事件响应的传递大体是经过逐层的<strong>视图树</strong>遍历实现的。</p>
-<blockquote>
-<p>那么我们日常写的 UIKit 组件为什么可以呈现在 iOS 设备的屏幕上呢？</p>
-</blockquote>
-<h3 id="Core-Animation"><a href="#Core-Animation" class="headerlink" title="Core Animation"></a>Core Animation</h3><p>Core Animation 其实是一个令人误解的命名。你可能认为它只是用来做动画的，但实际上它是从一个叫做 <strong>Layer Kit</strong> 这么一个不怎么和动画有关的名字演变而来的，所以做动画仅仅是 Core Animation 特性的冰山一角。</p>
-<p>Core Animation 本质上可以理解为是一个复合引擎，旨在尽可能快的组合屏幕上不同的显示内容。这些显示内容被分解成独立的图层，即 CALayer，CALayer 才是你所能在屏幕上看见的一切的基础。</p>
-<p>其实很多同学都应该知道 CALayer，UIKit 中需要在屏幕呈现的组件内部都有一个对应的 CALayer，也就是所谓的 Backing Layer。正是因为一一对应，所以 CALayer 也是树形结构的，我们称之为<strong>图层树</strong>。</p>
-<p>视图的职责就是<strong>创建并管理</strong>这个图层，以确保当子视图在层级关系中<strong>添加或者被移除</strong>的时候，<strong>他们关联的图层</strong>也<strong>同样对应在层级关系树当中有相同的操作</strong>。</p>
-<blockquote>
-<p>但是为什么 iOS 要基于 UIView 和 CALayer 提供两个平行的层级关系呢？为什么不用一个简单的层级关系来处理所有事情呢？</p>
-</blockquote>
-<p>原因在于要做<strong>职责分离</strong>，这样也能<strong>避免很多重复代码</strong>。在 iOS 和 Mac OS X 两个平台上，事件和用户交互有很多地方的不同，基于多点触控的用户界面和基于鼠标键盘的交互有着本质的区别，这就是为什么 iOS 有 UIKit 和 UIView，而 Mac OS X 有 AppKit 和 NSView 的原因。他们功能上很相似，但是在实现上有着显著的区别。</p>
-<blockquote>
-<p>Note: 实际上，这里并不是两个层级关系，而是<strong>四个</strong>，每一个都扮演不同的角色，除了<strong>视图树</strong>和<strong>图层树</strong>之外，还存在<strong>呈现树</strong>和<strong>渲染树</strong>。</p>
-</blockquote>
-<h3 id="OpenGL-ES-amp-Core-Graphics"><a href="#OpenGL-ES-amp-Core-Graphics" class="headerlink" title="OpenGL ES &amp; Core Graphics"></a>OpenGL ES &amp; Core Graphics</h3><h4 id="OpenGL-ES"><a href="#OpenGL-ES" class="headerlink" title="OpenGL ES"></a>OpenGL ES</h4><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/OpenGL_ES">OpenGL ES</a> 简称 GLES，即 OpenGL for Embedded Systems，是 OpenGL 的子集，通常面向<strong>图形硬件加速处理单元（GPU）</strong>渲染 2D 和 3D 计算机图形，例如视频游戏使用的计算机图形。</p>
-<p>OpenGL ES 专为智能手机，平板电脑，视频游戏机和 PDA 等嵌入式系统而设计 。OpenGL ES 是“历史上应用最广泛的 3D 图形 API”。</p>
-<h4 id="Core-Graphics"><a href="#Core-Graphics" class="headerlink" title="Core Graphics"></a>Core Graphics</h4><p><a target="_blank" rel="noopener" href="https://developer.apple.com/documentation/coregraphics?language=objc">Core Graphics</a> Framework 基于 Quartz 高级绘图引擎。它提供了具有无与伦比的输出保真度的低级别轻量级 2D 渲染。您可以使用此框架来处理基于路径的绘图，转换，颜色管理，离屏渲染，图案，渐变和阴影，图像数据管理，图像创建和图像遮罩以及 PDF 文档创建，显示和分析。</p>
-<blockquote>
-<p>Note: 在 Mac OS X 中，Core Graphics 还包括用于处理显示硬件，低级用户输入事件和窗口系统的服务。</p>
-</blockquote>
-<h3 id="Graphics-Hardware"><a href="#Graphics-Hardware" class="headerlink" title="Graphics Hardware"></a>Graphics Hardware</h3><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Graphics_hardware">Graphics Hardware</a> 译为图形硬件，iOS 设备中也有自己的图形硬件设备，也就是我们经常提及的 GPU。</p>
-<p><a href="">图形处理单元（GPU）</a>是一种专用电子电路，旨在快速操作和改变存储器，以加速在用于输出到显示设备的帧缓冲器中创建图像。GPU 被用于嵌入式系统，手机，个人电脑，工作站和游戏控制台。现代 GPU 在处理计算机图形和图像方面非常高效，并且 GPU 的高度并行结构使其在<strong>大块数据并行处理的算法</strong>中比通用 CPU 更有效。</p>
-<h2 id="OpenGL-主要渲染步骤"><a href="#OpenGL-主要渲染步骤" class="headerlink" title="OpenGL 主要渲染步骤"></a>OpenGL 主要渲染步骤</h2><p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/OpenGL">OpenGL</a> 全称 Open Graphics Library，译为开放图形库，是用于渲染 2D 和 3D 矢量图形的<strong>跨语言，跨平台</strong>的<strong>应用程序编程接口（API）</strong>。OpenGL 可以直接访问 GPU，以实现硬件加速渲染。</p>
-<p>一个用来渲染图像的 OpenGL 程序主要可以大致分为以下几个步骤：</p>
+<h2 id="Hackathon"><a href="#Hackathon" class="headerlink" title="Hackathon"></a>Hackathon</h2><p>Hackathon 译为“黑客马拉松”，旨在用限定的时间做出可用的软件应用。</p>
+<p>Hackathon 往往都有一个特定的焦点，其中可能包括使用的编程语言，操作系统，应用程序，API 等等。</p>
+<p>不仅仅是程序猿，Hackathon 的参赛人员包含软件开发领域的所有职业，包括平面设计师，界面设计师，产品经理等等，大家在赛前根据计划组队，比赛过程中各司其职，发挥专长，力争为团队拿下好的成绩。</p>
+<p>不过随着 Hackathon 的不断发展，现在的 Hackathon 已经不单单是场比赛了，我觉得它更像是让 Hacker 们齐聚一堂盛会和节日。</p>
+<h2 id="Hackathon-5-0"><a href="#Hackathon-5-0" class="headerlink" title="Hackathon 5.0"></a>Hackathon 5.0</h2><p>Emmmmm… 为什么叫 Hackathon 5.0 呢？其实感觉这个就是公司内部为了区分每一届 Hackathon 的 Tag 而已。貌似在美团网与大众点评合并之前，两家公司就都有内部举办 Hackathon 的历史，合并之后自然而然的将这一传统延续了下来。</p>
+<h2 id="不同于往届的赛制"><a href="#不同于往届的赛制" class="headerlink" title="不同于往届的赛制"></a>不同于往届的赛制</h2><p>往届 Hackathon 大致流程：</p>
 <ul>
-<li>设置图元数据</li>
-<li>着色器-shader 计算图元数据（位置·颜色·其他）</li>
-<li>光栅化-rasterization 渲染为像素</li>
-<li>fragment shader，决定最终成像</li>
-<li>其他操作（显示·隐藏·融合）</li>
+<li>提前一两周给一个特定范围内的主题</li>
+<li>大家根据主题找灵感</li>
+<li>线下拉人组队</li>
+<li>技术调研保证项目可行性以及确定技术方案</li>
+<li>报名参赛</li>
+<li>现场开始编码</li>
+<li>在规定的时间内（24 小时）完成作品</li>
+<li>在完成作品期间抽时间准备 PPT 模拟上台宣讲</li>
+<li>评委对参赛队伍的作品初筛</li>
+<li>入围的队伍上台决赛答辩</li>
+<li>评委给出最终评分决出名次</li>
+<li>上台领奖 &amp; 拍照留恋</li>
 </ul>
+<p>不过这次 Hackathon 5.0 在赛制上为了保证参赛作品的质量，没有明确的限制主题，这就导致有些作品是在赛前做了很久的项目，这些项目不论从体量还是从质量上都跟 24 小时竭尽全力所能产出的作品有着悬殊的差距。</p>
+<p>个人认为提前两周公布一个明确的主题范围，大家在两周内做技术调研之后提前在工作之余开始构建项目还是可以接受的，这样可以保证参赛作品的质量同时也可以省去大家通宵熬夜对身体的损耗。主办方出发点是好的，但是任何主题任何项目都可以参赛这点就决定了这场 Hackathon 注定是不太公平的同台竞技，不仅打压了部分第一次参加 Hackathon 的同学以后继续参加的积极性，还掀起了一个不好的势头 —— 以后参赛的作品可能都会是提前很久就开始构建的项目。</p>
+<p>嘛~ 上面的个人观点可能有些酸吧… 因为我们战队就是按照老 Hackathon 的赛制准备的（事实上我并不知道美团·点评内部 Hackathon 什么时候举办，也不知道这次的赛制竟然没有限制主题）。</p>
+<h2 id="嗨-Kr-森"><a href="#嗨-Kr-森" class="headerlink" title="嗨 Kr 森"></a>嗨 Kr 森</h2><p>嘛~ “嗨 Kr 森”是我们本次参加 Hackathon 5.0 的战队名哈！</p>
+<img src="/hackathon5-0/team.jpg" class="">
+<p>起这个名字无非就是觉得比较好玩，因为组里连我在内的三人中，有两位都没有参加过公司内部组织的 Hackathon，所以本次参赛的主要目的就是熟悉一下公司内部 Hackathon 的流程，还有混一件 Hackathon 5.0 主题 T 恤衫（笑）。</p>
+<h2 id="Somewhere"><a href="#Somewhere" class="headerlink" title="Somewhere"></a>Somewhere</h2><img src="/hackathon5-0/somewhere_00.jpg" class="">
+<p>Somewhere 译为“某处”，是我们战队这次拿来参赛的作品。它是一个将 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Augmented_reality">AR</a> 技术结合到地图的项目，旨在帮助用户发现值得消费时间去用心体验的地方。</p>
+<p>Emmmmm… 其实关于 Somewhere 还有一个比较文艺的文案是我们当时在写参赛 PPT 时想到的。</p>
 <blockquote>
-<p>Note: 其实还有一些非必要的步骤，与本文主题不相关，这里点到为止。</p>
+<p>我们一直以来都希望，打开手机，对准想要去的方向。相信总有一处地方，值得我们花些时间在那里。<strong>Somewhere，帮助你发现近在咫尺的美好</strong>。</p>
 </blockquote>
-<p>我们日常开发时使用 UIKit 布局视图控件，设置透明度等等都属于<strong>设置图元数据</strong>这步，这也是我们日常开发中可以影响 OpenGL 渲染的主要步骤。</p>
-<h2 id="OpenGL-Render-Pipeline"><a href="#OpenGL-Render-Pipeline" class="headerlink" title="OpenGL Render Pipeline"></a>OpenGL Render Pipeline</h2><p>如果有同学看过 WWDC 的一些演讲稿或者接触过一些 OpenGL 知识，应该对 Render Pipeline 这个专业术语并不陌生。</p>
-<p>不过 Render Pipeline 实在是一个初次见面不太容易理解的词，它译为<strong>渲染管道</strong>，也有译为渲染管线的…</p>
-<p>其实 Render Pipeline 指的是<strong>从应用程序数据转换到最终渲染的图像之间的一系列数据处理过程</strong>。</p>
-<p>好比我们上文中提到的 OpenGL 主要渲染步骤一样，我们开发应用程序时在<strong>设置图元数据</strong>这步为视图控件的设定布局，背景颜色，透明度以及阴影等等数据。</p>
-<p>下面以 OpenGL 4.5 的 Render Pipeline 为例介绍一下：</p>
-<img src="/ios-rendering-process/opengl_rendering_pipeline.png" class="">
-<p>这些图元数据流入 OpenGL 中，传入<strong>顶点着色器（vetex shader）</strong>，然后顶点着色器对其进行着色器内部的处理后流出。之后可能进入<strong>细分着色阶段（tessellation shading stage）</strong>，其中又有可能分为细分控制着色器和细分赋值着色器两部分处理，还可能会进入<strong>几何着色阶段（geometry shading stage）</strong>，数据从中传递。最后都会走<strong>片元着色阶段（fragment shading stage）</strong>。</p>
-<blockquote>
-<p>Note: 图元数据是以 copy 的形式流入 shader 的，shader 一般会以特殊的<strong>类似全局变量的形式</strong>接收数据。</p>
-</blockquote>
-<p>OpenGL 在最终成像之前还会经历一个阶段名为<strong>计算着色阶段（compute shaing stage）</strong>，这个阶段 OpenGL 会计算最终要在屏幕中成像的像素位置以及颜色，如果在之前提交代码时用到了 CALayer 会引起 <strong>blending</strong> 的显示效果（例如 Shadow）或者视图颜色或内容图片的 alpha 通道开启，都将会加大这个阶段 OpenGL 的工作量。</p>
-<h2 id="Core-Animation-Pipeline"><a href="#Core-Animation-Pipeline" class="headerlink" title="Core Animation Pipeline"></a>Core Animation Pipeline</h2><p>上文说到了 iOS 设备之所以可以成像不是因为 UIKit 而是因为 LayerKit，即 Core Animation。</p>
-<p>Core Animation 图层，即 CALayer 中包含一个属性 contents，我们可以通过给这个属性赋值来<strong>控制 CALayer 成像的内容</strong>。这个属性的类型定义为 id，在程序编译时不论我们给 contents 赋予任何类型的值，都是可以编译通过的。但实践中，<strong>如果 contents 赋值类型不是 CGImage，那么你将会得到一个空白图层</strong>。</p>
-<blockquote>
-<p>Note: 造成 contents 属性的奇怪表现的原因是 Mac OS X 的历史包袱，它之所以被定义为 id 类型是因为在 Mac OS X 中这个属性对 CGImage 和 NSImage 类型的值都起作用。但是在 iOS 中，如果你赋予一个 UIImage 属性的值，仅仅会得到一个空白图层。</p>
-</blockquote>
-<p>说完 Core Animation 的 contents 属性，下面介绍一下 iOS 中 Core Animation Pipeline：</p>
-<ul>
-<li>在 Application 中布局 UIKit 视图控件间接的关联 Core Animation 图层</li>
-<li>Core Animation 图层相关的数据提交到 iOS Render Server，即 OpenGL ES &amp; Core Graphics</li>
-<li>Render Server 将与 GPU 通信把数据经过处理之后传递给 GPU</li>
-<li>GPU 调用 iOS 当前设备渲染相关的图形设备 Display</li>
+<p>Somewhere 参考了 <a target="_blank" rel="noopener" href="https://github.com/ProjectDent/ARKit-CoreLocation">ARKit-CoreLocation</a> 的实现，在其基础上做了一些优化，例如对某一方向重叠在一起的 POI AR Annotations 做了收敛以防止多个 POI AR Annotations 重叠在一起的问题。</p>
+<img src="/hackathon5-0/somewhere_01.jpg" class="">
+<p>可惜的是 Somewhere 只拿到了入围奖（42 进 10），确实站在评委的角度看 Somewhere 在完成度上面对比获奖作品来说差的太多了…</p>
+<h2 id="去年的-Hackathon-回忆"><a href="#去年的-Hackathon-回忆" class="headerlink" title="去年的 Hackathon 回忆"></a>去年的 Hackathon 回忆</h2><p>去年还在 ELSEWHERE 工作时，和公司的小伙伴一起去上海参加中信集团与宝马联合赞助举办的开放式 Hackathon，也是我第一次参加 Hackathon，所以很多细节都记得清清楚楚~</p>
+<p>那届 Hackathon 的主题是三选一，其中中信集团的主题之一是我们一直比较感兴趣的区块链相关主题，中信集团想要依靠区块链技术打造其集团下属业务之间的用户信用体系，确实利用区块链超级账本做信用相关的东西是个不错的出发点，从扩展性的角度看区块链技术可以让中信集团以后支持并入其他非集团旗下的外部业务。</p>
+<img src="/hackathon5-0/hackathon_sh.jpg" class="">
+<p>最后我们的参赛作品“信信”非常幸运的入围，并且在决赛拿到了名次和奖品~</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>平日里有自己感兴趣的技术或者想做的事情，不妨抽空动手写一写 Demo，如果可行的话可以持续抽时间完善，说不定可以拿来作为作品参加下一届公司内部的 Hackathon。</li>
+<li>PPT 和作品的核心代码一样重要，初赛宣讲和决赛答辩给出的时间不同，最好准备详略两份 PPT。</li>
+<li>核心流程一定要跑通，尤其是涉及到网络，定位等不确定因素时，一定要在上台前确认好当前的状态是否会影响到作品演示。</li>
+<li>最受欢迎奖会在第二日的决赛答辩之前给出一个投票页面，在队长群会周知要填写投票页面中关于自己战队的作品简介，一定要及时填写作品简介以免影响得票率。</li>
 </ul>
-<img src="/ios-rendering-process/core_animation_pipeline.png" class="">
-<blockquote>
-<p>Note: 由于 iOS 设备目前的显示屏最大支持 <strong>60 FPS</strong> 的刷新率，所以每个处理间隔为 16.67 ms。</p>
-</blockquote>
-<p>可以看到从 Commit Transaction 之后我们的图元数据就将会在下一次 RunLoop 时被 Application 发送给底层的 Render Server，底层 Render Server 直接面向 GPU 经过一系列的数据处理将处理完毕的数据传递给 GPU，然后 GPU 负责渲染工作，根据当前 iOS 设备的屏幕计算图像<strong>像素位置以及像素 alpha 通道混色计算</strong>等等最终在当前 iOS 设备的显示屏中呈现图像。</p>
-<blockquote>
-<p>嘛~ 由于 Core Animation Pipeline 中 Render Server 包含 OpenGL ES &amp; Core Graphics，其中 OpenGL ES 的渲染可以参考上文 OpenGL Render Pipeline 理解。</p>
-</blockquote>
-<h2 id="Commit-Transaction"><a href="#Commit-Transaction" class="headerlink" title="Commit Transaction"></a>Commit Transaction</h2><p>Core Animation Pipeline 的整个管线中 iOS 常规开发一般可以影响到的范围也就仅仅是在 Application 中布局 UIKit 视图控件间接的关联 Core Animation 图层这一级，即 <strong>Commit Transaction 之前的一些操作</strong>。</p>
-<p>那么在 Commit Transaction 之前我们一般要做的事情有哪些？</p>
-<ul>
-<li>Layout，构建视图</li>
-<li>Display，绘制视图</li>
-<li>Prepare，额外的 Core Animation 工作</li>
-<li>Commit，打包图层并将它们发送到 Render Server</li>
-</ul>
-<h3 id="Layout"><a href="#Layout" class="headerlink" title="Layout"></a>Layout</h3><p>在 Layout 阶段我们能做的是把 constraint 写的尽量高效，iOS 的 Layout Constraint 类似于 Android 的 Relative Layout。</p>
-<blockquote>
-<p>Note: Emmmmm… 据观察 iOS 的 Layout Constraint 在书写时应该尽量少的依赖于视图树中同层级的兄弟视图节点，它会拖慢整个视图树的 Layout 计算过程。</p>
-</blockquote>
-<p><strong>这个阶段的 Layout 计算工作是在 CPU 完成的</strong>，包括 <code>layoutSubviews</code> 方法的重载，<code>addSubview:</code> 方法填充子视图等</p>
-<h3 id="Display"><a href="#Display" class="headerlink" title="Display"></a>Display</h3><p>其实这里的 Display 仅仅是我们设置 iOS 设备要最终成像的图元数据而已，重载视图 <code>drawRect:</code> 方法可以自定义 UIView 的显示，其原理是在 <code>drawRect:</code> 方法内部绘制 bitmap。</p>
-<blockquote>
-<p>Note: 重载 <code>drawRect:</code> 方法绘制 bitmap 过程<strong>使用 CPU 和 内存</strong>。</p>
-</blockquote>
-<p>所以重载 <code>drawRect:</code> 使用不当会造成 CPU 负载过重，App 内存飙升等问题。</p>
-<h3 id="Prepare"><a href="#Prepare" class="headerlink" title="Prepare"></a>Prepare</h3><p>这个步骤属于附加步骤，一般处理图像的解码 &amp; 转换等操作。</p>
-<h3 id="Commit"><a href="#Commit" class="headerlink" title="Commit"></a>Commit</h3><p>Commit 步骤指打包图层并将它们发送到 Render Server。</p>
-<blockquote>
-<p>Note: Commit 操作会<strong>递归执行</strong>，由于图层和视图一样是以树形结构存在的，当图层树过于复杂时 Commit 操作的开销也会非常大。</p>
-</blockquote>
-<h4 id="CATransaction"><a href="#CATransaction" class="headerlink" title="CATransaction"></a>CATransaction</h4><p>CATransaction 是 Core Animation 中用于将多个图层树操作分配到渲染树的<strong>原子更新</strong>中的机制，对图层树的每个修改都必须是事务的一部分。</p>
-<p>CATransaction 类没有属性或者实例方法，并且也不能用 <code>+alloc</code> 和 <code>-init</code> 方法创建它，我们只能用类方法 <code>+begin</code> 和 <code>+commit</code> 分别来入栈或者出栈。</p>
-<p>事实上任何可动画化的图层属性都会被添加到栈顶的事务，你可以通过 <code>+setAnimationDuration:</code> 方法设置当前事务的动画时间，或者通过 <code>+animationDuration</code> 方法来获取时长值（默认 0.25 秒）。</p>
-<p>Core Animation 在每个 RunLoop 周期中自动开始一次新的事务，即使你不显式地使用 <code>[CATransaction begin]</code> 开始一次事务，在一个特定 RunLoop 循环中的任何属性的变化都会被收集起来，然后做一次 0.25 秒的动画（CALayer 隐式动画）。</p>
-<blockquote>
-<p>Note: CATransaction 支持<strong>嵌套</strong>。</p>
-</blockquote>
-<h2 id="Animation"><a href="#Animation" class="headerlink" title="Animation"></a>Animation</h2><p>对于 App 用户交互体验提升最明显的工作莫过于使用动画了，那么 iOS 是如何处理动画的渲染过程的呢？</p>
-<p>日常开发中如果不是特别复杂的动画我们一般会使用 UIView Animation 实现，iOS 将 UIView Animation 的处理过程分为以下三个阶段：</p>
-<ul>
-<li>调用 <code>animateWithDuration:animations:</code> 方法</li>
-<li>在 Animation Block 中进行 Layout，Display，Prepare，Commit</li>
-<li>Render Server 根据 Animation 逐帧渲染</li>
-</ul>
-<img src="/ios-rendering-process/animation.png" class="">
-<blockquote>
-<p>Note: 原理是 <code>animateWithDuration:animations:</code> 内部使用了 CATransaction 来将整个 Animation Block 中的代码作为原子操作 commit 给了 RunLoop。</p>
-</blockquote>
-<h3 id="基于-CATransaction-实现链式动画"><a href="#基于-CATransaction-实现链式动画" class="headerlink" title="基于 CATransaction 实现链式动画"></a>基于 CATransaction 实现链式动画</h3><p>事实上大多数的动画交互都是有动画执行顺序的，尽管 UIView Animation 很强大，但是在写一些顺序动画时使用 UIView Animation 只能在 <code>+ (void)animateWithDuration:delay:options:animations:completion:</code> 方法的 completion block 中层级嵌套，写成一坨一坨 block 堆砌而成的代码，实在是难以阅读更别提后期维护了。</p>
-<p>在得知 UIView Animation 使用了 CATransaction 时，我们不禁会想到这个 completion block 是不是也是基于 CATransaction 实现的呢？</p>
-<p>Bingo！CATransaction 中有 <code>+completionBlock</code> 以及 <code>+setCompletionBlock:</code> 方法可以对应于 UIView Animation 的 completion block 的书写。</p>
-<blockquote>
-<p>Note: 我的一个开源库 <a target="_blank" rel="noopener" href="https://github.com/Lision/LSAnimator"><strong>LSAnimator - 可多链式动画库</strong></a> 在<strong>动画顺序链接时也用到了 CATransaction</strong>。</p>
-</blockquote>
-<h2 id="全文总结"><a href="#全文总结" class="headerlink" title="全文总结"></a>全文总结</h2><p>结合上下文不难梳理出一个 iOS <strong>最基本的完整渲染经过（Rendering pass）</strong>。</p>
-<img src="/ios-rendering-process/rendering_pass.png" class="">
-<h3 id="性能检测思路"><a href="#性能检测思路" class="headerlink" title="性能检测思路"></a>性能检测思路</h3><p>基于整篇文章的内容归纳一下我们在日常的开发工作中遇到性能问题时检测问题代码的思路：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">问题</th>
-<th style="text-align:center">建议</th>
-<th style="text-align:center">检测工具</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">目标帧率</td>
-<td style="text-align:center">60 FPS</td>
-<td style="text-align:center">Core Animation instrument</td>
-</tr>
-<tr>
-<td style="text-align:center">CPU or GPU</td>
-<td style="text-align:center">降低使用率节约能耗</td>
-<td style="text-align:center">Time Profiler instrument</td>
-</tr>
-<tr>
-<td style="text-align:center">不必要的 CPU 渲染</td>
-<td style="text-align:center">GPU 渲染更理想，但要清楚 CPU 渲染在何时有意义</td>
-<td style="text-align:center">Time Profiler instrument</td>
-</tr>
-<tr>
-<td style="text-align:center">过多的 offscreen passes</td>
-<td style="text-align:center">越少越好</td>
-<td style="text-align:center">Core Animation instrument</td>
-</tr>
-<tr>
-<td style="text-align:center">过多的 blending</td>
-<td style="text-align:center">越少越好</td>
-<td style="text-align:center">Core Animation instrument</td>
-</tr>
-<tr>
-<td style="text-align:center">奇怪的图片格式或大小</td>
-<td style="text-align:center">避免实时转换或调整大小</td>
-<td style="text-align:center">Core Animation instrument</td>
-</tr>
-<tr>
-<td style="text-align:center">开销昂贵的视图或特效</td>
-<td style="text-align:center">理解当前方案的开销成本</td>
-<td style="text-align:center">Xcode View Debugger</td>
-</tr>
-<tr>
-<td style="text-align:center">想象不到的层次结构</td>
-<td style="text-align:center">了解实际的视图层次结构</td>
-<td style="text-align:center">Xcode View Debugger</td>
-</tr>
-</tbody>
-</table>
-<p>文章写得比较用心（是我个人的原创文章，转载请注明 <a href="https://lision.me/">https://lision.me/</a>），如果发现错误会优先在我的个人博客中更新。如果有任何问题欢迎在我的微博 <a target="_blank" rel="noopener" href="http://weibo.com/lisioncode">@Lision</a> 联系我~</p>
-<p>希望我的文章可以为你带来价值~</p>
-<h2 id="扩展阅读"><a href="#扩展阅读" class="headerlink" title="扩展阅读"></a>扩展阅读</h2><ul>
-<li><a target="_blank" rel="noopener" href="https://developer.apple.com/videos/play/wwdc2014/419/">WWDC2014-Advanced Graphics and Animations for iOS Apps</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.ibireme.com/2015/11/12/smooth_user_interfaces_for_ios/">iOS 保持界面流畅的技巧</a></li>
-</ul>
-
+<p>嘛~ 目前准备看一下 WWDC 2018 有没有什么感兴趣的技术点，准备拿来结合生活中的场景做些有趣的东西出来，为 Hackathon 6.0 做准备~</p>
+<hr>
+<p>Emmmmm… 最后还要感谢战队里面的两位大佬愿意把宣讲和答辩的机会让给我，第一次面对着评委和台下这么多优秀的同事（其中不乏技术大佬）讲话真的是非常紧张的说，果然在回答某些问题上不够巧妙… 不过好在对于项目的宣讲和描述还算比较完整，大佬们也没有责怪我的意思，还给我拍了一张答辩时的照片~</p>
+<img src="/hackathon5-0/me.jpg" class="">
 
     
     
     
 	  <div class="tags">
-      <a class="tag-none-link" href="/tags/opengl/" rel="tag">opengl</a><a class="tag-none-link" href="/tags/wwdc/" rel="tag">wwdc</a>
+      <a class="tag-none-link" href="/tags/hackathon/" rel="tag">hackathon</a>
 	  </div>
     
 

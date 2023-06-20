@@ -105,88 +105,104 @@
 
   
   <h2 class="title">
-    <a href="/oc_class_properties/">
-      巧用 Objective-C Class Properties 解耦
+    <a href="/hhkb-bt/">
+      HHKB 开箱留念
     </a>
   </h2>
   
   <time>
-    3月 25, 2018
+    4月 5, 2018
   </time>
   <section class="content">
-	  <img src="/oc_class_properties/oc_class_properties.jpg" class="">
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Emmmmm… Objective-C Class Properties 早在 WWDC 2016 中就已经公示，给 Objective-C 加入这个特性主要是为了与 Swift 类型属性相互操作。</p>
-<p>官方是这么说明的：</p>
+	  <img src="/hhkb-bt/hhkb_c_00.jpg" class="">
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Emmmmm… 这个清明节本来打算去青海湖骑行的，不过因为北京 4 月飞雪的天气骤变加上自己没注意添衣… 最终还是没能出了帝都 ╮(╯▽╰)╭ </p>
+<p>不过这也省下了一些开销~ 于是用本来准备出去踏青的 💰 入了一把垂涎已久的键盘，也就是本文的主角 —— HHKB 酱！</p>
+<p>嘛~ 知道 HHKB 是在 2015 年，记得还是在某乎的一篇回答中看到的，答主是一个妹子，大意是这个妹子偷偷看到了程序猿男票的购物车中躺着一把 HHKB，然后这个对键盘一窍不通的妹子历尽波折将 HHKB 入手送给自己程序猿男票的暖心小故事。</p>
+<p>当时的我刚刚毕业一年左右吧，也是正想买一把键盘来敲代码，提升自己的输出（事实证明，并没有太大帮助 ^_^||），见证自己的成长（这个打油的键帽们可以证明哟）。于是就搜到了这篇回答，看得我心里一暖，无比羡慕答主男票的同时自己默默的继续浏览其他关于键盘的东西…</p>
+<p>最后在 Filco 和 HHKB 之间纠结挣扎了许久，选择了 Filco 87 青轴奶绿配色，不过想入一把 HHKB 的种子却埋在了心里…</p>
+<p>有了大 F 的陪伴，HHKB 的艹长得依旧很快，每次在使用 ctrl maping command 键时心里的艹都会拔高一截，尤其是最近已经到了不能不拔的地步…</p>
+<p>所以趁着这次机会，果断入手，写篇文章记录一下自己的开箱感受，说不定对某些同学有帮助呢~</p>
 <blockquote>
-<p>Interoperate with Swift type properties.</p>
-</blockquote>
-<p>嘛~ 虽然是为了配合 Swift 加入的新特性，不过聊胜于无哈！</p>
-<blockquote>
-<p>Note: 值得一提的是 Objective-C Class Properties 语法特性虽然是 WWDC 2016 加入的，不过由于是 Xcode 8 中 LLVM Compiler 的特性，因此也适用于 iOS 10 之前的部署版本哟~</p>
+<p>Note: 前排提示，多图预警！</p>
 </blockquote>
 <h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
-<li>LLVM</li>
-<li>Objective-C Class Properties</li>
-<li>解耦</li>
+<li>HHKB</li>
+<li>入手渠道</li>
+<li>开箱照</li>
+<li>手感体验</li>
+<li>键帽</li>
 <li>总结</li>
 </ul>
-<h2 id="LLVM"><a href="#LLVM" class="headerlink" title="LLVM"></a>LLVM</h2><img src="/oc_class_properties/llvm.jpg" class="">
-<p><a target="_blank" rel="noopener" href="https://llvm.org/">LLVM 官网</a> 对于 LLVM 的定义：</p>
-<blockquote>
-<p>Note: The LLVM Project is a collection of modular and reusable compiler and toolchain technologies. </p>
-</blockquote>
-<p>Emmmmm… 有趣的是，有的文章把 LLVM 强行展开为 “low level virtual machine” 译为 “低级别虚拟机”，不过在 <a target="_blank" rel="noopener" href="https://llvm.org/">LLVM 官网</a> 可以看到官方明示 LLVM 与传统的虚拟机<strong>没有一毛钱关系</strong>，名称 “LLVM” 本身<strong>不是缩写</strong>，它仅仅是项目的名称而已~</p>
-<p>嘛~ 可能有的同学不能理解为何 LLVM 是一个编译器工具链集合？这就要从 Apple 的编译器历史讲起咯~ </p>
-<p>很久很久以前… 算了，我感觉要跑题了（囧），这里简单列一下 Apple 采用过的编译方案吧：</p>
+<h2 id="HHKB"><a href="#HHKB" class="headerlink" title="HHKB"></a>HHKB</h2><p>HHKB 全称 Happy Hacking Keyboard，于 1996 年 12 月 20 日诞生于日本，系 <a target="_blank" rel="noopener" href="http://www.fujitsu.com/jp/">富士通</a> 旗下子公司 PFU 生产的紧凑型键盘，以逼格甚高的键盘配列、优秀流畅的敲击手感、高昂的售价为外设发烧友和码农们所熟知，亦以被 Hackers 钟爱而闻名。</p>
+<p>关于 HHKB 的评测贴很多，这里只挑一些我认为值得聊得点来写：</p>
 <ul>
-<li>GCC</li>
-<li>LLVM &amp; GCC</li>
-<li>LLVM Compiler</li>
+<li>HHKB 的键盘配列为何如此设计？</li>
+<li>什么是静电容轴？</li>
+<li>谁捧红了 HHKB？</li>
 </ul>
-<h3 id="GCC"><a href="#GCC" class="headerlink" title="GCC"></a>GCC</h3><p><a target="_blank" rel="noopener" href="https://gcc.gnu.org/">GCC, the GNU Compiler Collection</a> 是一套由 GNU 开发的编程语言编译器，最初作为 <a target="_blank" rel="noopener" href="http://www.gnu.org/gnu/thegnuproject.html">GNU 操作系统</a> 的编译器使用，后面发展成为类 Unix 操作系统以及 Apple Mac OS X 操作系统的标准编译器。</p>
-<p>原本 GCC 仅能处理 C 语言的编译，不过 GCC 很快扩展以支持 C++，之后的 GCC 越发全面，支持 Objective-C，Fortran，Ada，以及 Go 语言。</p>
-<p>值得一提的是 GCC 是一套以 GPL 以及 LGPL 许可证锁发行的 100% 自由软件，这意味着<strong>用户可以自由地运行，拷贝，分发，学习，修改并改进该软件</strong>。</p>
-<h3 id="LLVM-amp-GCC"><a href="#LLVM-amp-GCC" class="headerlink" title="LLVM &amp; GCC"></a>LLVM &amp; GCC</h3><p>LLVM 我们前面介绍过了，是模块化 &amp; 可重用性编译器以及工具链技术集合。</p>
-<p>LLVM 能够进行程序语言的 <strong>编译期优化、链接优化、在线编译优化、代码生成</strong>。</p>
-<h3 id="LLVM-Compiler"><a href="#LLVM-Compiler" class="headerlink" title="LLVM Compiler"></a>LLVM Compiler</h3><p>前面介绍过 GCC 支持很多语言，系统架构庞大而笨重，而 Apple 大量使用的 Objective-C 在 GCC 中顺位（优先级）较低。此外，GCC 作为一个纯粹的编译系统，在与 IDE 配合方面的表现也很差。</p>
-<p>So，Apple 决定从零开始写 C，C++，Objective-C 的编译器 Clang。</p>
-<p>至此，Apple 彻底与 GCC 了断。</p>
-<h2 id="Objective-C-Class-Properties"><a href="#Objective-C-Class-Properties" class="headerlink" title="Objective-C Class Properties"></a>Objective-C Class Properties</h2><img src="/oc_class_properties/oc_feature.jpg" class="">
-<p>Objective-C Class Properties 作为 Objective-C 新语法特性在 <a target="_blank" rel="noopener" href="https://developer.apple.com/videos/play/wwdc2016/405/">WWDC2016 What’s New in LLVM</a> 中公示，表示 Xcode 8 之后可以使用这一新语法特性。</p>
-<p>使用方式很简单：</p>
+<h3 id="标志性配列"><a href="#标志性配列" class="headerlink" title="标志性配列"></a>标志性配列</h3><p>HHKB 是由日本 Hacker <a target="_blank" rel="noopener" href="https://www.pfu.fujitsu.com/hhkeyboard/dr_wada.html">和田英一</a> 和 PFU 研究所共同设计，从名字就可以看出此系列键盘的用户定位是 Hacker，这块键盘的配列从第一代设计至今未变，可以说是 HHKB 的标志性配列。</p>
+<p>键盘非 67 键的普通主键区小键盘传统配列，为了 Hackers 可以更好的在 Emacs 和 Vim 下使用，键盘将高频键位 —— Ctrl 上移至 Cap 处，然后砍掉了 Cap… 并默认把 Esc 键下沉至低频键位 ~ 处，同时还把 Del 键下沉至 | 键处，甚至砍掉了 67 键配列中大多数人认为高频使用的方向键！</p>
+<h3 id="静电容轴"><a href="#静电容轴" class="headerlink" title="静电容轴"></a>静电容轴</h3><p>HHKB 既不是大多数人用的量产薄膜键盘，也不是近些年来逐渐火热的机械键盘，而是采用了 <a target="_blank" rel="noopener" href="http://www.topre.co.jp/en/">Topre</a> 无接触式电容开关设计。</p>
 <ul>
-<li>Declared with <code>class</code> flag </li>
-<li>Accessed with dot syntax</li>
-<li>Never synthesized</li>
-<li>Use <code>@dynamic</code> to defer to runtime</li>
+<li>普通薄膜键盘的触发开关是在橡胶下黏一块导电薄膜，通过这个导电薄膜触发按键开关。</li>
+<li>机械键盘在机械轴体内部加入铜片，按键时通过机械轴体轴心挤压铜片触发按键开关。</li>
+<li>静电容键盘通过碗状橡胶触发开关，触发原理是在按键过程中电极间距改变产生电容值变化，进而触发键盘讯号。</li>
 </ul>
-<h3 id="Declared-with-class-flag"><a href="#Declared-with-class-flag" class="headerlink" title="Declared with class flag"></a>Declared with <code>class</code> flag</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@interface</span> <span class="title">MyType</span> : <span class="title">NSObject</span></span></span><br><span class="line"><span class="keyword">@property</span> (<span class="keyword">class</span>) <span class="built_in">NSString</span> *someString;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
-<h3 id="Accessed-with-dot-syntax"><a href="#Accessed-with-dot-syntax" class="headerlink" title="Accessed with dot syntax"></a>Accessed with dot syntax</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">NSLog</span>(<span class="string">@&quot;format string: %@&quot;</span>, MyType.someString);</span><br></pre></td></tr></table></figure>
-<h3 id="Never-synthesized"><a href="#Never-synthesized" class="headerlink" title="Never synthesized"></a>Never synthesized</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyType</span></span></span><br><span class="line"><span class="keyword">static</span> <span class="built_in">NSString</span> *_someString = <span class="literal">nil</span>;</span><br><span class="line">+ (<span class="built_in">NSString</span> *)someString &#123; <span class="keyword">return</span> _someString; &#125;</span><br><span class="line">+ (<span class="type">void</span>)setSomeString:(<span class="built_in">NSString</span> *)newString &#123; _someString = newString; &#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
-<h3 id="Use-dynamic-to-defer-to-runtime"><a href="#Use-dynamic-to-defer-to-runtime" class="headerlink" title="Use @dynamic to defer to runtime"></a>Use <code>@dynamic</code> to defer to runtime</h3><figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">@implementation</span> <span class="title">MyType</span></span></span><br><span class="line"><span class="keyword">@dynamic</span> (<span class="keyword">class</span>) someString;</span><br><span class="line">+ (<span class="type">BOOL</span>)resolveClassMethod:(SEL) name &#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">@end</span></span><br></pre></td></tr></table></figure>
-<h2 id="解耦"><a href="#解耦" class="headerlink" title="解耦"></a>解耦</h2><p>笔者在做项目组件下沉时，遇到一个问题，正好适用于 Objective-C Class Properties 发挥：将要下沉的组件库中某系统类 Categroy 引用了业务层某方法。</p>
-<img src="/oc_class_properties/before_decoupling.png" class="">
-<p>业务层应该依赖于将要下沉的组件，而组件既然要下沉就不应该再反过来依赖上层业务实现！</p>
-<p>按照常规思路，想要把上层业务中被依赖的部分一起随组件下沉，但是发现被依赖的部分虽然也属于一个较为基础的模块，不过此模块现阶段不做下沉…</p>
-<p>后来经过组内大佬指点，使用 Objective-C Class Properties 解决了这个问题，即将上层业务被依赖的部分化作将要下沉组件依赖方系统类 Categroy 的 Class Properties。</p>
 <blockquote>
-<p>Note: 在 Categroy 中写 Objective-C Class Properties 需要使用 Runtime 关联方法。</p>
+<p>Note: 很多同学对机械键盘有误解，其实机械键盘轴体内部也是有弹簧的，轴体回弹也是依靠这个弹簧实现。</p>
 </blockquote>
-<img src="/oc_class_properties/after_decoupling.png" class="">
+<h3 id="钟爱-HHKB-的大神"><a href="#钟爱-HHKB-的大神" class="headerlink" title="钟爱 HHKB 的大神"></a>钟爱 HHKB 的大神</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Richard_Stallman">Richard Stallman</a>，GUN Emacs &amp; GCC 大佬。</li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Bjarne_Stroustrup">Bjarne Stroustrup</a>，C艹 之父。</li>
+</ul>
+<h2 id="入手渠道"><a href="#入手渠道" class="headerlink" title="入手渠道"></a>入手渠道</h2><p>我入手的是 HHKB Professional BT (Bluetooth) 版本，主要是看中了无线的优势，毕竟对于 Mac 来说，一个键盘占用一个 USB 接口太过奢侈了…</p>
+<p>截止至下单时，日亚的售价是 29700 日元，约合人民币 1750 元。</p>
+<p>某猫有一家认证过的 HHKB 官方旗舰店，售价 2388 元人民币，店铺限时活动 -200 元，加上满 200 即减 20 的满减活动，最终下单价为 2088 元。</p>
+<p>考虑到行货保修问题，以及海淘邮寄可能出现的一些状况果断选择了国行。</p>
+<h2 id="开箱照"><a href="#开箱照" class="headerlink" title="开箱照"></a>开箱照</h2><p>嘛~ 快递没什么好说的，店家包顺丰次日达，顺丰的服务一如既往的让人满意。</p>
+<p>清明小长假第一天就到了，开箱签收之后洗手拍照留念（笑）。</p>
+<blockquote>
+<p>Note: 再次提示，多图预警！</p>
+</blockquote>
+<img src="/hhkb-bt/hhkb_00.jpg" class="">
+<img src="/hhkb-bt/hhkb_01.jpg" class="">
+<img src="/hhkb-bt/hhkb_02.jpg" class="">
+<img src="/hhkb-bt/hhkb_03.jpg" class="">
+<img src="/hhkb-bt/hhkb_04.jpg" class="">
+<img src="/hhkb-bt/hhkb_05.jpg" class="">
+<img src="/hhkb-bt/hhkb_06.jpg" class="">
+<img src="/hhkb-bt/hhkb_07.jpg" class="">
+<img src="/hhkb-bt/hhkb_08.jpg" class="">
+<img src="/hhkb-bt/hhkb_09.jpg" class="">
+<img src="/hhkb-bt/hhkb_10.jpg" class="">
+<p>嘛~ 吐槽一下，HHKB Pro BT 的这个电池仓略丑，好在宝宝敲键盘的时候看不到它…</p>
+<h2 id="手感体验"><a href="#手感体验" class="headerlink" title="手感体验"></a>手感体验</h2><p>买之前体验了同事的 HHKB Pro Type-S 和 HHKB Pro BT，对比发现手感上并无太大偏差，不过虽然 Type-S 缩短键程没有特别明显的手感体验差异，但是静音是真的差了一个梯度。BT 版本的声音并不吵，个人感觉应该比 Filco 红轴要略小，开放式办公应该问题不大。</p>
+<p>不过讲真，HHKB 的手感并没有网上传的那么绵软流畅，质感也差了手边 Filco 青轴一段距离，也可能是我青轴用多了吧…</p>
+<p>具体描述的话，HHKB 的手感略柔和，没有青轴按下按键触发开关时的清脆声，整体给我的感觉有点神似红轴，但是又不像红轴那样一触到底…</p>
+<p>HHKB 和 Filco 都是信仰之物，上面的比较也是在较为苛刻的程度上我个人主观感受而已，毕竟这个价位的东西了，使用体验都会让人感到很舒服~</p>
+<p>在蓝牙连接状态下敲代码，完全没有误敲，重复触发以及遗漏触发的情况，个人感觉还是十分满意哈~</p>
+<h2 id="键帽"><a href="#键帽" class="headerlink" title="键帽"></a>键帽</h2><p>Emmmmm… 一开始并没有入 HHKB 的官方彩色键帽套装，理由是贵… 而且怕自己用不惯的话不方便退货。</p>
+<p>不过在连续敲了两天键盘之后，感觉手感真的是玄学啊~ 慢慢的竟然有点喜欢 HHKB 这种静电容轴的手感了，尽管目前仍然认为不及我的大 F 青轴，但是并不排斥~</p>
+<p>终于在网上看了很多搭配了 HHKB 官方彩色键帽的毒图之后，下单入手！</p>
+<p>嘛~ 头图就是搭配了彩色键帽之后的 HHKB (＾Ｕ＾)ノ~ＹＯ</p>
+<img src="/hhkb-bt/hhkb_c_00.jpg" class="">
+<img src="/hhkb-bt/hhkb_c_01.jpg" class="">
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li>介绍了 LLVM 顺便提到了 Apple 的编译系统发展简史。</li>
-<li>使用官方 Demo 简单介绍了 Objective-C Class Properties 语法特性的书写方式。</li>
-<li>提供了一种巧妙使用 Objective-C Class Properties 解耦的思路。</li>
+<li>HHKB 键盘配列不太适合 Windows 用户，不过非常适合 Mac OS X 下使用，一但养成肌肉记忆将会非常方便。</li>
+<li>HHKB 手感偏绵软，给我个人的感觉还算比较舒服，但是不及大 F 青轴的手感。</li>
+<li>HHKB Pro BT 蓝牙连接使用体验极好，没有遗漏以及重复触发按键的情况出现。</li>
+<li>彩色键帽真的是可以瞬间提升 HHKB 极具内敛的颜值。</li>
 </ul>
-<p>文章写得比较用心（是我个人的原创文章，转载请注明 <a href="https://lision.me/">https://lision.me/</a>），如果发现错误会优先在我的 <a href="https://lision.me/">个人博客</a> 中更新。如果有任何问题欢迎在我的微博 <a target="_blank" rel="noopener" href="https://weibo.com/lisioncode">@Lision</a> 联系我~</p>
-<p>希望我的文章可以为你带来价值~</p>
+<p>最后放一下已经服役了将近 3 年的大 F 和新伙伴的合影。</p>
+<img src="/hhkb-bt/iterative_filco.jpg" class="">
+<img src="/hhkb-bt/iterative_hhkb.jpg" class="">
 
 
     
     
     
 	  <div class="tags">
-      <a class="tag-none-link" href="/tags/llvm/" rel="tag">llvm</a>
+      <a class="tag-none-link" href="/tags/keyboard/" rel="tag">keyboard</a>
 	  </div>
     
 
