@@ -200,15 +200,13 @@
 <li><p>Future Plans</p>
 </li>
 </ul>
-<h1 id="What-is-Hidden"><a href="#What-is-Hidden" class="headerlink" title="What is Hidden?"></a>What is Hidden?</h1><p>Hidden is an app that I made in my spare time that helps users hide apps they want to hide.</p>
-<p>Unlike “Remove from Home Screen” in iOS desktop editing, Hidden can truly put apps into an <strong>uninstalled state</strong>, such as blocking related desktop widgets, shortcuts for App-related instructions, desktop searches or even App resource libraries cannot search for hidden Apps.</p>
-<p>Emmm… This feeling seems like what I described before - it seems to be in an uninstalled state but not really uninstalled. It can be restored at any time so that the App reappears.</p>
-<p>You can think of Hidden as a privacy tool to hide private apps when others borrow your phone; you can think of it as an efficiency tool to hide distracting apps while working or focusing attention; you can think of it as a parental management tool to hide Apps that have been used too much and may affect children’s health if necessary.</p>
+<h1 id="What-is-Hidden"><a href="#What-is-Hidden" class="headerlink" title="What is Hidden?"></a>What is Hidden?</h1><p>Hidden is an app that I made in my spare time.</p>
+<p>You can think of Hidden as a privacy tool to protect private apps when others borrow your phone; you can think of it as an efficiency tool to block distracting apps while working or focusing attention; you can think of it as a parental management tool to block Apps that have been used too much and may affect children’s health if necessary.</p>
 <p>In short, based on the core function of blocking applications, many interesting uses can be derived from them. Therefore, there are many future directions for iteration on Hidden.</p>
 <h1 id="Core-Concepts"><a href="#Core-Concepts" class="headerlink" title="Core Concepts"></a>Core Concepts</h1><ul>
-<li><p><strong>Authorization</strong>: The main ability of Hidden is to hide and lock Apps. This ability comes from the ScreenTime API. Therefore, without authorization, Hidden is almost useless. This is also why Hidden applies for permission to users who have not authorized ScreenTime.</p>
+<li><p><strong>Authorization</strong>: The main ability of Hidden is screen time management. This ability comes from the ScreenTime API. Therefore, without authorization, Hidden is almost useless. This is also why Hidden applies for permission to users who have not authorized ScreenTime.</p>
 </li>
-<li><p><strong>Privacy</strong>: The design of the ScreenTime API pays great attention to privacy and security. Hidden does not know which Apps you have installed or what Apps you want to hide. In fact, using Hidden does not require network authorization at present, and requesting network permissions only synchronizes AppStore information.</p>
+<li><p><strong>Privacy</strong>: The design of the ScreenTime API pays great attention to privacy and security. Hidden does not know which Apps you have installed or what Apps you want to manage. In fact, using Hidden does not require network authorization at present, and requesting network permissions only synchronizes AppStore information.</p>
 </li>
 <li><p><strong>Limitation</strong>: Hidden only works on Apps that do not have ScreenTime API authorization. This means that Hidden cannot hide itself, so it is not very interesting. It also means that if you want to cancel the control of Hidden, just revoke the ScreenTime authorization obtained by Hidden or simply uninstall it, and those Apps controlled by hidden will return to their original state.</p>
 </li>
@@ -222,13 +220,12 @@
 </li>
 </ul>
 <h1 id="Helplessness"><a href="#Helplessness" class="headerlink" title="Helplessness"></a>Helplessness</h1><ul>
-<li><p><strong>Icon disorder</strong>: When hidden apps reappear, they will be rearranged on the device desktop according to some rules, as if they were really uninstalled when hidden and then reinstalled from the App Store when they appear again. There is currently no solution for this problem, but you can bypass it by reserving corresponding space on the second screen or referring to the prompt when switching to hide mode for the first time in Hidde. Of course, you can also try disabling apps through Hidden’s lock mode. Locking won’t cause disorder and is suitable for non-essential blocking scenarios such as self-discipline.</p>
+<li><p><strong>Icon disorder</strong>: When blocking apps reappear, they will be rearranged on the device desktop according to some rules, as if they were really uninstalled when blocked and then reinstalled from the App Store when they appear again. There is currently no solution for this problem, but you can bypass it by reserving corresponding space on the second screen or referring to the prompt when switching to block mode for the first time in Hidde. Of course, you can also try disabling apps through Hidden’s lock mode. Locking won’t cause disorder and is suitable for non-essential blocking scenarios such as self-discipline.</p>
 </li>
 <li><p><strong>Simple interface</strong>: Um… because I haven’t found a cooperating designer yet, so I did all of Hidden’s interaction and interface design myself. It does have a bit of bias towards minimalism. If you carefully experience it, you may find that all interaction paths are as short as possible for higher efficiency. The interface elements are mostly simple graphics that directly map to code logic. To say more, actually “H” in AppIcon not only stands for “Hidden”, but also represents a fence image which means constraint and control; The theme color is a mixture of green and blue representing health/distance sense and reliability.</p>
 </li>
 </ul>
 <h1 id="Future-plans"><a href="#Future-plans" class="headerlink" title="Future plans"></a>Future plans</h1><p>As mentioned at the beginning of this article, many interesting uses can be derived from Hidden’s core function of blocking applications; therefore there are many directions for future iterations of Hidden. Honestly speaking, my current plan for Hidden leans more towards efficient tools; therefore subsequent iterations will probably move in this direction.</p>
-<p>If you have good ideas or suggestions or feedback questions about Hidden app development please feel free to contact me (email recommended - recently logged into Weibo account only to discover an unread message from two years ago). Valuable suggestions and ideas will be implemented accordingly with small gifts given back depending on circumstances (haven’t thought about what gift yet).</p>
 
 
     
