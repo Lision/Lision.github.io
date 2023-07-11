@@ -109,61 +109,57 @@
 
   
   <h2 class="title">
-    <a href="/hidden/">
-      理解 Hidden
+    <a href="/hood/">
+      理解 Hood
     </a>
   </h2>
   
   <time>
-    6月 1, 2023
+    7月 11, 2023
   </time>
   <section class="content">
-	  <img src="/hidden/dark.jpg" class="">
-<h1 id="Hidden-官方中文指引：理解-Hidden"><a href="#Hidden-官方中文指引：理解-Hidden" class="headerlink" title="Hidden 官方中文指引：理解 Hidden"></a>Hidden 官方中文指引：理解 Hidden</h1><p>Emmm… 很久没有更新过 Blog 了，以至于在打开 Markdown 编辑器后对着熟悉的界面（现在用 VSCode 来写 Markdown，可以支持 Vim）发了好一会儿呆。相比较微信公众号的文章来讲，Blog 文章可以在不更换 App 内链接的情况下灵活修改文章内容，这是这篇文章出现在 Blog 的主要原因。</p>
-<p>这篇文章是在我利用个人时间做的 App —— Hidden 初版快要完成时写的，旨在让 Hidden 的用户可以通过阅读本文提升对 Hidden 产品逻辑的理解从而更加科学合理的使用 Hidden。其实我还期望有用户可以在阅读和使用之后提出优化的建议，具备科学上网能力的读者可以通过文章下方的评论来直接留言讨论；不方便的用户则可以通过页面底部找到我的联系方式（GitHub/Twitter/微博）。</p>
+	  <img src="/hood/dark.jpg" class="">
+<h1 id="Hood-官方中文指引：理解-hood"><a href="#Hood-官方中文指引：理解-hood" class="headerlink" title="Hood 官方中文指引：理解 hood"></a>Hood 官方中文指引：理解 hood</h1><p>这篇文章是在我利用个人时间做的 App —— Hood 初版快要完成时写的，旨在让 Hood 的用户可以通过阅读本文提升对 Hood 产品逻辑的理解从而更加科学合理的使用 Hood。</p>
 <h1 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h1><ul>
-<li>Hidden 是什么?</li>
+<li>Hood 是什么?</li>
 <li>核心概念</li>
 <li>设计理念</li>
 <li>无可奈何</li>
 <li>未来计划</li>
 </ul>
-<h1 id="Hidden-是什么？"><a href="#Hidden-是什么？" class="headerlink" title="Hidden 是什么？"></a>Hidden 是什么？</h1><p>Hidden 是我利用业余时间做的一款 App，它可以帮助用户隐藏想要隐藏的 App。</p>
-<p>不同于 iOS 桌面编辑中的「从主屏幕移除」，Hidden 可以真正的让 App 处于一种<strong>被卸载拟态</strong>，比如同时隐藏掉 App 相关的桌面小组件，隐藏掉 App 相关的快捷指令，桌面搜索甚至 App 资源库也无法搜索到被隐藏起来的 App。</p>
-<p>Emmm…这种感觉就好像我之前描述的，貌似处于一种被卸载状态，但不是真的被卸载，可以随时还原让 App 重新出现。</p>
-<p>你可以把 Hidden 当作一个隐私工具，在他人借用手机时隐藏掉私密 App；你可以把 Hidden 当作一个效率工具，在工作或者集中注意力时隐藏分散你注意力的 App；你可以把 Hidden 当作一个家长管理工具，必要时将那些使用时长过多对孩子健康造成影响的 App 隐藏起来。</p>
-<p>总之，基于隐藏应用的核心功能可以派生出好多有趣的用法，因此 Hidden 未来的迭代方向也有很多。</p>
+<h1 id="Hood-是什么？"><a href="#Hood-是什么？" class="headerlink" title="Hood 是什么？"></a>Hood 是什么？</h1><p>Hood 是我利用业余时间做的一款 App。</p>
+<p>你可以把 Hood 当作一个隐私工具，在他人借用设备时禁用掉私密 App；你可以把 Hood 当作一个效率工具，在工作或者集中注意力时隐藏分散你注意力的 App；你可以把 Hood 当作一个家长管理工具，必要时将那些使用时长过多对孩子健康造成影响的 App 限制起来。</p>
+<p>总之，基于屏幕使用时间管理的核心功能可以派生出好多有趣的用法，因此 Hood 未来的迭代方向也有很多。</p>
 <h1 id="核心概念"><a href="#核心概念" class="headerlink" title="核心概念"></a>核心概念</h1><ul>
-<li><p><strong>授权</strong>，Hidden 的主要能力是隐藏和锁定 App，这项能力来自于 ScreenTime API，所以在没有得到授权时 Hidden 几乎没有任何用，这也是 Hidden 在用户未授权 ScreenTime 时向用户申请权限的原因。</p>
+<li><p><strong>授权</strong>，Hood 的主要能力是屏幕时间管理，这项能力来自于 ScreenTime API，所以在没有得到授权时 Hood 几乎没有任何用，这也是 Hood 在用户未授权 ScreenTime 时向用户申请权限的原因。</p>
 </li>
-<li><p><strong>隐私</strong>，ScreenTime API 的设计非常注重隐私安全，Hidden 不会知道你安装了哪些 Apps，以及什么 Apps 是你想要隐藏起来的。其实 Hidden 的使用并不需要网络授权，目前请求网络权限也仅仅是为了同步 AppStore 的信息。</p>
+<li><p><strong>隐私</strong>，ScreenTime API 的设计非常注重隐私安全，Hood 不会知道你安装了哪些 Apps，以及什么 Apps 是你想要限制使用的。其实 Hood 的使用并不需要网络授权，目前请求网络权限也仅仅是为了同步 AppStore 的信息。</p>
 </li>
-<li><p><strong>限制</strong>，Hidden 只会对没有 ScreenTime API 授权的 App 生效，这意味着 Hidden 不可以隐藏自己，所以不是很有趣。这也意味着如果你想取消 Hidden 的控制，只需要收回 Hidden 拿到的 ScreenTime 授权或者干脆卸载 Hidden，那些被 Hidden 控制起来的 Apps 就会一切如初。</p>
+<li><p><strong>限制</strong>，Hood 只会对没有 ScreenTime API 授权的 App 生效，这意味着 Hood 不可以隐藏自己，所以不是很有趣。这也意味着如果你想取消 Hood 的控制，只需要收回 Hood 拿到的 ScreenTime 授权或者干脆卸载 Hood，那些被 Hood 限制的 Apps 就会一切如初。</p>
 </li>
 </ul>
 <h1 id="设计理念"><a href="#设计理念" class="headerlink" title="设计理念"></a>设计理念</h1><ul>
-<li><p><strong>应用分组</strong>，管理单个应用比较麻烦，所以 Hidden 加入了分组的概念，以卡片形式展示。卡片信息没有展示内部有哪些 Apps，因为 Hidden 真的不知道组内有什么 Apps。市面上有些类似的产品可以展示用户选择了什么 Apps（猜测是通过 ScreenTime API 乱码形式的 AppToken 做匹配实现的），这违反了 Apple 对于屏幕时间授权的使用建议，由于存在被吊销授权的风险，我暂时不打算跟进这个 Feature。</p>
+<li><p><strong>应用分组</strong>，管理单个应用比较麻烦，所以 Hood 加入了分组的概念，以卡片形式展示。</p>
 </li>
-<li><p><strong>身份认证</strong>，看到 Hidden 内容的人应该是设备的主人，我比较懒只做了生物识别认证，也就是 Face ID 或 Touch ID。因为 iOS16 兼容的设备（ScreenTime 本设备授权最低系统版本）似乎没有不支持生物识别硬件能力的设备了，我实在没有动力做一套 Hidden 自建的密码验证机制（想要越过 Hidden 限制的人如果可以通过生物识别，也就意味着 Ta 可以通过系统设置收回 Hidden 的 ScreenTime 权限，所以自建密码验证毫无意义）。</p>
+<li><p><strong>身份认证</strong>，看到 Hood 内容的人应该是设备的主人，当前 Hood 只做了生物识别认证，也就是 Face ID 或 Touch ID。</p>
 </li>
-<li><p><strong>限制卸载</strong>，如果 Hidden 不再那么小众，那么可能拿到你设备的人即使不进行身份认证依然可以通过卸载 Hidden 的方式看到那些你不愿意让 TA 看到的 Apps，所以 Hidden 做了这个功能；相应的还有「<strong>限制安装应用</strong>」和「<strong>限制应用内购买</strong>」功能，笔者认为这三个功能对于监护人更好的约束被监护人这个场景很有用，可以防止孩子安装新的手游或私下购买游戏道具/打赏女主播。</p>
+<li><p><strong>限制卸载</strong>，如果 Hood 不再那么小众，那么可能拿到你设备的人即使不进行身份认证依然可以通过卸载 Hood 的方式看到那些你不愿意让 TA 看到的 Apps，所以 Hood 做了这个功能；相应的还有「<strong>限制安装应用</strong>」和「<strong>限制应用内购买</strong>」功能，笔者认为这三个功能对于监护人更好的约束被监护人这个场景很有用，可以防止孩子安装新的手游或私下购买游戏道具/打赏女主播。</p>
 </li>
 </ul>
 <h1 id="无可奈何"><a href="#无可奈何" class="headerlink" title="无可奈何"></a>无可奈何</h1><ul>
-<li><p><strong>图标乱序</strong>，被 Hidden 隐藏的 Apps 再次出现时会按照某种规则重新出现到设备桌面，就好像它们被 Hidden 隐藏的时真的被卸载然后出现时又重新从 AppStore 安装一样。暂时无解，不过可以通过在第二屏预留相应空位或者参照 Hidde 内首次切换隐藏模式时的提示绕过去。当然，你也可以试试通过 Hidden 的锁定模式来禁用 App，锁定不会乱序所以适用于自律等非必要隐藏的场景。</p>
+<li><p><strong>图标乱序</strong>，被 ScreenTime API 禁用的 Apps 在还原时会按照某种规则重新出现到设备桌面，就好像它们被禁用时真的被卸载然后出现时又重新从 AppStore 安装一样，遗憾的是这暂时无解。不过可以通过在第二屏预留相应空位或者参照 Hood 内切换隐藏模式时的提示绕过去。当然，你也可以试试通过 Hood 的锁定模式来禁用 App。</p>
 </li>
-<li><p><strong>界面简陋</strong>，呃… 因为目前还没找到合作的设计师，所以整个 App 的交互和界面设计都是我自己做的，确实有点偏性冷淡的素。其实仔细体会的话你也许可以发现所有的交互路径都是尽可能短的，目的自然是为了更高效，界面元素也基本都是简单的图形更多的是对代码逻辑的直接映射。再多说两句，其实 AppIcon 的 H 不只是 Hidden 的首字母，也是一个栅栏的形象，意味着约束和控制；主题色是绿色和蓝色的混色，表示健康/距离感与可靠。</p>
+<li><p><strong>界面简陋</strong>，呃… 因为目前还没找到合作的设计师，所以整个 App 的交互和界面设计都是我自己做的，确实有点偏性冷淡的素。其实仔细体会的话你也许可以发现所有的交互路径都是尽可能短的，目的自然是为了更高效。AppIcon 的 H 不只是 Hood 的首字母，也是一个栅栏的形象，意味着约束和控制；主题色是绿色和蓝色的混色，表示健康/距离感与可靠。</p>
 </li>
 </ul>
-<h1 id="未来计划"><a href="#未来计划" class="headerlink" title="未来计划"></a>未来计划</h1><p>正如文章开头说的那样，基于隐藏应用的核心功能可以派生出好多有趣的用法，因此 Hidden 未来的迭代方向也有很多。老实说，我目前对于 Hidden 的规划更倾向于效率类工具，所以后续大概率会往这个方向做迭代。</p>
-<p>如果你有好的想法建议或者问题反馈也非常欢迎联系我（推荐使用 Email，前段时间登陆微博发现一条两年前的私信，汗），有价值的建议和想法会得到实现，一经采纳还会视情况回馈小礼物（暂时没想好什么礼物就是了）。</p>
+<h1 id="未来计划"><a href="#未来计划" class="headerlink" title="未来计划"></a>未来计划</h1><p>正如文章开头说的那样，基于屏幕使用时间管理的核心功能可以派生出好多有趣的用法，因此 Hood 未来的迭代方向也有很多。老实说，我目前对于 Hood 的规划更倾向于效率类工具，所以后续大概率会往这个方向做迭代。</p>
 
 
     
     
     
 	  <div class="tags">
-      <a class="tag-none-link" href="/tags/app/" rel="tag">App</a><a class="tag-none-link" href="/tags/hidden/" rel="tag">hidden</a><a class="tag-none-link" href="/tags/ios/" rel="tag">iOS</a><a class="tag-none-link" href="/tags/personal-project/" rel="tag">personal project</a>
+      <a class="tag-none-link" href="/tags/app/" rel="tag">App</a><a class="tag-none-link" href="/tags/hood/" rel="tag">hood</a><a class="tag-none-link" href="/tags/ios/" rel="tag">iOS</a><a class="tag-none-link" href="/tags/personal-project/" rel="tag">personal project</a>
 	  </div>
     
 
@@ -174,65 +170,60 @@
 
   
   <h2 class="title">
-    <a href="/hidden-en/">
-      Understanding Hidden
+    <a href="/hood-en/">
+      Understanding Hood
     </a>
   </h2>
   
   <time>
-    6月 1, 2023
+    7月 11, 2023
   </time>
   <section class="content">
-	  <img src="/hidden-en/dark.jpg" class="">
+	  <img src="/hood-en/dark.jpg" class="">
 <blockquote>
 <p>The article was translated from Chinese by ChatGPT.</p>
 </blockquote>
-<h1 id="Hidden-Official-English-Guide-Understanding-Hidden"><a href="#Hidden-Official-English-Guide-Understanding-Hidden" class="headerlink" title="Hidden Official English Guide: Understanding Hidden"></a>Hidden Official English Guide: Understanding Hidden</h1><p>This article was written when I was about to complete the first version of my app, Hidden, in my spare time. The purpose is to help users of Hidden better understand the product logic through reading this article and use it more scientifically and reasonably. Actually, I also hope that users can provide optimization suggestions after reading and using it. Readers with scientific Internet access capabilities can directly leave a message for discussion through comments at the bottom of the article; inconvenient users can find my contact information (GitHub/Twitter/Weibo) at the bottom of the page.</p>
+<h1 id="Hood-Official-English-Guide-Understanding-Hood"><a href="#Hood-Official-English-Guide-Understanding-Hood" class="headerlink" title="Hood Official English Guide: Understanding Hood"></a>Hood Official English Guide: Understanding Hood</h1><p>This article was written when I was about to complete the first version of my app, Hood, in my spare time. The purpose is to help users of Hood better understand the product logic through reading this article and use it more scientifically and reasonably. </p>
 <h1 id="Index"><a href="#Index" class="headerlink" title="Index"></a>Index</h1><ul>
-<li><p>What is Hidden?</p>
-</li>
-<li><p>Core Concepts</p>
-</li>
-<li><p>Design Philosophy</p>
-</li>
-<li><p>Helplessness</p>
-</li>
-<li><p>Future Plans</p>
-</li>
+<li>What is Hood?</li>
+<li>Core Concepts</li>
+<li>Design Philosophy</li>
+<li>Helplessness</li>
+<li>Future Plans</li>
 </ul>
-<h1 id="What-is-Hidden"><a href="#What-is-Hidden" class="headerlink" title="What is Hidden?"></a>What is Hidden?</h1><p>Hidden is an app that I made in my spare time.</p>
-<p>You can think of Hidden as a privacy tool to protect private apps when others borrow your phone; you can think of it as an efficiency tool to block distracting apps while working or focusing attention; you can think of it as a parental management tool to block Apps that have been used too much and may affect children’s health if necessary.</p>
-<p>In short, based on the core function of blocking applications, many interesting uses can be derived from them. Therefore, there are many future directions for iteration on Hidden.</p>
+<h1 id="What-is-Hood"><a href="#What-is-Hood" class="headerlink" title="What is Hood?"></a>What is Hood?</h1><p>Hood is an app that I made in my spare time.</p>
+<p>You can think of Hood as a privacy tool to protect private apps when others borrow your phone; you can think of it as an efficiency tool to block distracting apps while working or focusing attention; you can think of it as a parental management tool to block Apps that have been used too much and may affect children’s health if necessary.</p>
+<p>In short, based on the core function of Screen Time Management, many interesting uses can be derived from them. Therefore, there are many future directions for iteration on Hood.</p>
 <h1 id="Core-Concepts"><a href="#Core-Concepts" class="headerlink" title="Core Concepts"></a>Core Concepts</h1><ul>
-<li><p><strong>Authorization</strong>: The main ability of Hidden is screen time management. This ability comes from the ScreenTime API. Therefore, without authorization, Hidden is almost useless. This is also why Hidden applies for permission to users who have not authorized ScreenTime.</p>
+<li><p><strong>Authorization</strong>: The main ability of Hood is Screen Time Management. This ability comes from the ScreenTime API. Therefore, without authorization, Hood is almost useless. This is also why Hood applies for permission to users who have not authorized ScreenTime.</p>
 </li>
-<li><p><strong>Privacy</strong>: The design of the ScreenTime API pays great attention to privacy and security. Hidden does not know which Apps you have installed or what Apps you want to manage. In fact, using Hidden does not require network authorization at present, and requesting network permissions only synchronizes AppStore information.</p>
+<li><p><strong>Privacy</strong>: The design of the ScreenTime API pays great attention to privacy and security. Hood does not know which Apps you have installed or what Apps you want to manage. In fact, using Hood does not require network authorization at present, and requesting network permissions only synchronizes AppStore information.</p>
 </li>
-<li><p><strong>Limitation</strong>: Hidden only works on Apps that do not have ScreenTime API authorization. This means that Hidden cannot hide itself, so it is not very interesting. It also means that if you want to cancel the control of Hidden, just revoke the ScreenTime authorization obtained by Hidden or simply uninstall it, and those Apps controlled by hidden will return to their original state.</p>
+<li><p><strong>Limitation</strong>: Hood only works on Apps that do not have ScreenTime API authorization. This means that Hood cannot hide itself, so it is not very interesting. It also means that if you want to cancel the control of Hood, just revoke the ScreenTime authorization obtained by Hood or simply uninstall it, and those Apps controlled by hidden will return to their original state.</p>
 </li>
 </ul>
 <h1 id="Design-Philosophy"><a href="#Design-Philosophy" class="headerlink" title="Design Philosophy"></a>Design Philosophy</h1><ul>
-<li><p><strong>Application grouping</strong>: Managing individual applications can be cumbersome, so Hidden introduces the concept of grouping in card form display. The card information does not show which Apps are inside because Hidden really doesn’t know what’s inside each group of apps. Some similar products on the market can display what apps users choose (guessing matching through AppToken in garbled form through ScreenTime API), which violates Apple’s usage recommendations for screen time authorizations and may result in revocation of authorizations risk; therefore I temporarily don’t plan to follow up this feature.</p>
+<li><p><strong>Application grouping</strong>: Managing individual applications can be cumbersome, so Hood introduces the concept of grouping in card form display. </p>
 </li>
-<li><p><strong>Identity authentication</strong>: People who see content in Hidde should be device owners. I am lazy and only did biometric authentication - Face ID or Touch ID - because iOS16-compatible devices (the lowest system version for local device authorization) seem There are no devices without biometric hardware capabilities anymore; I really don’t have any motivation to make a password verification mechanism built into Hiddne (if someone wants to bypass hidden restrictions If they can pass biometrics, it means they can revoke Hiddne’s ScreenTime permission through system settings, so self-built password verification is meaningless).</p>
+<li><p><strong>Identity authentication</strong>: People who see content in Hidde should be device owners. Hood only did biometric authentication - Face ID or Touch ID.</p>
 </li>
-<li><p><strong>Uninstall limitation</strong>: If Hidden is no longer so niche, people who get your device may still be able to see the Apps you don’t want them to see by uninstalling Hidden even if they do not authenticate. Therefore, Hidden has this function; corresponding functions also include “Limit installation of applications” and “Limit in-app purchases”, which I think are very useful for guardianship scenarios where parents need to restrict their children from installing new mobile games or buying game props/rewarding anchors.</p>
+<li><p><strong>Uninstall limitation</strong>: If Hood is no longer so niche, people who get your device may still be able to see the Apps you don’t want them to see by uninstalling Hood even if they do not authenticate. Therefore, Hood has this function; corresponding functions also include “Limit installation of applications” and “Limit in-app purchases”, which I think are very useful for guardianship scenarios where parents need to restrict their children from installing new mobile games or buying game props/rewarding anchors.</p>
 </li>
 </ul>
 <h1 id="Helplessness"><a href="#Helplessness" class="headerlink" title="Helplessness"></a>Helplessness</h1><ul>
-<li><p><strong>Icon disorder</strong>: When blocking apps reappear, they will be rearranged on the device desktop according to some rules, as if they were really uninstalled when blocked and then reinstalled from the App Store when they appear again. There is currently no solution for this problem, but you can bypass it by reserving corresponding space on the second screen or referring to the prompt when switching to block mode for the first time in Hidde. Of course, you can also try disabling apps through Hidden’s lock mode. Locking won’t cause disorder and is suitable for non-essential blocking scenarios such as self-discipline.</p>
+<li><p><strong>Icon disorder</strong>: When blocking apps restore, they will be rearranged on the device desktop according to some rules, as if they were really uninstalled when blocked and then reinstalled from the App Store when they appear again. There is currently no solution for this problem, but you can bypass it by reserving corresponding space on the second screen or referring to the prompt when switching to block mode in Hidde. Of course, you can also try disabling apps through Hood’s lock mode. Locking won’t cause disorder and is suitable for non-essential blocking scenarios such as self-discipline.</p>
 </li>
-<li><p><strong>Simple interface</strong>: Um… because I haven’t found a cooperating designer yet, so I did all of Hidden’s interaction and interface design myself. It does have a bit of bias towards minimalism. If you carefully experience it, you may find that all interaction paths are as short as possible for higher efficiency. The interface elements are mostly simple graphics that directly map to code logic. To say more, actually “H” in AppIcon not only stands for “Hidden”, but also represents a fence image which means constraint and control; The theme color is a mixture of green and blue representing health/distance sense and reliability.</p>
+<li><p><strong>Simple interface</strong>: Um… because I haven’t found a cooperating designer yet, so I did all of Hood’s interaction and interface design myself. It does have a bit of bias towards minimalism. If you carefully experience it, you may find that all interaction paths are as short as possible for higher efficiency. The interface elements are mostly simple graphics that directly map to code logic. To say more, actually “H” in AppIcon not only stands for “Hood”, but also represents a fence image which means constraint and control; The theme color is a mixture of green and blue representing health/distance sense and reliability.</p>
 </li>
 </ul>
-<h1 id="Future-plans"><a href="#Future-plans" class="headerlink" title="Future plans"></a>Future plans</h1><p>As mentioned at the beginning of this article, many interesting uses can be derived from Hidden’s core function of blocking applications; therefore there are many directions for future iterations of Hidden. Honestly speaking, my current plan for Hidden leans more towards efficient tools; therefore subsequent iterations will probably move in this direction.</p>
+<h1 id="Future-plans"><a href="#Future-plans" class="headerlink" title="Future plans"></a>Future plans</h1><p>As mentioned at the beginning of this article, many interesting uses can be derived from Hood’s core function of Screen Time Management; therefore there are many directions for future iterations of Hood. Honestly speaking, my current plan for Hood leans more towards efficient tools; therefore subsequent iterations will probably move in this direction.</p>
 
 
     
     
     
 	  <div class="tags">
-      <a class="tag-none-link" href="/tags/app/" rel="tag">App</a><a class="tag-none-link" href="/tags/hidden/" rel="tag">hidden</a><a class="tag-none-link" href="/tags/ios/" rel="tag">iOS</a><a class="tag-none-link" href="/tags/personal-project/" rel="tag">personal project</a>
+      <a class="tag-none-link" href="/tags/app/" rel="tag">App</a><a class="tag-none-link" href="/tags/hood/" rel="tag">hood</a><a class="tag-none-link" href="/tags/ios/" rel="tag">iOS</a><a class="tag-none-link" href="/tags/personal-project/" rel="tag">personal project</a>
 	  </div>
     
 

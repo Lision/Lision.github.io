@@ -105,26 +105,58 @@
 
   
   <h2 class="title">
-    <a href="/hidden-privacy-policy-en/">
-      Hidden Privacy Policy
+    <a href="/hood/">
+      理解 Hood
     </a>
   </h2>
   
   <time>
-    6月 20, 2023
+    7月 11, 2023
   </time>
   <section class="content">
-	  <h1 id="Privacy-Policy"><a href="#Privacy-Policy" class="headerlink" title="Privacy Policy"></a>Privacy Policy</h1><ul>
-<li>The applications selected in Hidden are provided by iOS Screen Time in the form of opaque tokens. Hidden will never know which applications you have chosen.</li>
-<li>Hidden does not collect any data, including which applications you have selected, location information or usage information.</li>
-<li>Hidden requests network authorization only for In-App Purchase services.</li>
-<li>Hidden does not use any third-party SDKs or services.</li>
+	  <img src="/hood/dark.jpg" class="">
+<h1 id="Hood-官方中文指引：理解-hood"><a href="#Hood-官方中文指引：理解-hood" class="headerlink" title="Hood 官方中文指引：理解 hood"></a>Hood 官方中文指引：理解 hood</h1><p>这篇文章是在我利用个人时间做的 App —— Hood 初版快要完成时写的，旨在让 Hood 的用户可以通过阅读本文提升对 Hood 产品逻辑的理解从而更加科学合理的使用 Hood。</p>
+<h1 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h1><ul>
+<li>Hood 是什么?</li>
+<li>核心概念</li>
+<li>设计理念</li>
+<li>无可奈何</li>
+<li>未来计划</li>
 </ul>
-<p><strong>Last updated on June 20, 2023</strong></p>
+<h1 id="Hood-是什么？"><a href="#Hood-是什么？" class="headerlink" title="Hood 是什么？"></a>Hood 是什么？</h1><p>Hood 是我利用业余时间做的一款 App。</p>
+<p>你可以把 Hood 当作一个隐私工具，在他人借用设备时禁用掉私密 App；你可以把 Hood 当作一个效率工具，在工作或者集中注意力时隐藏分散你注意力的 App；你可以把 Hood 当作一个家长管理工具，必要时将那些使用时长过多对孩子健康造成影响的 App 限制起来。</p>
+<p>总之，基于屏幕使用时间管理的核心功能可以派生出好多有趣的用法，因此 Hood 未来的迭代方向也有很多。</p>
+<h1 id="核心概念"><a href="#核心概念" class="headerlink" title="核心概念"></a>核心概念</h1><ul>
+<li><p><strong>授权</strong>，Hood 的主要能力是屏幕时间管理，这项能力来自于 ScreenTime API，所以在没有得到授权时 Hood 几乎没有任何用，这也是 Hood 在用户未授权 ScreenTime 时向用户申请权限的原因。</p>
+</li>
+<li><p><strong>隐私</strong>，ScreenTime API 的设计非常注重隐私安全，Hood 不会知道你安装了哪些 Apps，以及什么 Apps 是你想要限制使用的。其实 Hood 的使用并不需要网络授权，目前请求网络权限也仅仅是为了同步 AppStore 的信息。</p>
+</li>
+<li><p><strong>限制</strong>，Hood 只会对没有 ScreenTime API 授权的 App 生效，这意味着 Hood 不可以隐藏自己，所以不是很有趣。这也意味着如果你想取消 Hood 的控制，只需要收回 Hood 拿到的 ScreenTime 授权或者干脆卸载 Hood，那些被 Hood 限制的 Apps 就会一切如初。</p>
+</li>
+</ul>
+<h1 id="设计理念"><a href="#设计理念" class="headerlink" title="设计理念"></a>设计理念</h1><ul>
+<li><p><strong>应用分组</strong>，管理单个应用比较麻烦，所以 Hood 加入了分组的概念，以卡片形式展示。</p>
+</li>
+<li><p><strong>身份认证</strong>，看到 Hood 内容的人应该是设备的主人，当前 Hood 只做了生物识别认证，也就是 Face ID 或 Touch ID。</p>
+</li>
+<li><p><strong>限制卸载</strong>，如果 Hood 不再那么小众，那么可能拿到你设备的人即使不进行身份认证依然可以通过卸载 Hood 的方式看到那些你不愿意让 TA 看到的 Apps，所以 Hood 做了这个功能；相应的还有「<strong>限制安装应用</strong>」和「<strong>限制应用内购买</strong>」功能，笔者认为这三个功能对于监护人更好的约束被监护人这个场景很有用，可以防止孩子安装新的手游或私下购买游戏道具/打赏女主播。</p>
+</li>
+</ul>
+<h1 id="无可奈何"><a href="#无可奈何" class="headerlink" title="无可奈何"></a>无可奈何</h1><ul>
+<li><p><strong>图标乱序</strong>，被 ScreenTime API 禁用的 Apps 在还原时会按照某种规则重新出现到设备桌面，就好像它们被禁用时真的被卸载然后出现时又重新从 AppStore 安装一样，遗憾的是这暂时无解。不过可以通过在第二屏预留相应空位或者参照 Hood 内切换隐藏模式时的提示绕过去。当然，你也可以试试通过 Hood 的锁定模式来禁用 App。</p>
+</li>
+<li><p><strong>界面简陋</strong>，呃… 因为目前还没找到合作的设计师，所以整个 App 的交互和界面设计都是我自己做的，确实有点偏性冷淡的素。其实仔细体会的话你也许可以发现所有的交互路径都是尽可能短的，目的自然是为了更高效。AppIcon 的 H 不只是 Hood 的首字母，也是一个栅栏的形象，意味着约束和控制；主题色是绿色和蓝色的混色，表示健康/距离感与可靠。</p>
+</li>
+</ul>
+<h1 id="未来计划"><a href="#未来计划" class="headerlink" title="未来计划"></a>未来计划</h1><p>正如文章开头说的那样，基于屏幕使用时间管理的核心功能可以派生出好多有趣的用法，因此 Hood 未来的迭代方向也有很多。老实说，我目前对于 Hood 的规划更倾向于效率类工具，所以后续大概率会往这个方向做迭代。</p>
 
 
     
     
+    
+	  <div class="tags">
+      <a class="tag-none-link" href="/tags/app/" rel="tag">App</a><a class="tag-none-link" href="/tags/hood/" rel="tag">hood</a><a class="tag-none-link" href="/tags/ios/" rel="tag">iOS</a><a class="tag-none-link" href="/tags/personal-project/" rel="tag">personal project</a>
+	  </div>
     
 
   </section>

@@ -105,26 +105,61 @@
 
   
   <h2 class="title">
-    <a href="/hidden-privacy-policy/">
-      隐私政策
+    <a href="/hood-en/">
+      Understanding Hood
     </a>
   </h2>
   
   <time>
-    6月 20, 2023
+    7月 11, 2023
   </time>
   <section class="content">
-	  <h1 id="隐私政策"><a href="#隐私政策" class="headerlink" title="隐私政策"></a>隐私政策</h1><ul>
-<li>Hidden 中选择的应用程序以不透明令牌的形式由 iOS 屏幕时间提供。Hidden 永远不会知道您选择了哪些应用程序。</li>
-<li>Hidden 不收集任何数据，包括您选择了哪些应用程序、位置信息或使用信息。</li>
-<li>Hidden 请求网络授权仅用于应用内购买服务。</li>
-<li>Hidden 不使用任何第三方 SDK 或服务。</li>
+	  <img src="/hood-en/dark.jpg" class="">
+<blockquote>
+<p>The article was translated from Chinese by ChatGPT.</p>
+</blockquote>
+<h1 id="Hood-Official-English-Guide-Understanding-Hood"><a href="#Hood-Official-English-Guide-Understanding-Hood" class="headerlink" title="Hood Official English Guide: Understanding Hood"></a>Hood Official English Guide: Understanding Hood</h1><p>This article was written when I was about to complete the first version of my app, Hood, in my spare time. The purpose is to help users of Hood better understand the product logic through reading this article and use it more scientifically and reasonably. </p>
+<h1 id="Index"><a href="#Index" class="headerlink" title="Index"></a>Index</h1><ul>
+<li>What is Hood?</li>
+<li>Core Concepts</li>
+<li>Design Philosophy</li>
+<li>Helplessness</li>
+<li>Future Plans</li>
 </ul>
-<p><strong>最后更新于 2023 年 06 月 20 日</strong></p>
+<h1 id="What-is-Hood"><a href="#What-is-Hood" class="headerlink" title="What is Hood?"></a>What is Hood?</h1><p>Hood is an app that I made in my spare time.</p>
+<p>You can think of Hood as a privacy tool to protect private apps when others borrow your phone; you can think of it as an efficiency tool to block distracting apps while working or focusing attention; you can think of it as a parental management tool to block Apps that have been used too much and may affect children’s health if necessary.</p>
+<p>In short, based on the core function of Screen Time Management, many interesting uses can be derived from them. Therefore, there are many future directions for iteration on Hood.</p>
+<h1 id="Core-Concepts"><a href="#Core-Concepts" class="headerlink" title="Core Concepts"></a>Core Concepts</h1><ul>
+<li><p><strong>Authorization</strong>: The main ability of Hood is Screen Time Management. This ability comes from the ScreenTime API. Therefore, without authorization, Hood is almost useless. This is also why Hood applies for permission to users who have not authorized ScreenTime.</p>
+</li>
+<li><p><strong>Privacy</strong>: The design of the ScreenTime API pays great attention to privacy and security. Hood does not know which Apps you have installed or what Apps you want to manage. In fact, using Hood does not require network authorization at present, and requesting network permissions only synchronizes AppStore information.</p>
+</li>
+<li><p><strong>Limitation</strong>: Hood only works on Apps that do not have ScreenTime API authorization. This means that Hood cannot hide itself, so it is not very interesting. It also means that if you want to cancel the control of Hood, just revoke the ScreenTime authorization obtained by Hood or simply uninstall it, and those Apps controlled by hidden will return to their original state.</p>
+</li>
+</ul>
+<h1 id="Design-Philosophy"><a href="#Design-Philosophy" class="headerlink" title="Design Philosophy"></a>Design Philosophy</h1><ul>
+<li><p><strong>Application grouping</strong>: Managing individual applications can be cumbersome, so Hood introduces the concept of grouping in card form display. </p>
+</li>
+<li><p><strong>Identity authentication</strong>: People who see content in Hidde should be device owners. Hood only did biometric authentication - Face ID or Touch ID.</p>
+</li>
+<li><p><strong>Uninstall limitation</strong>: If Hood is no longer so niche, people who get your device may still be able to see the Apps you don’t want them to see by uninstalling Hood even if they do not authenticate. Therefore, Hood has this function; corresponding functions also include “Limit installation of applications” and “Limit in-app purchases”, which I think are very useful for guardianship scenarios where parents need to restrict their children from installing new mobile games or buying game props/rewarding anchors.</p>
+</li>
+</ul>
+<h1 id="Helplessness"><a href="#Helplessness" class="headerlink" title="Helplessness"></a>Helplessness</h1><ul>
+<li><p><strong>Icon disorder</strong>: When blocking apps restore, they will be rearranged on the device desktop according to some rules, as if they were really uninstalled when blocked and then reinstalled from the App Store when they appear again. There is currently no solution for this problem, but you can bypass it by reserving corresponding space on the second screen or referring to the prompt when switching to block mode in Hidde. Of course, you can also try disabling apps through Hood’s lock mode. Locking won’t cause disorder and is suitable for non-essential blocking scenarios such as self-discipline.</p>
+</li>
+<li><p><strong>Simple interface</strong>: Um… because I haven’t found a cooperating designer yet, so I did all of Hood’s interaction and interface design myself. It does have a bit of bias towards minimalism. If you carefully experience it, you may find that all interaction paths are as short as possible for higher efficiency. The interface elements are mostly simple graphics that directly map to code logic. To say more, actually “H” in AppIcon not only stands for “Hood”, but also represents a fence image which means constraint and control; The theme color is a mixture of green and blue representing health/distance sense and reliability.</p>
+</li>
+</ul>
+<h1 id="Future-plans"><a href="#Future-plans" class="headerlink" title="Future plans"></a>Future plans</h1><p>As mentioned at the beginning of this article, many interesting uses can be derived from Hood’s core function of Screen Time Management; therefore there are many directions for future iterations of Hood. Honestly speaking, my current plan for Hood leans more towards efficient tools; therefore subsequent iterations will probably move in this direction.</p>
 
 
     
     
+    
+	  <div class="tags">
+      <a class="tag-none-link" href="/tags/app/" rel="tag">App</a><a class="tag-none-link" href="/tags/hood/" rel="tag">hood</a><a class="tag-none-link" href="/tags/ios/" rel="tag">iOS</a><a class="tag-none-link" href="/tags/personal-project/" rel="tag">personal project</a>
+	  </div>
     
 
   </section>
