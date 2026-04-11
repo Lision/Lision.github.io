@@ -105,57 +105,79 @@
 
   
   <h2 class="title">
-    <a href="/hood/">
-      理解 Hood
+    <a href="/summary_for_2018/">
+      写在 2018 年的最后一天
     </a>
   </h2>
   
   <time>
-    7月 11, 2023
+    12月 31, 2018
   </time>
   <section class="content">
-	  <img src="/hood/dark.jpg" class="">
-<h1 id="Hood-官方中文指引：理解-Hood"><a href="#Hood-官方中文指引：理解-Hood" class="headerlink" title="Hood 官方中文指引：理解 Hood"></a>Hood 官方中文指引：理解 Hood</h1><p>这篇文章是在我利用个人时间做的 App —— Hood 初版快要完成时写的，旨在让 Hood 的用户可以通过阅读本文提升对 Hood 产品逻辑的理解从而更加科学合理的使用 Hood。</p>
-<h1 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h1><ul>
-<li>Hood 是什么?</li>
-<li>核心概念</li>
-<li>设计理念</li>
-<li>无可奈何</li>
-<li>未来计划</li>
+	  <img src="/summary_for_2018/sundial.jpg" class="">
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>打眼一瞧，上一篇文章还是十一长假的时候由于旅行计划破灭后闲着无聊破解 Bartender 时写的，这一转眼的功夫就到了元旦假期了…</p>
+<p>Emmmmm… 本来已经放弃要写年末总结的~</p>
+<p>众所周知，写年末总结约等于自抽嘴巴。末了还要对应着列出新一年的计划，为明年年末相同的环节埋下伏笔。一般来说，年初的计划写的越是<strong>具体、生动、形象</strong>，年末的嘴巴抽的就越是<strong>啪！啪！！啪！！！</strong></p>
+<p>让我惊喜的是，我的年初计划之前没有记到博客里，翻了一下仅有的一篇相关内容的文章<a href="https://lision.me/2017_2018/">《嘛~ 又一年了啊…》</a>，里面并没有什么具体的自定 KPI~</p>
+<blockquote>
+<p>原来我是这么的深谋远虑，早就想好了这一天的到来 😂</p>
+</blockquote>
+<h2 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h2><ul>
+<li>工作篇</li>
+<li>技术篇</li>
+<li>生活篇</li>
+<li>总结</li>
 </ul>
-<h1 id="Hood-是什么？"><a href="#Hood-是什么？" class="headerlink" title="Hood 是什么？"></a>Hood 是什么？</h1><p>Hood 是我利用业余时间做的一款 App。</p>
-<p>你可以把 Hood 当作一个隐私工具，在他人借用设备时禁用掉私密 App；你可以把 Hood 当作一个效率工具，在工作或者集中注意力时隐藏分散你注意力的 App；你可以把 Hood 当作一个家长管理工具，必要时将那些使用时长过多对孩子健康造成影响的 App 限制起来。</p>
-<p>总之，基于屏幕使用时间管理的核心功能可以派生出好多有趣的用法，因此 Hood 未来的迭代方向也有很多。</p>
-<h1 id="核心概念"><a href="#核心概念" class="headerlink" title="核心概念"></a>核心概念</h1><ul>
-<li><p><strong>授权</strong>，Hood 的主要能力是屏幕时间管理，这项能力来自于 ScreenTime API，所以在没有得到授权时 Hood 几乎没有任何用，这也是 Hood 在用户未授权 ScreenTime 时向用户申请权限的原因。</p>
-</li>
-<li><p><strong>隐私</strong>，ScreenTime API 的设计非常注重隐私安全，Hood 不会知道你安装了哪些 Apps，以及什么 Apps 是你想要限制使用的。其实 Hood 的使用并不需要网络授权，目前请求网络权限也仅仅是为了同步 AppStore 的信息。</p>
-</li>
-<li><p><strong>限制</strong>，Hood 只会对没有 ScreenTime API 授权的 App 生效，这意味着 Hood 不可以隐藏自己，所以不是很有趣。这也意味着如果你想取消 Hood 的控制，只需要收回 Hood 拿到的 ScreenTime 授权或者干脆卸载 Hood，那些被 Hood 限制的 Apps 就会一切如初。</p>
-</li>
+<h2 id="工作篇"><a href="#工作篇" class="headerlink" title="工作篇"></a>工作篇</h2><p>嘛~ 这一年在工作中的整体表现算是达到了自己的预期，里程碑如下：</p>
+<ul>
+<li>年初接到了美团外卖团队的 Offer 并成功入职</li>
+<li>参加美团·点评技术通道秋季晋级答辩并成功晋升</li>
 </ul>
-<h1 id="设计理念"><a href="#设计理念" class="headerlink" title="设计理念"></a>设计理念</h1><ul>
-<li><p><strong>应用分组</strong>，管理单个应用比较麻烦，所以 Hood 加入了分组的概念，以卡片形式展示。</p>
-</li>
-<li><p><strong>身份认证</strong>，看到 Hood 内容的人应该是设备的主人，当前 Hood 只做了生物识别认证，也就是 Face ID 或 Touch ID。</p>
-</li>
-<li><p><strong>限制卸载</strong>，如果 Hood 不再那么小众，那么可能拿到你设备的人即使不进行身份认证依然可以通过卸载 Hood 的方式看到那些你不愿意让 TA 看到的 Apps，所以 Hood 做了这个功能；相应的还有「<strong>限制安装应用</strong>」和「<strong>限制应用内购买</strong>」功能，笔者认为这三个功能对于监护人更好的约束被监护人这个场景很有用，可以防止孩子安装新的手游或私下购买游戏道具/打赏女主播。</p>
-</li>
+<p>年初的 Offer 抉择没让自己后悔，这一年外卖商家侧的业务发展很迅猛，随之而言工作中面临的挑战也很多，工作内容充实。我的老板对组员和其自身都有着很高的要求，有一个优秀的 Leader 是一件很幸运的事，因为他（她）会直接决定你所处团队的方方面面。</p>
+<h2 id="技术篇"><a href="#技术篇" class="headerlink" title="技术篇"></a>技术篇</h2><p>这一年在技术方面值得记录的事：</p>
+<ul>
+<li>年初在 GitHub 开源了两个轮子，一年维护下来虽然累，但从中收获不少</li>
+<li>加入了 <a target="_blank" rel="noopener" href="https://weibo.com/swiftguide">@SwiftGG 翻译组</a> 并参与了一些优质文章的校对工作</li>
+<li>阅读了一些公司内部自己感兴趣的源码</li>
 </ul>
-<h1 id="无可奈何"><a href="#无可奈何" class="headerlink" title="无可奈何"></a>无可奈何</h1><ul>
-<li><p><strong>图标乱序</strong>，被 ScreenTime API 禁用的 Apps 在还原时会按照某种规则重新出现到设备桌面，就好像它们被禁用时真的被卸载然后出现时又重新从 AppStore 安装一样，遗憾的是这暂时无解。不过可以通过在第二屏预留相应空位或者参照 Hood 内切换隐藏模式时的提示绕过去。当然，你也可以试试通过 Hood 的锁定模式来禁用 App。</p>
-</li>
-<li><p><strong>界面简陋</strong>，呃… 因为目前还没找到合作的设计师，所以整个 App 的交互和界面设计都是我自己做的，确实有点偏性冷淡的素。其实仔细体会的话你也许可以发现所有的交互路径都是尽可能短的，目的自然是为了更高效。AppIcon 的 H 不只是 Hood 的首字母，也是一个栅栏的形象，意味着约束和控制；主题色是绿色和蓝色的混色，表示健康/距离感与可靠。</p>
-</li>
+<h3 id="关于开源"><a href="#关于开源" class="headerlink" title="关于开源"></a>关于开源</h3><img src="/summary_for_2018/github.jpg" class="">
+<p>Emmmmm… 年初的时候写了两个开源项目：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/Lision/LSAnimator">LSAnimator</a> - An easy to read and write, non-invasive multi-chain animation framework, inspired by JHChainableAnimations.</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Lision/WKWebViewJavascriptBridge">WKWebViewJavascriptBridge</a> - A Bridge for Sending Messages between Swift and JavaScript in WKWebViews.</li>
 </ul>
-<h1 id="未来计划"><a href="#未来计划" class="headerlink" title="未来计划"></a>未来计划</h1><p>正如文章开头说的那样，基于屏幕使用时间管理的核心功能可以派生出好多有趣的用法，因此 Hood 未来的迭代方向也有很多。老实说，我目前对于 Hood 的规划更倾向于效率类工具，所以后续大概率会往这个方向做迭代。</p>
+<p>早在开坑时就做好了填坑的觉悟，得益于推广之前有写覆盖较为全面的单测用例并配置了 Travis-CI，这一年来两个开源项目并未对使用者造成任何负面影响，用户提的 Issue 也都有抽出时间解答 &amp; 处理。</p>
+<h3 id="阅读-amp-实践"><a href="#阅读-amp-实践" class="headerlink" title="阅读 &amp; 实践"></a>阅读 &amp; 实践</h3><blockquote>
+<p>「纸上得来终觉浅，绝知此事要躬行。」</p>
+</blockquote>
+<p>对于这句话的理解越发深刻了，自己之前在书本上学到过的知识好多都没有动手实践过，今年在学习时多次有茅塞顿开的感觉。经过复盘，这种感觉产生的根本原因是自己之前阅读技术书籍时没有完全弄明白，类似于在脑中记录了一个符号，在后期阅读源码 &amp; 解决问题时找到了该符号的对应实现体（笑）。</p>
+<h2 id="生活篇"><a href="#生活篇" class="headerlink" title="生活篇"></a>生活篇</h2><img src="/summary_for_2018/game.jpg" class="">
+<p>工作之余我的时间主要花费在电子游戏上面 😂 今年又败了一些游戏：</p>
+<ul>
+<li>《马里奥赛车 8 豪华版》</li>
+<li>《龙珠斗士 z》</li>
+<li>《精灵宝可梦 Let’s go 皮卡丘》</li>
+<li>《任天堂全明星大乱斗 sp》</li>
+<li>《Dead Cell》</li>
+<li>《传说法师》</li>
+<li>《空洞骑士》</li>
+</ul>
+<blockquote>
+<p>Ps: 为了玩大乱斗还入手了 Switch Pro 手柄，不过 Pro 手柄的操控感真的是非常让我惊喜，想不到任天堂这种品控也能有这种精品外设产出（手动滑稽）。</p>
+</blockquote>
+<p>遗憾的是，自己貌似并没有太多时间去享受这些游戏，最为典型的应该是 2016 年入手的《黑暗之魂 III》，到现在还都是未开封状态 o(╯□╰)o … </p>
+<blockquote>
+<p>感觉一过了 25 周岁之后身体机能大不如前了，最明显的区别就是现在下班回家之后开机器的意愿非常弱，周末几乎不会有通宵肝游戏的想法出现。</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Emmmmm… 感觉这一年来最大的变化是写文章的意愿越来越弱了，其实计划中是有很多东西想转为文字沉淀在自己的博客里的，奈何要做的事情太多，时间却又太少。有些东西当时梳理成了笔记（方便自己回顾），随着时间的推移也就不想再写成文章发出来了…</p>
+<p>通过复盘也发现自己对于生活的态度过于随意，导致年末复盘几乎没什么可写的东西，准备在明年的年度计划中明确生活相关的各项指标，现在想到的有理财，健身，观影，游戏…</p>
 
 
     
     
     
 	  <div class="tags">
-      <a class="tag-none-link" href="/tags/app/" rel="tag">App</a><a class="tag-none-link" href="/tags/hood/" rel="tag">hood</a><a class="tag-none-link" href="/tags/ios/" rel="tag">iOS</a><a class="tag-none-link" href="/tags/personal-project/" rel="tag">personal project</a>
+      <a class="tag-none-link" href="/tags/summary/" rel="tag">summary</a>
 	  </div>
     
 
